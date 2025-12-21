@@ -3,7 +3,7 @@
     "name": "ScopeIt",
     "slug": "ScopeIt",
     "version": "1.0.0",
-    "scheme": "ScopeIt",
+    "scheme": "scopeit",
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -15,9 +15,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-v2.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0B1220"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -26,7 +26,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0B1220"
       }
     }
   }
