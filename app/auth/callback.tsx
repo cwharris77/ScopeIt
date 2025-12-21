@@ -1,43 +1,50 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
 
 export default function AuthCallback() {
   const router = useRouter();
+  const params = useLocalSearchParams();
 
   useEffect(() => {
     const handleCallback = async () => {
-      const { data, error } = await supabase.auth.getSession();
+      // Get tokens from URL params (Supabase sends them as hash fragments)
+      const accessToken = params.access_token as string;
+      const refreshToken = params.refresh_token as string;
 
-      if (error) {
-        console.error('Error getting session in callback:', error.message);
-        router.replace('/sign-in');
-        return;
-      }
+      console.log('Callback params:', params);
 
-      if (data.session) {
-        router.replace('/(tabs)');
+      if (accessToken && refreshToken) {
+        try {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (error) {
+            console.error('Error setting session:', error);
+          } else {
+            console.log('Session set successfully');
+            router.replace('/(tabs)');
+          }
+        } catch (err) {
+          console.error('Callback error:', err);
+        }
       } else {
-        router.replace('/sign-in');
+        console.log('No tokens found in callback');
+        // If no tokens, redirect back to sign in
+        setTimeout(() => router.replace('/sign-in'), 2000);
       }
     };
 
     handleCallback();
-  }, [router]);
+  }, [params]);
 
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#087f8c" />
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+      <ActivityIndicator size="large" />
+      <Text style={{ marginTop: 20 }}>Completing sign in...</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-});
