@@ -11,7 +11,9 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      ["expo-router"],
+      [
+        "expo-router"
+      ],
       [
         "expo-splash-screen",
         {
@@ -31,20 +33,34 @@
       "resizeMode": "contain",
       "backgroundColor": "#087f8c"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "icon": {
         "dark": "./assets/icons/ios-dark.png",
         "light": "./assets/icons/ios-light.png",
         "tinted": "./assets/icons/ios-tinted.png"
+      },
+      "bundleIdentifier": "com.cwharris77.ScopeIt",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#087f8c"
+      },
+      "package": "com.cwharris77.ScopeIt"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7b92695d-875e-4605-96f7-ebf53b72abc0"
       }
-    }
+    },
+    "owner": "cwharris77"
   }
 }
