@@ -3,11 +3,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 
-// SplashScreen.preventAutoHideAsync();
-
 SplashScreen.setOptions({
   fade: true,
-  duration: 400,
+  duration: 500,
 });
 
 export default function RootLayout() {
