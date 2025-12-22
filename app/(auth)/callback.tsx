@@ -1,7 +1,7 @@
+import { supabase } from '@/lib/supabase';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { supabase } from '../../lib/supabase';
 
 export default function AuthCallback() {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function AuthCallback() {
       } else {
         console.log('No tokens found in callback');
         // If no tokens, redirect back to sign in
-        setTimeout(() => router.replace('/sign-in'), 2000);
+        setTimeout(() => router.replace('/(auth)'), 2000);
       }
     };
 

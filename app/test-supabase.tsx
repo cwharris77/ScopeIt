@@ -1,6 +1,6 @@
+import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { supabase } from '../lib/supabase';
 
 export default function TestSupabase() {
   const [status, setStatus] = useState('Not tested');

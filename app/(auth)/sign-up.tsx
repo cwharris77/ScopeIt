@@ -1,7 +1,7 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '../../contexts/AuthContext';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');

@@ -26,7 +26,7 @@ function RootLayoutNav() {
 
     if (!session && inAuthGroup) {
       // Redirect to sign-in if not authenticated
-      router.replace('/sign-in');
+      router.replace('/(auth)');
     } else if (session && !inAuthGroup) {
       // Redirect to app if authenticated
       router.replace('/(tabs)');
@@ -36,7 +36,7 @@ function RootLayoutNav() {
   return (
     <Stack>
       <Stack.Screen name="(auth)" options={{ headerShown: false, title: 'Sign In' }} />
-      <Stack.Screen name="auth/callback" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)/callback" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
