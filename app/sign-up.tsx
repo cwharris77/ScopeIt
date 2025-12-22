@@ -11,14 +11,22 @@ export default function SignUp() {
   const router = useRouter();
 
   const handleSignUp = async () => {
+    if (loading) return;
+
     setLoading(true);
     try {
-      await signUpWithEmail(email, password);
-      Alert.alert(
-        'Account Created',
-        'Please check your email to confirm your account before signing in.',
-        [{ text: 'OK', onPress: () => router.replace('/sign-in') }]
-      );
+      const result = await signUpWithEmail(email, password);
+
+      let message =
+        'If this email is new, we’ve sent a confirmation link. If you already have an account, you’ll receive a sign-in link.';
+
+      if (result.action === 'signed_in') {
+        message = 'Your account is ready.';
+      }
+
+      Alert.alert('Check your email', message, [
+        { text: 'OK', onPress: () => router.replace('/sign-in') },
+      ]);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
