@@ -14,6 +14,7 @@ type AuthContextType = {
   signInWithProvider: (provider: 'google' | 'apple' | 'github') => Promise<void>;
   signUpWithEmail: (email: string, password: string) => Promise<{ action: string }>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
+  resendEmail: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType>({
   signInWithProvider: async () => {},
   signUpWithEmail: async () => ({ action: 'confirm_email' }),
   signInWithEmail: async () => {},
+  resendEmail: async () => {},
   signOut: async () => {},
 });
 
@@ -137,13 +139,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Sign in success:', data);
   };
 
+  const resendEmail = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: 'scopeit://auth/callback',
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
     <AuthContext.Provider
-      value={{ session, loading, signInWithProvider, signUpWithEmail, signInWithEmail, signOut }}>
+      value={{
+        session,
+        loading,
+        signInWithProvider,
+        signUpWithEmail,
+        signInWithEmail,
+        signOut,
+        resendEmail,
+      }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,24 +1,21 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function SignIn() {
+export default function AuthEmail() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signInWithProvider, signInWithEmail } = useAuth();
+  const { signInWithProvider } = useAuth();
+  const router = useRouter();
 
-  const handleEmailSignIn = async () => {
-    setLoading(true);
-    try {
-      await signInWithEmail(email, password);
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setLoading(false);
+  const handleContinue = async () => {
+    if (!email) {
+      Alert.alert('Error', 'Please enter your email');
+      return;
     }
+
+    router.push(`/(auth)/password?email=${encodeURIComponent(email)}`);
   };
 
   return (
@@ -34,19 +31,9 @@ export default function SignIn() {
           autoCapitalize="none"
           keyboardType="email-address"
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleEmailSignIn}
-          disabled={loading}>
-          <Text style={styles.buttonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
+        <TouchableOpacity style={[styles.button]} onPress={handleContinue}>
+          <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>
 
@@ -61,17 +48,19 @@ export default function SignIn() {
           <Ionicons name="logo-google" size={24} color="black" />
           <Text style={styles.oauthButtonText}>Google</Text>
         </TouchableOpacity>
+
         {/* <TouchableOpacity style={styles.oauthButton} onPress={() => signInWithProvider('apple')}>
           <Ionicons name="logo-apple" size={24} color="black" />
           <Text style={styles.oauthButtonText}>Apple</Text>
         </TouchableOpacity> */}
+
         <TouchableOpacity style={styles.oauthButton} onPress={() => signInWithProvider('github')}>
           <FontAwesome name="github" size={24} color="black" />
           <Text style={styles.oauthButtonText}>GitHub</Text>
         </TouchableOpacity>
       </View>
 
-      <Link href="/sign-up" asChild>
+      <Link href="(auth)/sign-up" asChild>
         <TouchableOpacity style={styles.linkButton}>
           <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
