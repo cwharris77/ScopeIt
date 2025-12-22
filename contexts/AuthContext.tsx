@@ -6,12 +6,13 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
+const REDIRECT_URL = Linking.createURL('auth/callback');
 
 type AuthContextType = {
   session: Session | null;
   loading: boolean;
   signInWithProvider: (provider: 'google' | 'apple' | 'github') => Promise<void>;
-  signUpWithEmail: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>;
+  signUpWithEmail: (email: string, password: string) => Promise<{ action: string }>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -20,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
   signInWithProvider: async () => {},
-  signUpWithEmail: async () => ({ needsConfirmation: true }),
+  signUpWithEmail: async () => ({ action: 'confirm_email' }),
   signInWithEmail: async () => {},
   signOut: async () => {},
 });
@@ -49,12 +50,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithProvider = async (provider: 'google' | 'apple' | 'github') => {
-    const redirectTo = Linking.createURL('auth/callback');
-
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo,
+        redirectTo: REDIRECT_URL,
         skipBrowserRedirect: true,
       },
     });
@@ -66,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Open in-app browser instead of external browser
     if (data?.url) {
-      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+      const result = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URL);
 
       if (result.type === 'success') {
         const url = result.url;
@@ -87,19 +86,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
-        emailRedirectTo: 'scopeit://auth/callback',
+        emailRedirectTo: REDIRECT_URL,
       },
     });
 
+    // If Supabase errors, fallback to magic link
     if (error) {
-      console.error('Sign up error:', error);
-      throw error;
+      console.warn('Sign up failed, falling back to magic link:', error.message);
+
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: REDIRECT_URL,
+        },
+      });
+
+      if (otpError) {
+        console.error('Magic link error:', otpError);
+        throw otpError;
+      }
+
+      return { action: 'magic_link' as const };
     }
 
-    // Check if email confirmation is required
-    const needsConfirmation = data.user && !data.session;
+    // Email confirmation required (expected for new users)
+    if (data.user && !data.session) {
+      return { action: 'confirm_email' as const };
+    }
 
-    return { needsConfirmation: !!needsConfirmation };
+    // Rare case: auto signed in
+    if (data.session) {
+      return { action: 'signed_in' as const };
+    }
+
+    // Final fallback (should not happen, but keeps UI stable)
+    return { action: 'check_email' as const };
   };
 
   const signInWithEmail = async (email: string, password: string) => {
