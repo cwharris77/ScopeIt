@@ -1,32 +1,40 @@
-import { Link, useRouter } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '../contexts/AuthContext';
 
-export default function SignUp() {
-  const [email, setEmail] = useState('');
+export default function AuthPassword() {
+  const params = useLocalSearchParams();
+  const email = params.email as string;
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUpWithEmail } = useAuth();
+  const [hasSentLink, setHasSentLink] = useState(false);
+  const { signInWithEmail, resendEmail } = useAuth();
   const router = useRouter();
 
-  const handleSignUp = async () => {
-    if (loading) return;
+  const handleSignIn = async () => {
+    if (!password) {
+      Alert.alert('Error', 'Please enter your password.');
+      return;
+    }
 
     setLoading(true);
     try {
-      const result = await signUpWithEmail(email, password);
+      await signInWithEmail(email, password);
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      let message =
-        'If this email is new, we’ve sent a confirmation link. If you already have an account, you’ll receive a sign-in link.';
-
-      if (result.action === 'signed_in') {
-        message = 'Your account is ready.';
-      }
-
-      Alert.alert('Check your email', message, [
-        { text: 'OK', onPress: () => router.replace('/sign-in') },
-      ]);
+  const handleSignInWithLink = async () => {
+    setLoading(true);
+    try {
+      setHasSentLink(true);
+      await resendEmail(email);
+      Alert.alert('Email sent', 'Check your inbox for a sign-in link.');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -36,17 +44,11 @@ export default function SignUp() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+      <Text style={styles.title}>Welcome Back</Text>
 
       <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-        />
+        <Text className="text-center">Email: {email}</Text>
+
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -57,17 +59,17 @@ export default function SignUp() {
 
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleSignUp}
+          onPress={handleSignIn}
           disabled={loading}>
-          <Text style={styles.buttonText}>{loading ? 'Creating Account...' : 'Sign Up'}</Text>
+          <Text style={styles.buttonText}>{loading ? 'Signing In…' : 'Sign In'}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleSignInWithLink}>
+          <Text style={{ color: '#087f8c', textAlign: 'center', marginTop: 10 }}>
+            {hasSentLink ? 'Resend link' : 'Sign in with link'}
+          </Text>
         </TouchableOpacity>
       </View>
-
-      <Link href="/sign-in" asChild>
-        <TouchableOpacity style={styles.linkButton}>
-          <Text style={styles.linkText}>Already have an account? Sign In</Text>
-        </TouchableOpacity>
-      </Link>
     </View>
   );
 }
@@ -87,6 +89,8 @@ const styles = StyleSheet.create({
     color: '#087f8c',
   },
   form: {
+    display: 'flex',
+    flexDirection: 'column',
     gap: 15,
   },
   input: {
@@ -110,13 +114,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  linkButton: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  linkText: {
-    color: '#087f8c',
-    fontSize: 16,
   },
 });
