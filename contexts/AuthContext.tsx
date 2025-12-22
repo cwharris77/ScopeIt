@@ -1,12 +1,11 @@
+import { getRedirectUrl, supabase } from '@/lib/supabase';
 import { Session } from '@supabase/supabase-js';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
-import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
-const REDIRECT_URL = Linking.createURL('auth/callback');
+const REDIRECT_URL = getRedirectUrl();
 
 type AuthContextType = {
   session: Session | null;
@@ -143,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: 'scopeit://auth/callback',
+        emailRedirectTo: REDIRECT_URL,
       },
     });
 
