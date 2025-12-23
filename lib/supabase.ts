@@ -32,5 +32,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 export const getRedirectUrl = () => {
-  return Linking.createURL('(auth)/callback');
+  return Linking.createURL('auth/callback');
 };
