@@ -21,7 +21,6 @@ function RootLayoutNav() {
 
     const inAuthGroup = segments[0] === '(tabs)';
     const onAuthCallback = path.startsWith('(auth)/callback');
-    console.log({ segments, inAuthGroup, onAuthCallback });
 
     // Don't redirect if we're on the auth callback page
     if (onAuthCallback) return;
