@@ -9,8 +9,8 @@ export default function HomeScreen() {
       <Text className="text-4xl font-bold text-white">Home</Text>
       <Button
         title="Sign Out"
-        onPress={() => {
-          signOut();
+        onPress={async () => {
+          await signOut();
         }}
       />
     </View>

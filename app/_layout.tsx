@@ -1,4 +1,4 @@
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -13,13 +13,15 @@ SplashScreen.setOptions({
 function RootLayoutNav() {
   const { session, loading } = useAuth();
   const segments = useSegments();
+  const path = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     if (loading) return;
 
     const inAuthGroup = segments[0] === '(tabs)';
-    const onAuthCallback = segments[0] === 'auth';
+    const onAuthCallback = path.startsWith('(auth)/callback');
+    console.log({ segments, inAuthGroup, onAuthCallback });
 
     // Don't redirect if we're on the auth callback page
     if (onAuthCallback) return;
@@ -31,12 +33,11 @@ function RootLayoutNav() {
       // Redirect to app if authenticated
       router.replace('/(tabs)');
     }
-  }, [session, loading, segments]);
+  }, [session, loading, segments, path]);
 
   return (
     <Stack>
       <Stack.Screen name="(auth)" options={{ headerShown: false, title: 'Sign In' }} />
-      <Stack.Screen name="(auth)/callback" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
