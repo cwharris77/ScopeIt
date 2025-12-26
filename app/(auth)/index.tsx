@@ -62,7 +62,7 @@ export default function AuthEmail() {
 
       <Link href="(auth)/sign-up" asChild>
         <TouchableOpacity style={styles.linkButton}>
-          <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
+          <Text style={styles.linkText}>Don&apos;t have an account? Sign Up</Text>
         </TouchableOpacity>
       </Link>
     </View>
