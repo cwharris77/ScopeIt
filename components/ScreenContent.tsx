@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { EditScreenInfo } from './EditScreenInfo';
 
 type ScreenContentProps = {
@@ -11,12 +12,12 @@ type ScreenContentProps = {
 
 export const ScreenContent = ({ title, path, children }: ScreenContentProps) => {
   return (
-    <View className={styles.container}>
+    <SafeAreaView className={styles.container}>
       <Text className={styles.title}>{title}</Text>
       <View className={styles.separator} />
       <EditScreenInfo path={path} />
       {children}
-    </View>
+    </SafeAreaView>
   );
 };
 const styles = {
