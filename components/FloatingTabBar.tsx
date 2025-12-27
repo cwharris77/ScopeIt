@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { ComponentProps } from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
 
@@ -16,7 +17,7 @@ const ICONS: Record<'home' | 'tasks', { focused: IoniconName; unfocused: Ionicon
 };
 
 export function FloatingTabBar({ state, navigation }: { state: any; navigation: any }) {
-  console.log('Rendering FloatingTabBar with state:', state);
+  const router = useRouter();
   return (
     <View
       style={{
@@ -51,7 +52,7 @@ export function FloatingTabBar({ state, navigation }: { state: any; navigation: 
 
       {/* Center FAB */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('add')} // TODO: add modal to add task
+        onPress={() => router.push('/add-task')}
         activeOpacity={0.9}
         style={{
           width: 64,
