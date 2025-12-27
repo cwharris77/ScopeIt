@@ -3,7 +3,7 @@ import Loading from '@/components/Loading';
 import TaskView from '@/components/TaskView';
 import { useTasks } from '@/hooks/useTasks';
 import { useState } from 'react';
-import { Alert, Button, FlatList, Text } from 'react-native';
+import { Alert, Button, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TasksScreen() {
@@ -27,7 +27,7 @@ export default function TasksScreen() {
       return;
     }
 
-    console.log('Task created:', data);
+    // console.log('Task created:', data);
   };
 
   if (loading) {
@@ -40,8 +40,7 @@ export default function TasksScreen() {
   console.log('Rendering tasks:', tasks);
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center">
-      <Text>Tasks</Text>
+    <SafeAreaView className="p-4">
       <Button
         title={isCreating ? 'Creating...' : 'New Task'}
         onPress={handleAddTask}
