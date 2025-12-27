@@ -43,7 +43,6 @@ function RootLayoutNav() {
         options={{
           presentation: 'transparentModal',
           headerShown: false,
-          // contentStyle: { backgroundColor: 'transparent' },
         }}
       />
     </Stack>
