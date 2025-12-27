@@ -34,3 +34,26 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 export const getRedirectUrl = () => {
   return Linking.createURL('auth/callback');
 };
+
+export async function createTask(
+  userId: string,
+  taskData: {
+    task_name: string;
+    estimated_minutes?: number;
+    // add other fields as needed
+  }
+) {
+  const { data, error } = await supabase
+    .from('tasks')
+    .insert([
+      {
+        user_id: userId,
+        task_name: taskData.task_name,
+        estimated_minutes: taskData.estimated_minutes,
+      },
+    ])
+    .select()
+    .single();
+
+  return { data, error };
+}
