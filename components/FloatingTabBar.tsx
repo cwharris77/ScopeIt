@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useRouter } from 'expo-router';
 import { ComponentProps } from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
@@ -16,7 +17,7 @@ const ICONS: Record<'home' | 'tasks', { focused: IoniconName; unfocused: Ionicon
   },
 };
 
-export function FloatingTabBar({ state, navigation }: { state: any; navigation: any }) {
+export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   const router = useRouter();
   return (
     <View
