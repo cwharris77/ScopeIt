@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { createTask, supabase } from '@/lib/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 
@@ -56,5 +56,17 @@ export function useTasks() {
     };
   }, [session?.user.id]);
 
-  return { tasks, loading, error };
+  const addTask = async (taskData: { task_name: string; estimated_minutes?: number }) => {
+    if (!session?.user.id) return { data: null, error: 'No user' };
+
+    const { data, error } = await createTask(session.user.id, taskData);
+
+    if (!error && data) {
+      setTasks((prev) => [...prev, data]);
+    }
+
+    return { data, error };
+  };
+
+  return { tasks, loading, error, addTask };
 }
