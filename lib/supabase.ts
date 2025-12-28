@@ -1,3 +1,4 @@
+import { Database } from '@/types/supabase';
 import { createClient } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
@@ -22,7 +23,7 @@ const storage = {
   },
 };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage,
     autoRefreshToken: true,
@@ -35,25 +36,9 @@ export const getRedirectUrl = () => {
   return Linking.createURL('auth/callback');
 };
 
-export async function createTask(
-  userId: string,
-  taskData: {
-    task_name: string;
-    estimated_minutes?: number;
-    // add other fields as needed
-  }
-) {
-  const { data, error } = await supabase
-    .from('tasks')
-    .insert([
-      {
-        user_id: userId,
-        task_name: taskData.task_name,
-        estimated_minutes: taskData.estimated_minutes,
-      },
-    ])
-    .select()
-    .single();
+export type Tables<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Row'];
 
-  return { data, error };
-}
+export type Task = Tables<'tasks'>;
+export type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
+export type TaskUpdate = Database['public']['Tables']['tasks']['Update'];

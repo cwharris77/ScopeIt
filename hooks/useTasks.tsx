@@ -1,72 +1,94 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { createTask, supabase } from '@/lib/supabase';
+import { supabase, Task, TaskInsert } from '@/lib/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useTasks() {
   const { session } = useAuth();
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<PostgrestError | null>(null);
 
-  useEffect(() => {
-    if (!session?.user.id) return;
-
-    // Initial fetch
-    const fetchTasks = async () => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('user_id', session.user.id);
-
-      if (error) setError(error);
-      else setTasks(data || []);
+  const fetchTasks = useCallback(async () => {
+    if (!session?.user.id) {
       setLoading(false);
-    };
+      return;
+    }
 
-    fetchTasks();
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
 
-    // Subscribe to realtime changes
-    const subscription = supabase
-      .channel('tasks-channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks',
-          filter: `user_id=eq.${session.user.id}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setTasks((prev) => [...prev, payload.new]);
-          } else if (payload.eventType === 'UPDATE') {
-            setTasks((prev) =>
-              prev.map((task) => (task.id === payload.new.id ? payload.new : task))
-            );
-          } else if (payload.eventType === 'DELETE') {
-            setTasks((prev) => prev.filter((task) => task.id !== payload.old.id));
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    if (error) {
+      setError(error);
+    } else {
+      setTasks(data || []);
+    }
+    setLoading(false);
   }, [session?.user.id]);
 
-  const addTask = async (taskData: { task_name: string; estimated_minutes?: number }) => {
-    if (!session?.user.id) return { data: null, error: 'No user' };
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
-    const { data, error } = await createTask(session.user.id, taskData);
+  const addTask = useCallback(
+    async (taskData: Omit<TaskInsert, 'user_id'>) => {
+      if (!session?.user.id) return { data: null, error: 'No user' };
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert({
+          ...taskData,
+          user_id: session.user.id,
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        // Manually add to the beginning of the list
+        setTasks((prev) => [data, ...prev]);
+      }
+
+      return { data, error };
+    },
+    [session?.user.id]
+  );
+
+  const updateTask = useCallback(async (id: string, updates: Partial<Task>) => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
 
     if (!error && data) {
-      setTasks((prev) => [...prev, data]);
+      setTasks((prev) => prev.map((task) => (task.id === id ? data : task)));
     }
 
     return { data, error };
-  };
+  }, []);
 
-  return { tasks, loading, error, addTask };
+  const deleteTask = useCallback(async (id: string) => {
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
+
+    if (!error) {
+      setTasks((prev) => prev.filter((task) => task.id !== id));
+    }
+
+    return { error };
+  }, []);
+
+  return {
+    tasks,
+    loading,
+    error,
+    addTask,
+    updateTask,
+    deleteTask,
+    refetch: fetchTasks, // Expose refetch for manual refresh
+  };
 }

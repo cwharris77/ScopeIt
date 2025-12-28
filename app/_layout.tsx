@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { TasksProvider } from '@/contexts/TasksContext';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -38,6 +39,7 @@ function RootLayoutNav() {
     <Stack>
       <Stack.Screen name="(auth)" options={{ headerShown: false, title: 'Sign In' }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
       <Stack.Screen
         name="add-task"
         options={{
@@ -53,7 +55,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <RootLayoutNav />
+        <TasksProvider>
+          <RootLayoutNav />
+        </TasksProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

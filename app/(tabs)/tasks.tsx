@@ -1,7 +1,7 @@
 import ErrorView from '@/components/ErrorView';
 import Loading from '@/components/Loading';
 import TaskView from '@/components/TaskView';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasks } from '@/contexts/TasksContext';
 import { FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
