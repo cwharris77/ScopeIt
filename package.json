@@ -8,7 +8,9 @@
     "prebuild": "expo prebuild",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor  > types/supabase.ts"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
