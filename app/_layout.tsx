@@ -39,7 +39,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(auth)" options={{ title: 'Sign In' }} />
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="(screens)" />
+      <Stack.Screen name="(screens)" options={{ presentation: 'transparentModal' }} />
     </Stack>
   );
 }
