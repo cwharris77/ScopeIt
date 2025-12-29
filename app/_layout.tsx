@@ -20,8 +20,8 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === '(tabs)' || segments[0] === 'add-task';
-    const onAuthCallback = path.startsWith('(auth)/callback');
+    const inAuthGroup = segments[0] === '(tabs)' || segments[0] === '(screens)';
+    const onAuthCallback = path.startsWith('/callback');
 
     // Don't redirect if we're on the auth callback page
     if (onAuthCallback) return;
@@ -36,18 +36,10 @@ function RootLayoutNav() {
   }, [session, loading, segments, path]);
 
   return (
-    <Stack>
-      <Stack.Screen name="(auth)" options={{ headerShown: false, title: 'Sign In' }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-      <Stack.Screen
-        name="add-task"
-        options={{
-          presentation: 'transparentModal',
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen name="edit-task" />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(auth)" options={{ title: 'Sign In' }} />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(screens)" />
     </Stack>
   );
 }

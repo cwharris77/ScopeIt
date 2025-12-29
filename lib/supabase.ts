@@ -33,7 +33,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 });
 
 export const getRedirectUrl = () => {
-  return Linking.createURL('auth/callback');
+  return Linking.createURL('callback');
 };
 
 export type Tables<T extends keyof Database['public']['Tables']> =
