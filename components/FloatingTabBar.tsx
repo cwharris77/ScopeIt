@@ -1,3 +1,4 @@
+import { FLOATING_TAB_BAR_BOTTOM, FLOATING_TAB_BAR_HEIGHT } from '@/constants/layout';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useRouter } from 'expo-router';
@@ -23,10 +24,10 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
     <View
       style={{
         position: 'absolute',
-        bottom: 50,
+        bottom: FLOATING_TAB_BAR_BOTTOM,
         alignSelf: 'center',
         width: '90%',
-        height: 90,
+        height: FLOATING_TAB_BAR_HEIGHT,
         backgroundColor: '#1f2937',
         borderRadius: 60,
         flexDirection: 'row',
@@ -56,8 +57,8 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
         onPress={() => router.push('/add-task')}
         activeOpacity={0.9}
         style={{
-          width: 64,
-          height: 64,
+          width: 55,
+          height: 55,
           borderRadius: 32,
           backgroundColor: '#fff',
           justifyContent: 'center',
