@@ -6,7 +6,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: '#181922' },
+        sceneStyle: { backgroundColor: '#181922', width: '100%' },
       }}
       tabBar={(props) => <FloatingTabBar {...props} />}>
       <Tabs.Screen name="index" />
