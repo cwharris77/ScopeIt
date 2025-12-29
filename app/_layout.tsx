@@ -47,6 +47,7 @@ function RootLayoutNav() {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="edit-task" />
     </Stack>
   );
 }
