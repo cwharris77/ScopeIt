@@ -20,7 +20,8 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === '(tabs)' || segments[0] === '(screens)';
+    const inAuthGroup =
+      segments[0] === '(tabs)' || segments[0] === '(screens)' || segments[0] === '(modals)';
     const onAuthCallback = path.startsWith('/callback');
 
     // Don't redirect if we're on the auth callback page
@@ -39,7 +40,8 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(auth)" options={{ title: 'Sign In' }} />
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="(screens)" options={{ presentation: 'transparentModal' }} />
+      <Stack.Screen name="(screens)" />
+      <Stack.Screen name="(modals)" options={{ presentation: 'transparentModal' }} />
     </Stack>
   );
 }
