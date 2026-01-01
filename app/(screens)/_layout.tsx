@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 
 export default function ScreensLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#181922' } }}>
       <Stack.Screen name="edit-task" />
     </Stack>
   );
