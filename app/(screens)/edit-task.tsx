@@ -70,8 +70,8 @@ function EditTaskContent({
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <YStack flex={1} paddingTop="$md" gap="$md">
-        <XStack alignItems="center" paddingHorizontal="$md">
+      <YStack flex={1} paddingTop={12} gap={12}>
+        <XStack alignItems="center" paddingHorizontal={12}>
           <XStack flex={1}>
             <Button
               circular
@@ -85,7 +85,7 @@ function EditTaskContent({
             />
           </XStack>
 
-          <Text fontSize="$xl">Edit Task</Text>
+          <Text fontSize={24}>Edit Task</Text>
 
           <XStack flex={1} />
         </XStack>
@@ -94,13 +94,13 @@ function EditTaskContent({
         <YStack
           flex={1}
           backgroundColor="$backgroundStrong"
-          padding="$xl"
+          padding={20}
           paddingBottom={Math.max(insets.bottom, 16)}
-          marginHorizontal="$md"
-          marginBottom="$md"
+          marginHorizontal={12}
+          marginBottom={12}
           borderRadius={40}>
-          <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$md">
-            <Text fontSize="$xxl" fontWeight="semibold" flexShrink={1}>
+          <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={12}>
+            <Text fontSize={30} fontWeight="semibold" flexShrink={1}>
               {displayTask.name}
             </Text>
             <PrioritySelect
@@ -115,9 +115,9 @@ function EditTaskContent({
               }}
             />
           </XStack>
-          <Separator marginVertical="$xl" />
+          <Separator marginVertical={20} />
           <Text>{displayTask.description}</Text>
-          <Separator marginVertical="$xl" />
+          <Separator marginVertical={20} />
           <Timer
             task={displayTask}
             onUpdate={(updates: Partial<Task>, immediate = false) => {

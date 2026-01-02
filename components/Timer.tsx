@@ -60,14 +60,15 @@ export function Timer({ task, onUpdate }: TimerProps) {
   };
 
   return (
-    <XStack alignItems="center" justifyContent="space-between" gap="$md" paddingVertical="$sm">
+    <XStack alignItems="center" justifyContent="space-between" gap={12} paddingVertical={8}>
       {/* Estimate */}
-      <YStack gap="$xs" flex={1}>
-        <Text fontSize="$xs" color="$color11" fontWeight="bold">
+      <YStack gap={4} flex={1}>
+        <Text fontSize={12} color="$color11" fontWeight="bold">
           ESTIMATE (MIN)
         </Text>
         <Input
           size="$md"
+          style={{ fontSize: 16 }}
           value={task.estimated_minutes?.toString()}
           onChange={(e: any) => {
             const text = e.nativeEvent.text;
@@ -92,11 +93,11 @@ export function Timer({ task, onUpdate }: TimerProps) {
       />
 
       {/* Elapsed */}
-      <YStack gap="$xs" flex={1} alignItems="flex-end">
-        <Text fontSize="$xs" color="$color11" fontWeight="bold">
+      <YStack gap={4} flex={1} alignItems="flex-end">
+        <Text fontSize={12} color="$color11" fontWeight="bold">
           ELAPSED
         </Text>
-        <Text fontSize="$xl" fontWeight="bold" fontFamily="$mono">
+        <Text fontSize={24} fontWeight="bold" fontFamily="$mono">
           {formatTime(getElapsedSeconds())}
         </Text>
       </YStack>
