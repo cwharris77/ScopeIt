@@ -3,7 +3,7 @@ import { TasksProvider } from '@/contexts/TasksContext';
 import defaultConfig from '@/tamagui.config';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TamaguiProvider } from 'tamagui';
 import '../global.css';
@@ -49,9 +49,11 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
   return (
     <SafeAreaProvider>
-      <TamaguiProvider config={defaultConfig}>
+      <TamaguiProvider config={defaultConfig} defaultTheme={theme}>
         <AuthProvider>
           <TasksProvider>
             <RootLayoutNav />
