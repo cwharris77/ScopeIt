@@ -4,10 +4,11 @@ import { Text, TouchableOpacity } from 'react-native';
 
 export default function TaskView({ task }: { task: Task }) {
   const router = useRouter();
+
   return (
     <TouchableOpacity
       onPress={() =>
-        router.push(`/edit-task?taskId=${task.id}&name=${task.name}&priority=${task.priority}`)
+        router.push(`/edit-task?id=${task.id}&name=${task.name}&priority=${task.priority}`)
       }
       activeOpacity={0.9}
       className="max-w-3/4 w-80 rounded-lg bg-primary p-4">
