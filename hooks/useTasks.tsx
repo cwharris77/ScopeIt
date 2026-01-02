@@ -34,6 +34,26 @@ export function useTasks() {
     fetchTasks();
   }, [fetchTasks]);
 
+  const getTask = useCallback(
+    async (id: string) => {
+      if (!session?.user.id) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const { data, error } = await supabase.from('tasks').select().eq('id', id).maybeSingle();
+
+      if (error) {
+        setError(error);
+        return { error };
+      }
+      setLoading(false);
+      return { data };
+    },
+    [session?.user.id]
+  );
+
   const addTask = useCallback(
     async (taskData: Omit<TaskInsert, 'user_id'>) => {
       if (!session?.user.id) return { data: null, error: 'No user' };
@@ -89,6 +109,7 @@ export function useTasks() {
     addTask,
     updateTask,
     deleteTask,
+    getTask,
     refetch: fetchTasks, // Expose refetch for manual refresh
   };
 }

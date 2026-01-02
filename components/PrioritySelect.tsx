@@ -61,7 +61,7 @@ export function PrioritySelect({ value, onChange, className }: PrioritySelectPro
                   priorityBg(priority),
                   priority === value && 'opacity-90'
                 )}>
-                <Text className="font-medium capitalize text-white">{priority}</Text>
+                <Text className="text-center font-medium capitalize text-white">{priority}</Text>
               </Pressable>
             ))}
           </View>
