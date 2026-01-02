@@ -6,6 +6,9 @@ import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 
+import { defaultConfig } from '@tamagui/config/v4';
+import { createTamagui, TamaguiProvider } from 'tamagui';
+
 SplashScreen.setOptions({
   fade: true,
   duration: 500,
@@ -46,14 +49,18 @@ function RootLayoutNav() {
   );
 }
 
+const config = createTamagui(defaultConfig);
+
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <TasksProvider>
-          <RootLayoutNav />
-        </TasksProvider>
-      </AuthProvider>
+      <TamaguiProvider config={config}>
+        <AuthProvider>
+          <TasksProvider>
+            <RootLayoutNav />
+          </TasksProvider>
+        </AuthProvider>
+      </TamaguiProvider>
     </SafeAreaProvider>
   );
 }
