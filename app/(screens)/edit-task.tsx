@@ -1,4 +1,11 @@
-import { TaskPriority, TaskPriorityName, TaskPriorityType, TaskURLParams } from '@/types/tasks';
+import { PrioritySelect } from '@/components/PrioritySelect';
+import { parseTaskPriorityValue } from '@/lib/tasks';
+import {
+  TaskPriority,
+  TaskPriorityName,
+  TaskPriorityValueName,
+  TaskURLParams,
+} from '@/types/tasks';
 import { ChevronLeft } from '@tamagui/lucide-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -9,13 +16,13 @@ export default function EditTask() {
   const params = useLocalSearchParams<TaskURLParams>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [priorityName, setPriorityName] = useState<TaskPriorityName>('medium');
-  const [priority, setPriority] = useState<TaskPriorityType>(TaskPriority.medium);
+
+  const priorityValue = parseTaskPriorityValue(params.priority) ?? TaskPriority.medium;
+  const [priority, setPriority] = useState<TaskPriorityName>(TaskPriorityValueName[priorityValue]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <YStack flex={1} paddingTop="$md" gap="$md">
-        {/* Header */}
         <XStack alignItems="center" paddingHorizontal="$md">
           <XStack flex={1}>
             <Button
@@ -49,6 +56,7 @@ export default function EditTask() {
               {params.name}
             </Text>
           </XStack>
+          <PrioritySelect value={priority} onChange={setPriority} />
           <Separator marginVertical="$lg" />
         </YStack>
       </YStack>
