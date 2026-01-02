@@ -1,13 +1,12 @@
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { TasksProvider } from '@/contexts/TasksContext';
+import defaultConfig from '@/tamagui.config';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { TamaguiProvider } from 'tamagui';
 import '../global.css';
-
-import { defaultConfig } from '@tamagui/config/v4';
-import { createTamagui, TamaguiProvider } from 'tamagui';
 
 SplashScreen.setOptions({
   fade: true,
@@ -49,12 +48,10 @@ function RootLayoutNav() {
   );
 }
 
-const config = createTamagui(defaultConfig);
-
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <TamaguiProvider config={config}>
+      <TamaguiProvider config={defaultConfig}>
         <AuthProvider>
           <TasksProvider>
             <RootLayoutNav />

@@ -23,6 +23,7 @@ export type Database = {
           estimated_minutes: number
           id: string
           name: string
+          priority: number
           started_at: string | null
           status: string | null
           user_id: string
@@ -35,6 +36,7 @@ export type Database = {
           estimated_minutes: number
           id?: string
           name: string
+          priority?: number
           started_at?: string | null
           status?: string | null
           user_id: string
@@ -47,6 +49,7 @@ export type Database = {
           estimated_minutes?: number
           id?: string
           name?: string
+          priority?: number
           started_at?: string | null
           status?: string | null
           user_id?: string
