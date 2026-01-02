@@ -1,4 +1,5 @@
 import { PrioritySelect } from '@/components/PrioritySelect';
+import { useAutoSaveTask } from '@/hooks/useAutoSaveTasks';
 import { parseTaskPriorityValue } from '@/lib/tasks';
 import {
   TaskPriority,
@@ -19,6 +20,9 @@ export default function EditTask() {
 
   const priorityValue = parseTaskPriorityValue(params.priority) ?? TaskPriority.medium;
   const [priority, setPriority] = useState<TaskPriorityName>(TaskPriorityValueName[priorityValue]);
+  const [taskFields, setTaskFields] = useState({});
+
+  useAutoSaveTask(params.id, taskFields);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
@@ -56,7 +60,19 @@ export default function EditTask() {
               {params.name}
             </Text>
           </XStack>
-          <PrioritySelect value={priority} onChange={setPriority} />
+          <PrioritySelect
+            value={priority}
+            onChange={(priorityName) => {
+              setPriority(priorityName);
+
+              // Map string → numeric
+              const priorityValue = TaskPriority[priorityName];
+              setTaskFields((prev) => ({
+                ...prev,
+                priority: priorityValue,
+              }));
+            }}
+          />
           <Separator marginVertical="$lg" />
         </YStack>
       </YStack>
