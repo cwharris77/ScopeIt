@@ -49,7 +49,7 @@ export function Timer({ task, onUpdate }: TimerProps) {
     const base = task.actual_seconds || 0;
     if (!isRunning) return base;
     const start = new Date(task.started_at!).getTime();
-    return base + Math.floor((Date.now() - start) / 1000);
+    return base + Math.floor((now - start) / 1000);
   };
 
   const formatTime = (totalSeconds: number) => {
