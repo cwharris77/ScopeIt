@@ -1,18 +1,19 @@
 import Loading from '@/components/Loading';
 import { PrioritySelect } from '@/components/PrioritySelect';
+import { Timer } from '@/components/Timer';
 import { useAutoSaveTask } from '@/hooks/useAutoSaveTasks';
 import { useTasks } from '@/hooks/useTasks';
 import { Task } from '@/lib/supabase';
 import {
   TaskPriority,
-  TaskPriorityName,
   TaskPriorityType,
   TaskPriorityValueName,
   TaskURLParams,
 } from '@/types/tasks';
 import { ChevronLeft } from '@tamagui/lucide-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Suspense, use, useMemo, useState } from 'react';
+import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Separator, Text, XStack, YStack } from 'tamagui';
 
@@ -23,16 +24,47 @@ function EditTaskContent({
 }) {
   const { data: task, error } = use(taskPromise);
   const { id } = useLocalSearchParams<TaskURLParams>();
+  const { updateTask } = useTasks();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const [priority, setPriority] = useState<TaskPriorityName>(() => {
-    const priorityValue = (task?.priority as TaskPriorityType) ?? TaskPriority.medium;
-    return TaskPriorityValueName[priorityValue];
-  });
-  const [taskFields, setTaskFields] = useState({});
+  const [taskFields, setTaskFields] = useState<Partial<Task>>({});
 
-  useAutoSaveTask(id, taskFields);
+  const displayTask = useMemo(() => {
+    return { ...task, ...taskFields } as Task;
+  }, [task, taskFields]);
+
+  const priorityValue = (displayTask.priority as TaskPriorityType) ?? TaskPriority.medium;
+  const priority = TaskPriorityValueName[priorityValue];
+
+  // Handle saving
+  const saveTask = useRef(() => {
+    if (!id || Object.keys(taskFields).length === 0) return;
+    updateTask(id as string, taskFields);
+  });
+
+  // Keep saveTask ref updated
+  useEffect(() => {
+    saveTask.current = () => {
+      if (!id || Object.keys(taskFields).length === 0) return;
+      updateTask(id as string, taskFields);
+    };
+  }, [id, taskFields, updateTask]);
+
+  // AppState listener for background saving
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        saveTask.current();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useAutoSaveTask(id as string, taskFields);
 
   if (error || !task) return <Text>Task not found</Text>;
 
@@ -69,13 +101,11 @@ function EditTaskContent({
           borderRadius={40}>
           <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$md">
             <Text fontSize="$xxl" fontWeight="semibold" flexShrink={1}>
-              {task.name}
+              {displayTask.name}
             </Text>
             <PrioritySelect
               value={priority}
               onChange={(priorityName) => {
-                setPriority(priorityName);
-
                 // Map string → numeric
                 const priorityValue = TaskPriority[priorityName];
                 setTaskFields((prev) => ({
@@ -86,8 +116,21 @@ function EditTaskContent({
             />
           </XStack>
           <Separator marginVertical="$xl" />
-          <Text>{task.description}</Text>
+          <Text>{displayTask.description}</Text>
           <Separator marginVertical="$xl" />
+          <Timer
+            task={displayTask}
+            onUpdate={(updates: Partial<Task>, immediate = false) => {
+              setTaskFields((prev) => ({
+                ...prev,
+                ...updates,
+              }));
+
+              if (immediate) {
+                updateTask(id as string, updates);
+              }
+            }}
+          />
         </YStack>
       </YStack>
     </SafeAreaView>
