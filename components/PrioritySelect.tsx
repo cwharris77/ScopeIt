@@ -7,6 +7,7 @@ import { TaskPriorityName } from '@/types/tasks';
 type PrioritySelectProps = {
   value: TaskPriorityName;
   onChange: (value: TaskPriorityName) => void;
+  className?: string;
 };
 
 const PRIORITIES: TaskPriorityName[] = ['low', 'medium', 'high'];
@@ -20,12 +21,11 @@ function priorityBg(priority: TaskPriorityName) {
     case 'high':
       return 'bg-high_priority';
     default:
-      console.error(`Unknown priority: ${priority}`);
-    //   throw new Error(`Unknown priority: ${priority}`);
+      throw new Error(`Unknown priority: ${priority}`);
   }
 }
 
-export function PrioritySelect({ value, onChange }: PrioritySelectProps) {
+export function PrioritySelect({ value, onChange, className }: PrioritySelectProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -36,7 +36,8 @@ export function PrioritySelect({ value, onChange }: PrioritySelectProps) {
         className={cn(
           'rounded-lg px-4 py-3',
           'flex-row items-center justify-between',
-          priorityBg(value)
+          priorityBg(value),
+          className
         )}>
         <Text className="font-semibold capitalize text-white">{value}</Text>
         <Text className="text-white">▼</Text>

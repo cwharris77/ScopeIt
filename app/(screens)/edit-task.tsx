@@ -59,20 +59,21 @@ export default function EditTask() {
             <Text fontSize="$xxl" fontWeight="semibold" flexShrink={1}>
               {params.name}
             </Text>
-          </XStack>
-          <PrioritySelect
-            value={priority}
-            onChange={(priorityName) => {
-              setPriority(priorityName);
+            <PrioritySelect
+              value={priority}
+              onChange={(priorityName) => {
+                setPriority(priorityName);
 
-              // Map string → numeric
-              const priorityValue = TaskPriority[priorityName];
-              setTaskFields((prev) => ({
-                ...prev,
-                priority: priorityValue,
-              }));
-            }}
-          />
+                // Map string → numeric
+                const priorityValue = TaskPriority[priorityName];
+                setTaskFields((prev) => ({
+                  ...prev,
+                  priority: priorityValue,
+                }));
+              }}
+            />
+          </XStack>
+
           <Separator marginVertical="$lg" />
         </YStack>
       </YStack>
