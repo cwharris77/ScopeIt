@@ -1,3 +1,4 @@
+import { TASK_STATUS } from '@/constants/taskStatus';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Task, TaskInsert } from '@/lib/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
@@ -102,6 +103,109 @@ export function useTasks() {
     return { error };
   }, []);
 
+  /**
+   * Start a task timer - pauses any other running task first
+   */
+  const startTask = useCallback(
+    async (id: string) => {
+      // First pause any currently running task
+      const runningTask = tasks.find((t) => t.status === TASK_STATUS.RUNNING && t.id !== id);
+      if (runningTask) {
+        await pauseTask(runningTask.id);
+      }
+
+      // Start this task
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({
+          status: TASK_STATUS.RUNNING,
+          started_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (!error && data) {
+        setTasks((prev) => prev.map((task) => (task.id === id ? data : task)));
+      }
+
+      return { data, error };
+    },
+    [tasks]
+  );
+
+  /**
+   * Pause a running task - accumulates elapsed time
+   */
+  const pauseTask = useCallback(
+    async (id: string) => {
+      // Get current task to calculate elapsed time
+      const task = tasks.find((t) => t.id === id);
+      if (!task || !task.started_at) return { error: 'Task not running' };
+
+      const start = new Date(task.started_at).getTime();
+      const delta = Math.floor((Date.now() - start) / 1000);
+      const newActualSeconds = (task.actual_seconds || 0) + delta;
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({
+          status: TASK_STATUS.PAUSED,
+          started_at: null,
+          actual_seconds: newActualSeconds,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (!error && data) {
+        setTasks((prev) => prev.map((t) => (t.id === id ? data : t)));
+      }
+
+      return { data, error };
+    },
+    [tasks]
+  );
+
+  /**
+   * Complete a task
+   */
+  const completeTask = useCallback(
+    async (id: string) => {
+      // Get current task to calculate final elapsed time
+      const task = tasks.find((t) => t.id === id);
+      if (!task) return { error: 'Task not found' };
+
+      let finalActualSeconds = task.actual_seconds || 0;
+
+      // If task was running, add the current session time
+      if (task.status === TASK_STATUS.RUNNING && task.started_at) {
+        const start = new Date(task.started_at).getTime();
+        const delta = Math.floor((Date.now() - start) / 1000);
+        finalActualSeconds += delta;
+      }
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({
+          status: TASK_STATUS.COMPLETED,
+          started_at: null,
+          actual_seconds: finalActualSeconds,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (!error && data) {
+        setTasks((prev) => prev.map((t) => (t.id === id ? data : t)));
+      }
+
+      return { data, error };
+    },
+    [tasks]
+  );
+
   return {
     tasks,
     loading,
@@ -110,6 +214,9 @@ export function useTasks() {
     updateTask,
     deleteTask,
     getTask,
-    refetch: fetchTasks, // Expose refetch for manual refresh
+    startTask,
+    pauseTask,
+    completeTask,
+    refetch: fetchTasks,
   };
 }

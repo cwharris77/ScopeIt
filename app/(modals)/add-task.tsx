@@ -1,4 +1,10 @@
-import { TasksProvider, useTasks } from '@/contexts/TasksContext';
+/**
+ * Add Task Modal - Enhanced with category selection and premium styling
+ */
+
+import { Colors } from '@/constants/colors';
+import { CATEGORIES, Category, TASK_STATUS } from '@/constants/taskStatus';
+import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -8,6 +14,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -16,15 +23,15 @@ import {
 export default function AddTaskModal() {
   const router = useRouter();
   const { addTask } = useTasks();
+
+  // Form state
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [estimatedMinutes, setEstimatedMinutes] = useState('30');
+  const [category, setCategory] = useState<Category>('Work');
+  const [expectedHours, setExpectedHours] = useState('0');
+  const [expectedMins, setExpectedMins] = useState('30');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
-    setTitle('');
-    setDescription('');
-    setEstimatedMinutes('30');
     router.back();
   };
 
@@ -34,173 +41,296 @@ export default function AddTaskModal() {
       return;
     }
 
+    const hours = parseInt(expectedHours) || 0;
+    const mins = parseInt(expectedMins) || 0;
+    const totalMinutes = hours * 60 + mins;
+
+    if (totalMinutes <= 0) {
+      Alert.alert('Error', 'Please set an estimated duration');
+      return;
+    }
+
     setIsSubmitting(true);
     const { error } = await addTask({
       name: title.trim(),
-      description: description.trim(),
-      estimated_minutes: parseInt(estimatedMinutes) || 30,
+      category: category,
+      estimated_minutes: totalMinutes,
+      status: TASK_STATUS.PENDING,
     });
     setIsSubmitting(false);
 
     if (error) {
-      Alert.alert('Error', 'Failed to create task: ' + error);
+      Alert.alert('Error', 'Failed to create task');
       return;
     }
 
-    // Success - close modal
     handleClose();
   };
 
   return (
-    <TasksProvider>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}>
-        <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }} onPress={handleClose}>
-          <Pressable
-            style={{
-              flex: 1,
-              justifyContent: 'flex-end',
-            }}
-            onPress={(e) => e.stopPropagation()} // Prevent closing when clicking inside
-          >
-            <View
-              style={{
-                backgroundColor: '#fff',
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                paddingTop: 24,
-                paddingHorizontal: 24,
-                paddingBottom: 40,
-                minHeight: 400,
-              }}>
-              {/* Header */}
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', flex: 1 }}>New Task</Text>
-                <Pressable onPress={handleClose} style={{ padding: 8 }}>
-                  <Ionicons name="close" size={28} color="#6b7280" />
-                </Pressable>
-              </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.keyboardView}>
+      <Pressable style={styles.overlay} onPress={handleClose}>
+        <Pressable style={styles.container} onPress={(e) => e.stopPropagation()}>
+          {/* Handle bar */}
+          <View style={styles.handleBar} />
 
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Title Input */}
-                <View style={{ marginBottom: 20 }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: 8,
-                    }}>
-                    Title *
-                  </Text>
-                  <TextInput
-                    style={{
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: 12,
-                      padding: 16,
-                      fontSize: 16,
-                      color: '#1f2937',
-                    }}
-                    placeholder="Enter task title"
-                    placeholderTextColor="#9ca3af"
-                    value={title}
-                    onChangeText={setTitle}
-                    autoFocus
-                  />
-                </View>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>New Task</Text>
+            <Pressable onPress={handleClose} style={styles.closeButton}>
+              <Ionicons name="close" size={24} color={Colors.textMuted} />
+            </Pressable>
+          </View>
 
-                {/* Description Input */}
-                <View style={{ marginBottom: 24 }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: 8,
-                    }}>
-                    Description
-                  </Text>
-                  <TextInput
-                    style={{
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: 12,
-                      padding: 16,
-                      fontSize: 16,
-                      color: '#1f2937',
-                      minHeight: 120,
-                      textAlignVertical: 'top',
-                    }}
-                    placeholder="Add details about your task..."
-                    placeholderTextColor="#9ca3af"
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                    numberOfLines={5}
-                  />
-                </View>
-
-                {/* Estimated Minutes Input */}
-                <View style={{ marginBottom: 24 }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: 8,
-                    }}>
-                    Estimated Minutes *
-                  </Text>
-                  <TextInput
-                    style={{
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: 12,
-                      padding: 16,
-                      fontSize: 16,
-                      color: '#1f2937',
-                    }}
-                    placeholder="Enter estimated minutes"
-                    placeholderTextColor="#9ca3af"
-                    value={estimatedMinutes}
-                    onChangeText={setEstimatedMinutes}
-                    keyboardType="number-pad"
-                  />
-                </View>
-
-                {/* Buttons */}
-                <View style={{ gap: 12 }}>
-                  <Pressable
-                    onPress={handleSubmit}
-                    disabled={isSubmitting}
-                    style={{
-                      backgroundColor: isSubmitting ? '#9ca3af' : '#087f8c',
-                      borderRadius: 12,
-                      padding: 16,
-                      alignItems: 'center',
-                    }}>
-                    <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
-                      {isSubmitting ? 'Creating...' : 'Create Task'}
-                    </Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={handleClose}
-                    style={{
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: 12,
-                      padding: 16,
-                      alignItems: 'center',
-                    }}>
-                    <Text style={{ color: '#6b7280', fontSize: 16, fontWeight: '600' }}>
-                      Cancel
-                    </Text>
-                  </Pressable>
-                </View>
-              </ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+            {/* Title Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>TITLE</Text>
+              <TextInput
+                autoFocus
+                value={title}
+                onChangeText={setTitle}
+                placeholder="e.g. Design System Sync"
+                placeholderTextColor={Colors.textMuted}
+                style={styles.textInput}
+              />
             </View>
-          </Pressable>
+
+            {/* Category Selection */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>CATEGORY</Text>
+              <View style={styles.categoryGrid}>
+                {CATEGORIES.map((cat) => (
+                  <Pressable
+                    key={cat}
+                    onPress={() => setCategory(cat)}
+                    style={[styles.categoryPill, category === cat && styles.categoryPillActive]}>
+                    <Text
+                      style={[styles.categoryText, category === cat && styles.categoryTextActive]}>
+                      {cat}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            {/* Duration Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>ESTIMATION</Text>
+              <View style={styles.durationContainer}>
+                <View style={styles.durationColumn}>
+                  <TextInput
+                    value={expectedHours}
+                    onChangeText={setExpectedHours}
+                    keyboardType="number-pad"
+                    style={styles.durationInput}
+                    maxLength={2}
+                  />
+                  <Text style={styles.durationLabel}>HRS</Text>
+                </View>
+                <Text style={styles.durationSeparator}>:</Text>
+                <View style={styles.durationColumn}>
+                  <TextInput
+                    value={expectedMins}
+                    onChangeText={(text) => {
+                      const num = parseInt(text) || 0;
+                      if (num <= 59) setExpectedMins(text);
+                    }}
+                    keyboardType="number-pad"
+                    style={styles.durationInput}
+                    maxLength={2}
+                  />
+                  <Text style={styles.durationLabel}>MINS</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Submit Button */}
+            <Pressable
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+              style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}>
+              <Ionicons name="checkmark-circle" size={24} color={Colors.white} />
+              <Text style={styles.submitButtonText}>
+                {isSubmitting ? 'Creating...' : 'Initialize Task'}
+              </Text>
+            </Pressable>
+          </ScrollView>
         </Pressable>
-      </KeyboardAvoidingView>
-    </TasksProvider>
+      </Pressable>
+    </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  keyboardView: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  container: {
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    paddingTop: 12,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+    maxHeight: '90%',
+  },
+  handleBar: {
+    width: 48,
+    height: 6,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 3,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: Colors.background,
+    letterSpacing: -0.5,
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  inputGroup: {
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: Colors.textMuted,
+    letterSpacing: 2,
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+  textInput: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 16,
+    padding: 16,
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.background,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  categoryPill: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+  },
+  categoryPillActive: {
+    backgroundColor: Colors.primary,
+  },
+  categoryText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: Colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  categoryTextActive: {
+    color: Colors.white,
+  },
+  durationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  durationColumn: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  durationInput: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 24,
+    fontWeight: '900',
+    color: Colors.primary,
+    textAlign: 'center',
+    width: '100%',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  durationLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: Colors.textMuted,
+    marginTop: 8,
+    letterSpacing: 1,
+  },
+  durationSeparator: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#d1d5db',
+    marginHorizontal: 8,
+    marginBottom: 20,
+  },
+  submitButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 20,
+    paddingVertical: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  submitButtonDisabled: {
+    backgroundColor: Colors.textMuted,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: Colors.white,
+  },
+});
