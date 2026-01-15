@@ -1,154 +1,427 @@
-import Loading from '@/components/Loading';
-import { PrioritySelect } from '@/components/PrioritySelect';
-import { Timer } from '@/components/Timer';
-import { useAutoSaveTask } from '@/hooks/useAutoSaveTasks';
-import { useTasks } from '@/hooks/useTasks';
-import { Task } from '@/lib/supabase';
-import {
-  TaskPriority,
-  TaskPriorityType,
-  TaskPriorityValueName,
-  TaskURLParams,
-} from '@/types/tasks';
-import { ChevronLeft } from '@tamagui/lucide-icons';
+/**
+ * Edit Task Screen - Matches add-task modal styling
+ * Redesigned to remove timer controls; uses save button instead
+ */
+
+import { Colors } from '@/constants/colors';
+import { CATEGORIES, Category } from '@/constants/taskStatus';
+import { useTasks } from '@/contexts/TasksContext';
+import { TaskURLParams } from '@/types/tasks';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Suspense, use, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button, Separator, Text, XStack, YStack } from 'tamagui';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-function EditTaskContent({
-  taskPromise,
-}: {
-  taskPromise: Promise<{ data: Task | null; error?: any }>;
-}) {
-  const { data: task, error } = use(taskPromise);
-  const { id } = useLocalSearchParams<TaskURLParams>();
-  const { updateTask } = useTasks();
+export default function EditTaskScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const { id } = useLocalSearchParams<TaskURLParams>();
+  const { tasks, updateTask } = useTasks();
 
-  const [taskFields, setTaskFields] = useState<Partial<Task>>({});
+  // Find the task
+  const task = tasks.find((t) => t.id === id);
 
-  const displayTask = useMemo(() => {
-    return { ...task, ...taskFields } as Task;
-  }, [task, taskFields]);
+  // Form state
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<Category>('work');
+  const [expectedHours, setExpectedHours] = useState('0');
+  const [expectedMins, setExpectedMins] = useState('30');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const priorityValue = (displayTask.priority as TaskPriorityType) ?? TaskPriority.medium;
-  const priority = TaskPriorityValueName[priorityValue];
-
-  // Handle saving
-  const saveTask = useRef(() => {
-    if (!id || Object.keys(taskFields).length === 0) return;
-    updateTask(id as string, taskFields);
-  });
-
-  // Keep saveTask ref updated
+  // Load task data
   useEffect(() => {
-    saveTask.current = () => {
-      if (!id || Object.keys(taskFields).length === 0) return;
-      updateTask(id as string, taskFields);
-    };
-  }, [id, taskFields, updateTask]);
+    if (task) {
+      setTitle(task.name || '');
+      setDescription(task.description || '');
+      setCategory((task.category as Category) || 'work');
+      const totalMins = task.estimated_minutes || 0;
+      setExpectedHours(Math.floor(totalMins / 60).toString());
+      setExpectedMins((totalMins % 60).toString());
+      setIsLoading(false);
+    } else if (id) {
+      // Task not found
+      setIsLoading(false);
+    }
+  }, [task, id]);
 
-  // AppState listener for background saving
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'background' || nextAppState === 'inactive') {
-        saveTask.current();
-      }
+  const handleClose = () => {
+    router.back();
+  };
+
+  const handleSave = async () => {
+    if (!title.trim()) {
+      Alert.alert('Error', 'Please enter a task title');
+      return;
+    }
+
+    const hours = parseInt(expectedHours) || 0;
+    const mins = parseInt(expectedMins) || 0;
+    const totalMinutes = hours * 60 + mins;
+
+    if (totalMinutes <= 0) {
+      Alert.alert('Error', 'Please set an estimated duration');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { error } = await updateTask(id as string, {
+      name: title.trim(),
+      description: description.trim() || null,
+      category: category,
+      estimated_minutes: totalMinutes,
     });
+    setIsSubmitting(false);
 
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+    if (error) {
+      Alert.alert('Error', 'Failed to update task');
+      return;
+    }
 
-  useAutoSaveTask(id as string, taskFields);
+    handleClose();
+  };
 
-  if (error || !task) return <Text>Task not found</Text>;
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!task) {
+    return (
+      <SafeAreaView style={styles.errorContainer}>
+        <Ionicons name="alert-circle-outline" size={48} color={Colors.textMuted} />
+        <Text style={styles.errorText}>Task not found</Text>
+        <Pressable style={styles.backButton} onPress={handleClose}>
+          <Text style={styles.backButtonText}>Go Back</Text>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <YStack flex={1} paddingTop={12} gap={12}>
-        <XStack alignItems="center" paddingHorizontal={12}>
-          <XStack flex={1}>
-            <Button
-              circular
-              size="$lg"
-              icon={ChevronLeft}
-              scaleIcon={1.5}
-              onPress={() => {
-                router.back();
-              }}
-              variant="outlined"
-            />
-          </XStack>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Pressable onPress={handleClose} style={styles.closeButton}>
+            <Ionicons name="chevron-back" size={24} color={Colors.text} />
+          </Pressable>
+          <Text style={styles.headerTitle}>Edit Task</Text>
+          <View style={styles.headerSpacer} />
+        </View>
 
-          <Text fontSize={24}>Edit Task</Text>
+        {/* Content */}
+        <View style={styles.container}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}>
+            {/* Title Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>TITLE</Text>
+              <TextInput
+                value={title}
+                onChangeText={setTitle}
+                placeholder="e.g. Design System Sync"
+                placeholderTextColor={Colors.textMuted}
+                style={styles.textInput}
+              />
+            </View>
 
-          <XStack flex={1} />
-        </XStack>
+            {/* Description Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>DESCRIPTION</Text>
+              <TextInput
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Add details about your task..."
+                placeholderTextColor={Colors.textMuted}
+                style={[styles.textInput, styles.textArea]}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+            </View>
 
-        {/* Content area with margins and larger border radius */}
-        <YStack
-          flex={1}
-          backgroundColor="$backgroundStrong"
-          padding={20}
-          paddingBottom={Math.max(insets.bottom, 16)}
-          marginHorizontal={12}
-          marginBottom={12}
-          borderRadius={40}>
-          <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={12}>
-            <Text fontSize={30} fontWeight="semibold" flexShrink={1}>
-              {displayTask.name}
-            </Text>
-            <PrioritySelect
-              value={priority}
-              onChange={(priorityName) => {
-                // Map string → numeric
-                const priorityValue = TaskPriority[priorityName];
-                setTaskFields((prev) => ({
-                  ...prev,
-                  priority: priorityValue,
-                }));
-              }}
-            />
-          </XStack>
-          <Separator marginVertical={20} />
-          <Text>{displayTask.description}</Text>
-          <Separator marginVertical={20} />
-          <Timer
-            task={displayTask}
-            onUpdate={(updates: Partial<Task>, immediate = false) => {
-              setTaskFields((prev) => ({
-                ...prev,
-                ...updates,
-              }));
+            {/* Category Selection */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>CATEGORY</Text>
+              <View style={styles.categoryGrid}>
+                {CATEGORIES.map((cat) => (
+                  <Pressable
+                    key={cat}
+                    onPress={() => setCategory(cat)}
+                    style={[styles.categoryPill, category === cat && styles.categoryPillActive]}>
+                    <Text
+                      style={[styles.categoryText, category === cat && styles.categoryTextActive]}>
+                      {cat}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
 
-              if (immediate) {
-                updateTask(id as string, updates);
-              }
-            }}
-          />
-        </YStack>
-      </YStack>
+            {/* Duration Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>ESTIMATION</Text>
+              <View style={styles.durationContainer}>
+                <View style={styles.durationColumn}>
+                  <TextInput
+                    value={expectedHours}
+                    onChangeText={setExpectedHours}
+                    keyboardType="number-pad"
+                    style={styles.durationInput}
+                    maxLength={2}
+                  />
+                  <Text style={styles.durationLabel}>HRS</Text>
+                </View>
+                <Text style={styles.durationSeparator}>:</Text>
+                <View style={styles.durationColumn}>
+                  <TextInput
+                    value={expectedMins}
+                    onChangeText={(text) => {
+                      const num = parseInt(text) || 0;
+                      if (num <= 59) setExpectedMins(text);
+                    }}
+                    keyboardType="number-pad"
+                    style={styles.durationInput}
+                    maxLength={2}
+                  />
+                  <Text style={styles.durationLabel}>MINS</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Save Button */}
+            <Pressable
+              onPress={handleSave}
+              disabled={isSubmitting}
+              style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}>
+              <Ionicons name="checkmark-circle" size={24} color={Colors.white} />
+              <Text style={styles.submitButtonText}>
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </Text>
+            </Pressable>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-export default function EditTask() {
-  const { id } = useLocalSearchParams<TaskURLParams>();
-  const { getTask } = useTasks();
-
-  const taskPromise = useMemo(() => {
-    if (!id) return Promise.resolve({ data: null });
-    return getTask(id);
-  }, [id, getTask]);
-
-  return (
-    <Suspense fallback={<Loading />}>
-      <EditTaskContent taskPromise={taskPromise as Promise<{ data: Task | null; error?: any }>} />
-    </Suspense>
-  );
-}
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  errorText: {
+    fontSize: 16,
+    color: Colors.textMuted,
+  },
+  backButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+  },
+  backButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.white,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  closeButton: {
+    width: 44,
+    height: 44,
+    backgroundColor: Colors.backgroundSecondary,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: Colors.text,
+  },
+  headerSpacer: {
+    width: 44,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    marginHorizontal: 12,
+    overflow: 'hidden',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 24,
+    paddingBottom: 40,
+  },
+  inputGroup: {
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: Colors.textMuted,
+    letterSpacing: 2,
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+  textInput: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 16,
+    padding: 16,
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.background,
+  },
+  textArea: {
+    minHeight: 100,
+    paddingTop: 16,
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  categoryPill: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#f3f4f6',
+  },
+  categoryPillActive: {
+    backgroundColor: Colors.primary,
+  },
+  categoryText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: Colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  categoryTextActive: {
+    color: Colors.white,
+  },
+  durationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  durationColumn: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  durationInput: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 24,
+    fontWeight: '900',
+    color: Colors.primary,
+    textAlign: 'center',
+    width: '100%',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  durationLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: Colors.textMuted,
+    marginTop: 8,
+    letterSpacing: 1,
+  },
+  durationSeparator: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#d1d5db',
+    marginHorizontal: 8,
+    marginBottom: 20,
+  },
+  submitButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 20,
+    paddingVertical: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  submitButtonDisabled: {
+    backgroundColor: Colors.textMuted,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: Colors.white,
+  },
+});

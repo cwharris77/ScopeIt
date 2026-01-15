@@ -69,9 +69,15 @@ export default function AnalyticsScreen() {
 
   const stats = calculateStats();
 
-  // Get last 5 tasks for chart display
+  // Get last 5 tasks for chart display - cap at reasonable max for display
+  const maxMinutes = Math.max(
+    ...completedTasks
+      .slice(0, 5)
+      .map((t) => Math.max(t.estimated_minutes || 0, Math.round((t.actual_seconds || 0) / 60))),
+    60
+  );
   const chartData = completedTasks.slice(0, 5).map((t) => ({
-    name: t.name.length > 10 ? t.name.substring(0, 10) + '...' : t.name,
+    name: t.name.length > 12 ? t.name.substring(0, 12) + '...' : t.name,
     expected: t.estimated_minutes || 0,
     actual: Math.round((t.actual_seconds || 0) / 60),
   }));
@@ -148,27 +154,31 @@ export default function AnalyticsScreen() {
                 </Text>
                 <View style={styles.barsContainer}>
                   <View style={styles.barRow}>
-                    <View
-                      style={[
-                        styles.bar,
-                        styles.barExpected,
-                        {
-                          width: `${Math.min(100, (item.expected / Math.max(...chartData.map((d) => Math.max(d.expected, d.actual)))) * 100)}%`,
-                        },
-                      ]}
-                    />
+                    <View style={styles.barWrapper}>
+                      <View
+                        style={[
+                          styles.bar,
+                          styles.barExpected,
+                          {
+                            width: `${Math.min(100, (item.expected / maxMinutes) * 100)}%`,
+                          },
+                        ]}
+                      />
+                    </View>
                     <Text style={styles.barValue}>{item.expected}</Text>
                   </View>
                   <View style={styles.barRow}>
-                    <View
-                      style={[
-                        styles.bar,
-                        styles.barActual,
-                        {
-                          width: `${Math.min(100, (item.actual / Math.max(...chartData.map((d) => Math.max(d.expected, d.actual)))) * 100)}%`,
-                        },
-                      ]}
-                    />
+                    <View style={styles.barWrapper}>
+                      <View
+                        style={[
+                          styles.bar,
+                          styles.barActual,
+                          {
+                            width: `${Math.min(100, (item.actual / maxMinutes) * 100)}%`,
+                          },
+                        ]}
+                      />
+                    </View>
                     <Text style={styles.barValue}>{item.actual}</Text>
                   </View>
                 </View>
@@ -329,6 +339,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  barWrapper: {
+    flex: 1,
+    maxWidth: '80%',
   },
   bar: {
     height: 8,

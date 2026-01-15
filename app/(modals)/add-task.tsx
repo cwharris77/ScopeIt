@@ -26,7 +26,7 @@ export default function AddTaskModal() {
 
   // Form state
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<Category>('Work');
+  const [category, setCategory] = useState<Category>('work');
   const [expectedHours, setExpectedHours] = useState('0');
   const [expectedMins, setExpectedMins] = useState('30');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingHorizontal: 24,
     paddingBottom: 40,
-    maxHeight: '90%',
+    minHeight: 520,
   },
   handleBar: {
     width: 48,
@@ -211,7 +211,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollView: {
-    flex: 1,
+    flexGrow: 1,
+    paddingBottom: 20,
   },
   inputGroup: {
     marginBottom: 24,
