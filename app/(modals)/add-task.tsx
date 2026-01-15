@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.background,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     paddingTop: 12,
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   handleBar: {
     width: 48,
     height: 6,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.border,
     borderRadius: 3,
     alignSelf: 'center',
     marginBottom: 20,
@@ -199,13 +199,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '900',
-    color: Colors.background,
+    color: Colors.text,
     letterSpacing: -0.5,
   },
   closeButton: {
     width: 40,
     height: 40,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.backgroundSecondary,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -226,12 +226,14 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   textInput: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.backgroundSecondary,
     borderRadius: 16,
     padding: 16,
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.background,
+    color: Colors.text,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   categoryGrid: {
     flexDirection: 'row',
@@ -242,10 +244,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.backgroundSecondary,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   categoryPillActive: {
     backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   categoryText: {
     fontSize: 12,
@@ -260,18 +265,18 @@ const styles = StyleSheet.create({
   durationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: Colors.backgroundSecondary,
     borderRadius: 24,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: Colors.border,
   },
   durationColumn: {
     flex: 1,
     alignItems: 'center',
   },
   durationInput: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.backgroundTertiary,
     borderRadius: 12,
     padding: 12,
     fontSize: 24,
@@ -279,17 +284,8 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     textAlign: 'center',
     width: '100%',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   durationLabel: {
     fontSize: 9,
@@ -301,7 +297,7 @@ const styles = StyleSheet.create({
   durationSeparator: {
     fontSize: 24,
     fontWeight: '900',
-    color: '#d1d5db',
+    color: Colors.textMuted,
     marginHorizontal: 8,
     marginBottom: 20,
   },
