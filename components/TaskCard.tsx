@@ -184,10 +184,26 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
               <Text style={styles.buttonText}>Start</Text>
             </Pressable>
           )}
-          <Pressable onPress={() => onComplete(task.id)} style={styles.completeButton}>
-            <Ionicons name="checkmark-circle-outline" size={20} color={Colors.textSecondary} />
-            <Text style={styles.completeButtonText}>Finish</Text>
-          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Pressable onPress={() => onComplete(task.id)}>
+              {({ pressed }) => (
+                <View style={[styles.completeButton, pressed && styles.completeButtonPressed]}>
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={20}
+                    color={pressed ? Colors.success : Colors.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.completeButtonText,
+                      pressed && styles.completeButtonTextPressed,
+                    ]}>
+                    Finish
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+          </View>
         </View>
       )}
 
@@ -365,7 +381,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   primaryButton: {
-    flex: 1.5,
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -395,10 +411,17 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     gap: 8,
   },
+  completeButtonPressed: {
+    opacity: 0.7,
+    borderColor: Colors.success,
+  },
   completeButtonText: {
     color: Colors.textSecondary,
     fontSize: 14,
     fontWeight: '800',
+  },
+  completeButtonTextPressed: {
+    color: Colors.success,
   },
   varianceRow: {
     flexDirection: 'row',
