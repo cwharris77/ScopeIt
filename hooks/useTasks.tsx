@@ -104,37 +104,6 @@ export function useTasks() {
   }, []);
 
   /**
-   * Start a task timer - pauses any other running task first
-   */
-  const startTask = useCallback(
-    async (id: string) => {
-      // First pause any currently running task
-      const runningTask = tasks.find((t) => t.status === TASK_STATUS.RUNNING && t.id !== id);
-      if (runningTask) {
-        await pauseTask(runningTask.id);
-      }
-
-      // Start this task
-      const { data, error } = await supabase
-        .from('tasks')
-        .update({
-          status: TASK_STATUS.RUNNING,
-          started_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (!error && data) {
-        setTasks((prev) => prev.map((task) => (task.id === id ? data : task)));
-      }
-
-      return { data, error };
-    },
-    [tasks]
-  );
-
-  /**
    * Pause a running task - accumulates elapsed time
    */
   const pauseTask = useCallback(
@@ -144,8 +113,23 @@ export function useTasks() {
       if (!task || !task.started_at) return { error: 'Task not running' };
 
       const start = new Date(task.started_at).getTime();
-      const delta = Math.floor((Date.now() - start) / 1000);
+      // Prevent negative delta
+      const delta = Math.max(0, Math.floor((Date.now() - start) / 1000));
       const newActualSeconds = (task.actual_seconds || 0) + delta;
+
+      // Optimistic update
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === id
+            ? {
+                ...t,
+                status: TASK_STATUS.PAUSED,
+                started_at: null,
+                actual_seconds: newActualSeconds,
+              }
+            : t
+        )
+      );
 
       const { data, error } = await supabase
         .from('tasks')
@@ -158,13 +142,60 @@ export function useTasks() {
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        console.error('Error pausing task:', error);
+        await fetchTasks();
+      } else if (data) {
         setTasks((prev) => prev.map((t) => (t.id === id ? data : t)));
       }
 
       return { data, error };
     },
-    [tasks]
+    [tasks, fetchTasks]
+  );
+
+  /**
+   * Start a task timer - pauses any other running task first
+   */
+  const startTask = useCallback(
+    async (id: string) => {
+      // First pause any currently running task
+      const runningTask = tasks.find((t) => t.status === TASK_STATUS.RUNNING && t.id !== id);
+      if (runningTask) {
+        await pauseTask(runningTask.id);
+      }
+
+      const now = new Date().toISOString();
+
+      // Optimistic update
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === id ? { ...task, status: TASK_STATUS.RUNNING, started_at: now } : task
+        )
+      );
+
+      // Start this task
+      const { data, error } = await supabase
+        .from('tasks')
+        .update({
+          status: TASK_STATUS.RUNNING,
+          started_at: now,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        // Revert on error (could be improved by refetching)
+        console.error('Error starting task:', error);
+        await fetchTasks();
+      } else if (data) {
+        setTasks((prev) => prev.map((task) => (task.id === id ? data : task)));
+      }
+
+      return { data, error };
+    },
+    [tasks, fetchTasks, pauseTask]
   );
 
   /**
@@ -181,9 +212,26 @@ export function useTasks() {
       // If task was running, add the current session time
       if (task.status === TASK_STATUS.RUNNING && task.started_at) {
         const start = new Date(task.started_at).getTime();
-        const delta = Math.floor((Date.now() - start) / 1000);
+        const delta = Math.max(0, Math.floor((Date.now() - start) / 1000));
         finalActualSeconds += delta;
       }
+
+      const now = new Date().toISOString();
+
+      // Optimistic update
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === id
+            ? {
+                ...t,
+                status: TASK_STATUS.COMPLETED,
+                started_at: null,
+                actual_seconds: finalActualSeconds,
+                completed_at: now,
+              }
+            : t
+        )
+      );
 
       const { data, error } = await supabase
         .from('tasks')
@@ -191,19 +239,22 @@ export function useTasks() {
           status: TASK_STATUS.COMPLETED,
           started_at: null,
           actual_seconds: finalActualSeconds,
-          completed_at: new Date().toISOString(),
+          completed_at: now,
         })
         .eq('id', id)
         .select()
         .single();
 
-      if (!error && data) {
+      if (error) {
+        console.error('Error completing task:', error);
+        await fetchTasks();
+      } else if (data) {
         setTasks((prev) => prev.map((t) => (t.id === id ? data : t)));
       }
 
       return { data, error };
     },
-    [tasks]
+    [tasks, fetchTasks]
   );
 
   return {

@@ -34,6 +34,9 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
   useEffect(() => {
     if (!isRunning) return;
 
+    // Update immediately to avoid stale state causing negative time
+    setNow(Date.now());
+
     const interval = setInterval(() => {
       setNow(Date.now());
     }, 1000);
@@ -70,7 +73,8 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
     const base = task.actual_seconds || 0;
     if (!isRunning || !task.started_at) return base;
     const start = new Date(task.started_at).getTime();
-    return base + Math.floor((now - start) / 1000);
+    // Clamp to 0 to prevent negative time if 'now' is slightly behind 'start'
+    return base + Math.max(0, Math.floor((now - start) / 1000));
   };
 
   const elapsedSeconds = getElapsedSeconds();
