@@ -34,18 +34,20 @@ export const msToDisplay = (ms: number): string => {
 };
 
 /**
- * Format seconds to display format (HH:MM:SS)
+ * Format seconds to display format - only shows hours/minutes when needed
  */
 export const secondsToDisplay = (totalSeconds: number): string => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
-  return [
-    hours.toString().padStart(2, '0'),
-    minutes.toString().padStart(2, '0'),
-    seconds.toString().padStart(2, '0'),
-  ].join(':');
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${seconds}s`;
+  }
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+  return `${seconds}s`;
 };
 
 /**

@@ -9,7 +9,7 @@ import { Task } from '@/lib/supabase';
 import { formatTime, minutesToDisplay, secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface TaskCardProps {
@@ -23,7 +23,7 @@ interface TaskCardProps {
 export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskCardProps) {
   const router = useRouter();
   const [now, setNow] = useState(Date.now());
-  const [pulseAnim] = useState(new Animated.Value(1));
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
   const status = (task.status as TaskStatus) || TASK_STATUS.PENDING;
   const isRunning = status === TASK_STATUS.RUNNING;
@@ -41,20 +41,20 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
     return () => clearInterval(interval);
   }, [isRunning]);
 
-  // Pulse animation for running tasks
+  // Pulse animation for the play icon only when running
   useEffect(() => {
     if (isRunning) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.02,
-            duration: 1000,
+            toValue: 1.3,
+            duration: 600,
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: 600,
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
@@ -82,13 +82,17 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
     router.push(`/edit-task?id=${task.id}&name=${task.name}&priority=${task.priority}`);
   };
 
+  function getVarianceColor() {
+    if (!isCompleted) return Colors.textMuted;
+    return isOver ? Colors.danger : Colors.success;
+  }
+
   return (
-    <Animated.View
+    <View
       style={[
         styles.container,
         isRunning && styles.containerRunning,
         isCompleted && styles.containerCompleted,
-        { transform: [{ scale: pulseAnim }] },
       ]}>
       {/* Flowing top border for active task */}
       {isRunning && <View style={styles.flowingBorder} />}
@@ -140,13 +144,16 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
         <View style={styles.timeColumn}>
           <Text style={styles.timeLabel}>ELAPSED</Text>
           <View style={styles.timeRow}>
-            <Ionicons
-              name={isRunning ? 'play' : 'play-outline'}
-              size={14}
-              color={
-                isRunning ? Colors.primary : isCompleted ? getVarianceColor() : Colors.textMuted
-              }
-            />
+            {/* Animated play icon - pulses when running */}
+            <Animated.View style={isRunning ? { transform: [{ scale: pulseAnim }] } : undefined}>
+              <Ionicons
+                name={isRunning ? 'play' : 'play-outline'}
+                size={isRunning ? 18 : 14}
+                color={
+                  isRunning ? Colors.primary : isCompleted ? getVarianceColor() : Colors.textMuted
+                }
+              />
+            </Animated.View>
             <Text
               style={[
                 styles.elapsedValue,
@@ -195,13 +202,8 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
           </Text>
         </View>
       )}
-    </Animated.View>
+    </View>
   );
-
-  function getVarianceColor() {
-    if (!isCompleted) return Colors.textMuted;
-    return isOver ? Colors.danger : Colors.success;
-  }
 }
 
 const styles = StyleSheet.create({
@@ -348,12 +350,14 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   elapsedValue: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '700',
     color: Colors.textMuted,
     fontVariant: ['tabular-nums'],
   },
   elapsedRunning: {
+    fontSize: 20,
+    fontWeight: '900',
     color: Colors.primary,
   },
   buttonRow: {
