@@ -101,8 +101,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundSecondary,
     borderRadius: 32,
     flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
     borderWidth: 1,
     borderColor: Colors.border,
     ...Platform.select({
@@ -120,9 +121,11 @@ const styles = StyleSheet.create({
   tabButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 8,
     position: 'relative',
+    flex: 1,
+    minWidth: 0,
   },
   tabLabel: {
     fontSize: 10,
