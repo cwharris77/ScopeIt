@@ -11,7 +11,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor  > types/supabase.ts",
-    "functions:deploy": "supabase functions deploy"
+    "functions:deploy": "supabase functions deploy",
+    "functions:serve": "supabase functions serve --env-file supabase/.env --no-verify-jwt"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
