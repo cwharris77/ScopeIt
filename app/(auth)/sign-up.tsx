@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -42,6 +43,7 @@ export default function SignUp() {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor={Colors.textSecondary}
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
@@ -50,6 +52,7 @@ export default function SignUp() {
         <TextInput
           style={styles.input}
           placeholder="Password"
+          placeholderTextColor={Colors.textSecondary}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -77,27 +80,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
-    color: '#087f8c',
+    color: Colors.primary,
   },
   form: {
     gap: 15,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: Colors.border,
+    backgroundColor: Colors.backgroundSecondary,
+    color: Colors.text,
     padding: 15,
     borderRadius: 10,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#087f8c',
+    backgroundColor: Colors.primary,
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   linkText: {
-    color: '#087f8c',
+    color: Colors.primary,
     fontSize: 16,
   },
 });

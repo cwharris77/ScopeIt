@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
@@ -26,6 +27,7 @@ export default function AuthEmail() {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor={Colors.textSecondary}
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
@@ -45,17 +47,17 @@ export default function AuthEmail() {
 
       <View style={styles.oauthContainer}>
         <TouchableOpacity style={styles.oauthButton} onPress={() => signInWithProvider('google')}>
-          <Ionicons name="logo-google" size={24} color="black" />
+          <Ionicons name="logo-google" size={24} color={Colors.text} />
           <Text style={styles.oauthButtonText}>Google</Text>
         </TouchableOpacity>
 
         {/* <TouchableOpacity style={styles.oauthButton} onPress={() => signInWithProvider('apple')}>
-          <Ionicons name="logo-apple" size={24} color="black" />
+          <Ionicons name="logo-apple" size={24} color={Colors.text} />
           <Text style={styles.oauthButtonText}>Apple</Text>
         </TouchableOpacity> */}
 
         <TouchableOpacity style={styles.oauthButton} onPress={() => signInWithProvider('github')}>
-          <FontAwesome name="github" size={24} color="black" />
+          <FontAwesome name="github" size={24} color={Colors.text} />
           <Text style={styles.oauthButtonText}>GitHub</Text>
         </TouchableOpacity>
       </View>
@@ -74,27 +76,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
   },
   title: {
     fontSize: 40,
     fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
-    color: '#087f8c',
+    color: Colors.primary,
   },
   form: {
     gap: 15,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: Colors.border,
+    backgroundColor: Colors.backgroundSecondary,
+    color: Colors.text,
     padding: 15,
     borderRadius: 10,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#087f8c',
+    backgroundColor: Colors.primary,
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -104,7 +108,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -116,11 +120,11 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ddd',
+    backgroundColor: Colors.border,
   },
   dividerText: {
     marginHorizontal: 10,
-    color: '#666',
+    color: Colors.textSecondary,
   },
   oauthContainer: {
     flexDirection: 'row',
@@ -130,7 +134,8 @@ const styles = StyleSheet.create({
   oauthButton: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: Colors.border,
+    backgroundColor: Colors.backgroundSecondary,
     padding: 12,
     borderRadius: 10,
     alignItems: 'center',
@@ -138,14 +143,14 @@ const styles = StyleSheet.create({
   oauthButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: Colors.text,
   },
   linkButton: {
     marginTop: 30,
     alignItems: 'center',
   },
   linkText: {
-    color: '#087f8c',
+    color: Colors.primary,
     fontSize: 16,
   },
 });

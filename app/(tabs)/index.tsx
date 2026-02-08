@@ -1,24 +1,16 @@
-/**
- * Home Screen - Main task management view
- * Ported from web app with mobile styling
- */
-
 import { FilterBar } from '@/components/FilterBar';
+import { ProfileButton } from '@/components/ProfileButton';
 import { TaskCard } from '@/components/TaskCard';
 import { Colors } from '@/constants/colors';
 import { CATEGORY_ALL, SortOption, TASK_STATUS } from '@/constants/taskStatus';
-import { useAuth } from '@/contexts/AuthContext';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const router = useRouter();
-  const { signOut } = useAuth();
-  const { tasks, loading, refetch, startTask, pauseTask, completeTask, deleteTask } = useTasks();
+  const { tasks, refetch, startTask, pauseTask, completeTask, deleteTask } = useTasks();
 
   // Filter & Sort State
   const [filterCategory, setFilterCategory] = useState<string>(CATEGORY_ALL);
@@ -59,10 +51,6 @@ export default function HomeScreen() {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
-  };
-
-  const handleAddTask = () => {
-    router.push('/add-task');
   };
 
   const handleStartTask = async (id: string) => {
@@ -114,13 +102,17 @@ export default function HomeScreen() {
     <>
       {/* App Header */}
       <View style={styles.appHeader}>
-        <View>
-          <Text style={styles.appTitle}>ScopeIt</Text>
-          <Text style={styles.appSubtitle}>MASTER YOUR ESTIMATION</Text>
+        <View style={styles.appTitleBlock}>
+          <Text style={styles.appTitle} numberOfLines={1}>
+            ScopeIt
+          </Text>
+          <Text style={styles.appSubtitle} numberOfLines={1}>
+            MASTER YOUR ESTIMATION
+          </Text>
         </View>
-        <Pressable style={styles.addButton} onPress={handleAddTask}>
-          <Ionicons name="add" size={28} color={Colors.white} />
-        </Pressable>
+        <View style={styles.headerActions}>
+          <ProfileButton />
+        </View>
       </View>
 
       {/* Filter Bar */}
@@ -209,6 +201,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
+  },
+  appTitleBlock: {
+    flex: 1,
+    minWidth: 0,
+    marginRight: 12,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flexShrink: 0,
   },
   appTitle: {
     fontSize: 28,

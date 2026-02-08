@@ -1,3 +1,4 @@
+import { ProfileButton } from '@/components/ProfileButton';
 import { Colors } from '@/constants/colors';
 import { TASK_STATUS } from '@/constants/taskStatus';
 import { useTasks } from '@/contexts/TasksContext';
@@ -5,7 +6,7 @@ import { AIAnalysis, analyzeTaskPerformance } from '@/services/geminiService';
 import { secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AnalyticsScreen() {
@@ -82,6 +83,7 @@ export default function AnalyticsScreen() {
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Analytics</Text>
+          <ProfileButton />
         </View>
         <View style={styles.emptyState}>
           <View style={styles.emptyIcon}>
@@ -111,9 +113,9 @@ export default function AnalyticsScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Analytics</Text>
-          <Pressable style={styles.refreshButton} onPress={fetchAnalysis}>
-            <Ionicons name="refresh-outline" size={20} color={Colors.textSecondary} />
-          </Pressable>
+          <View style={styles.headerActions}>
+            <ProfileButton />
+          </View>
         </View>
 
         {/* Stats Cards */}
@@ -255,10 +257,18 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   headerTitle: {
+    flex: 1,
+    minWidth: 0,
     fontSize: 28,
     fontWeight: '900',
     color: Colors.text,
     letterSpacing: -1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flexShrink: 0,
   },
   refreshButton: {
     width: 40,

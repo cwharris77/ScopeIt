@@ -1,12 +1,7 @@
-/**
- * Floating Tab Bar - Updated with Focus and Scope tabs
- */
-
 import { Colors } from '@/constants/colors';
 import { FLOATING_TAB_BAR_BOTTOM, FLOATING_TAB_BAR_HEIGHT } from '@/constants/layout';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useRouter } from 'expo-router';
 import { ComponentProps } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -33,26 +28,14 @@ const TABS: {
 ];
 
 export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
-      {/* Left tab */}
       <TabButton
         icon={TABS[0].icon}
         label={TABS[0].label}
         focused={state.index === 0}
         onPress={() => navigation.navigate(TABS[0].route)}
       />
-
-      {/* Center FAB */}
-      <Pressable
-        onPress={() => router.push('/add-task')}
-        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}>
-        <Ionicons name="add" size={32} color={Colors.backgroundSecondary} />
-      </Pressable>
-
-      {/* Right tab */}
       <TabButton
         icon={TABS[1].icon}
         label={TABS[1].label}
@@ -136,29 +119,6 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: Colors.primary,
-  },
-  fab: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 10,
-      },
-    }),
-  },
-  fabPressed: {
-    transform: [{ scale: 0.95 }],
   },
 });
 

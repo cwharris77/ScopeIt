@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -47,11 +48,12 @@ export default function AuthPassword() {
       <Text style={styles.title}>Welcome Back</Text>
 
       <View style={styles.form}>
-        <Text className="text-center">Email: {email}</Text>
+        <Text style={styles.emailText}>Email: {email}</Text>
 
         <TextInput
           style={styles.input}
           placeholder="Password"
+          placeholderTextColor={Colors.textSecondary}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -65,7 +67,7 @@ export default function AuthPassword() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleSignInWithLink}>
-          <Text style={{ color: '#087f8c', textAlign: 'center', marginTop: 10 }}>
+          <Text style={styles.linkText}>
             {hasSentLink ? 'Resend link' : 'Sign in with link'}
           </Text>
         </TouchableOpacity>
@@ -79,29 +81,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
-    color: '#087f8c',
+    color: Colors.primary,
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
     gap: 15,
   },
+  emailText: {
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: Colors.border,
+    backgroundColor: Colors.backgroundSecondary,
+    color: Colors.text,
     padding: 15,
     borderRadius: 10,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#087f8c',
+    backgroundColor: Colors.primary,
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -111,8 +119,13 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  linkText: {
+    color: Colors.primary,
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
