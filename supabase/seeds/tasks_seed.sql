@@ -1,6 +1,13 @@
 -- seeds/tasks_seed.sql
 -- Realistic sample data for `public.tasks`
--- Replace the user_id UUIDs below with real auth user IDs if desired.
+
+-- Create test users in auth.users so foreign key constraints are satisfied
+INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, confirmation_token, recovery_token)
+VALUES
+  ('11111111-1111-4111-8111-111111111111', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'alice@test.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '', ''),
+  ('22222222-2222-4222-8222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'bob@test.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '', ''),
+  ('33333333-3333-4333-8333-333333333333', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'charlie@test.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '', '')
+ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.tasks (id, name, description, priority, category, status, estimated_minutes, actual_seconds, user_id, started_at, completed_at, created_at)
 VALUES

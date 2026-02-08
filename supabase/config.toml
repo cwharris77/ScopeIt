@@ -1,0 +1,23 @@
+# Configuration for local Supabase CLI (migrations, seeding, functions, storage, etc.)
+
+# --- Database seed configuration ---
+[db.seed]
+# Enable seed execution during `supabase start` and `supabase db reset`
+enabled = true
+
+# List of seed SQL files.
+sql_paths = [
+  "./seeds/tasks_seed.sql"
+]
+
+# --- other helpful defaults ---
+# Alternative format if CLI expects a named functions map
+# [functions.project]
+# path = "./functions"
+#
+# [storage]
+# # Example: declare buckets to be created and seeded
+# [[storage.buckets]]
+# name = "images"
+# public = false
+# objects_path = "./images"
