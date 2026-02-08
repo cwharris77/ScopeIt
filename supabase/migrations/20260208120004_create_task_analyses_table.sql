@@ -1,4 +1,3 @@
--- 20260208120004_create_task_analyses_table.sql
 BEGIN;
 
 CREATE TABLE public.task_analyses (
