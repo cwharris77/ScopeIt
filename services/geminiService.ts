@@ -15,7 +15,7 @@ export interface AIAnalysis {
 
 // Initialize the Gemini client
 const getAI = () => {
-  const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.warn('Gemini API key not configured');
     return null;
