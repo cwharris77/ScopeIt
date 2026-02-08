@@ -14,17 +14,33 @@ export default function HomeScreen() {
   const { tasks, refetch, startTask, pauseTask, completeTask, deleteTask } = useTasks();
 
   // Filter & Sort State
-  const [filterCategory, setFilterCategory] = useState<string>(CATEGORY_ALL);
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [refreshing, setRefreshing] = useState(false);
+
+  const handleCategoryToggle = (category: string) => {
+    if (category === CATEGORY_ALL) {
+      setSelectedCategories(new Set());
+      return;
+    }
+    setSelectedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
 
   // Process and filter tasks
   const processedTasks = useMemo(() => {
     let result = [...tasks];
 
-    // Filter by category
-    if (filterCategory !== CATEGORY_ALL) {
-      result = result.filter((t) => t.category === filterCategory);
+    // Filter by selected categories
+    if (selectedCategories.size > 0) {
+      result = result.filter((t) => selectedCategories.has(t.category));
     }
 
     // Sort tasks
@@ -42,7 +58,7 @@ export default function HomeScreen() {
     });
 
     return result;
-  }, [tasks, filterCategory, sortBy]);
+  }, [tasks, selectedCategories, sortBy]);
 
   // Separate active and completed tasks
   const activeTasks = processedTasks.filter((t) => t.status !== TASK_STATUS.COMPLETED);
@@ -93,7 +109,7 @@ export default function HomeScreen() {
     <View style={styles.emptyState}>
       <Ionicons name="filter-outline" size={48} color={Colors.textMuted} />
       <Text style={styles.emptyTitle}>No tasks match filter</Text>
-      <Pressable onPress={() => setFilterCategory(CATEGORY_ALL)}>
+      <Pressable onPress={() => setSelectedCategories(new Set())}>
         <Text style={styles.resetFilter}>Reset Filter</Text>
       </Pressable>
     </View>
@@ -119,8 +135,8 @@ export default function HomeScreen() {
       {/* Filter Bar */}
       {tasks.length > 0 && (
         <FilterBar
-          selectedCategory={filterCategory}
-          onCategoryChange={setFilterCategory}
+          selectedCategories={selectedCategories}
+          onCategoryToggle={handleCategoryToggle}
           sortBy={sortBy}
           onSortChange={setSortBy}
           itemCount={processedTasks.length}

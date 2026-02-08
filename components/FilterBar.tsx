@@ -9,21 +9,22 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface FilterBarProps {
-  selectedCategory: string;
-  onCategoryChange: (category: string) => void;
+  selectedCategories: Set<string>;
+  onCategoryToggle: (category: string) => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   itemCount: number;
 }
 
 export function FilterBar({
-  selectedCategory,
-  onCategoryChange,
+  selectedCategories,
+  onCategoryToggle,
   sortBy,
   onSortChange,
   itemCount,
 }: FilterBarProps) {
   const allCategories = [CATEGORY_ALL, ...CATEGORIES];
+  const isAllSelected = selectedCategories.size === 0;
 
   return (
     <View style={styles.container}>
@@ -34,16 +35,18 @@ export function FilterBar({
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.pillsContainer}>
-          {allCategories.map((cat) => (
-            <Pressable
-              key={cat}
-              onPress={() => onCategoryChange(cat)}
-              style={[styles.pill, selectedCategory === cat && styles.pillActive]}>
-              <Text style={[styles.pillText, selectedCategory === cat && styles.pillTextActive]}>
-                {cat}
-              </Text>
-            </Pressable>
-          ))}
+          {allCategories.map((cat) => {
+            const isActive =
+              cat === CATEGORY_ALL ? isAllSelected : selectedCategories.has(cat);
+            return (
+              <Pressable
+                key={cat}
+                onPress={() => onCategoryToggle(cat)}
+                style={[styles.pill, isActive && styles.pillActive]}>
+                <Text style={[styles.pillText, isActive && styles.pillTextActive]}>{cat}</Text>
+              </Pressable>
+            );
+          })}
         </ScrollView>
       </View>
 
