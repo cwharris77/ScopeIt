@@ -1,6 +1,9 @@
 import { GoogleGenAI, Type } from 'npm:@google/genai';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+const NEW_TASKS_THRESHOLD = 5;
+
 const corsHeaders = {
   // TODO update to only allow requests from the app when I have a domain
   'Access-Control-Allow-Origin': '*',
@@ -40,18 +43,57 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { taskIds } = await req.json();
-    if (!taskIds || !Array.isArray(taskIds) || taskIds.length === 0) {
-      return new Response(JSON.stringify({ error: 'Invalid or empty taskIds array' }), {
+    // Count completed tasks for this user
+    const { count: completedCount, error: countError } = await supabase
+      .from('tasks')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('status', 'completed');
+
+    if (countError) {
+      return new Response(JSON.stringify({ error: 'Failed to count tasks' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!completedCount || completedCount === 0) {
+      return new Response(JSON.stringify({ error: 'No completed tasks to analyze' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    // Check for cached analysis
+    const { data: cached, error: cacheError } = await supabase
+      .from('task_analyses')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (cacheError) {
+      console.error('Cache lookup error:', cacheError);
+      // Continue to generate fresh analysis
+    }
+
+    if (cached) {
+      const ageMs = Date.now() - new Date(cached.created_at).getTime();
+      const newTasksSince = completedCount - cached.completed_count;
+
+      if (ageMs < SEVEN_DAYS_MS && newTasksSince < NEW_TASKS_THRESHOLD) {
+        return new Response(JSON.stringify(cached.analysis), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // Fetch completed tasks for Gemini
     const { data: completedTasks, error: tasksError } = await supabase
       .from('tasks')
       .select('name, category, estimated_minutes, actual_seconds, status')
-      .in('id', taskIds)
       .eq('user_id', user.id)
       .eq('status', 'completed');
 
@@ -95,7 +137,7 @@ Deno.serve(async (req) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash-lite',
       contents: prompt,
       config: {
         abortSignal: controller.signal,
@@ -129,6 +171,19 @@ Deno.serve(async (req) => {
     }
 
     const analysis = JSON.parse(text);
+
+    // Save analysis to DB
+    const { error: insertError } = await supabase.from('task_analyses').insert({
+      user_id: user.id,
+      analysis,
+      completed_count: completedCount,
+    });
+
+    if (insertError) {
+      console.error('Failed to cache analysis:', insertError);
+      // Still return the analysis even if caching failed
+    }
+
     return new Response(JSON.stringify(analysis), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

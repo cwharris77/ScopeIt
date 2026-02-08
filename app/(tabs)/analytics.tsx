@@ -1,8 +1,3 @@
-/**
- * Analytics Screen - Task performance insights with AI
- * Ported from web app
- */
-
 import { Colors } from '@/constants/colors';
 import { TASK_STATUS } from '@/constants/taskStatus';
 import { useTasks } from '@/contexts/TasksContext';
@@ -21,23 +16,23 @@ export default function AnalyticsScreen() {
 
   const completedTasks = tasks.filter((t) => t.status === TASK_STATUS.COMPLETED);
 
-  const triggerAnalysis = useCallback(async () => {
+  const fetchAnalysis = useCallback(async () => {
     if (completedTasks.length === 0) return;
     setLoading(true);
-    const result = await analyzeTaskPerformance(tasks);
-    if (result) setAnalysis(result);
+    const result = await analyzeTaskPerformance();
+    if (result) {
+      setAnalysis(result);
+    }
     setLoading(false);
-  }, [tasks, completedTasks.length]);
+  }, [completedTasks.length]);
 
   useEffect(() => {
-    if (completedTasks.length > 0 && !analysis) {
-      triggerAnalysis();
-    }
-  }, [completedTasks.length]);
+    fetchAnalysis();
+  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await triggerAnalysis();
+    await fetchAnalysis();
     setRefreshing(false);
   };
 
@@ -116,7 +111,7 @@ export default function AnalyticsScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Analytics</Text>
-          <Pressable style={styles.refreshButton} onPress={triggerAnalysis}>
+          <Pressable style={styles.refreshButton} onPress={fetchAnalysis}>
             <Ionicons name="refresh-outline" size={20} color={Colors.textSecondary} />
           </Pressable>
         </View>
@@ -216,7 +211,7 @@ export default function AnalyticsScreen() {
               </View>
             </View>
 
-            <Text style={styles.summaryText}>"{analysis.summary}"</Text>
+            <Text style={styles.summaryText}>&quot;{analysis.summary}&quot;</Text>
 
             <View style={styles.insightSection}>
               <Text style={styles.insightSectionTitle}>KEY INSIGHTS</Text>
