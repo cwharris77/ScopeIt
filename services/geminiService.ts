@@ -18,6 +18,9 @@ export const analyzeTaskPerformance = async (): Promise<AIAnalysis | null> => {
 
     if (error) {
       console.error('Edge function error:', error);
+      if (data && typeof data === 'object' && 'detail' in data) {
+        console.error('Edge function detail:', (data as { detail?: string }).detail);
+      }
       return null;
     }
 

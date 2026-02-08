@@ -15,9 +15,12 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  console.log('[analyze-tasks] Function invoked');
+
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('[analyze-tasks] Missing authorization header');
       return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -37,6 +40,7 @@ Deno.serve(async (req) => {
     } = await supabase.auth.getUser(token);
 
     if (userError || !user) {
+      console.error('[analyze-tasks] Auth failed:', userError?.message ?? 'No user', userError);
       return new Response(JSON.stringify({ error: 'Unauthorized', detail: userError?.message }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -51,13 +55,15 @@ Deno.serve(async (req) => {
       .eq('status', 'completed');
 
     if (countError) {
-      return new Response(JSON.stringify({ error: 'Failed to count tasks' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      console.error('[analyze-tasks] Failed to count tasks:', countError.message, countError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to count tasks', detail: countError.message }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     if (!completedCount || completedCount === 0) {
+      console.log('[analyze-tasks] No completed tasks, completedCount=', completedCount);
       return new Response(JSON.stringify({ error: 'No completed tasks to analyze' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -74,7 +80,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (cacheError) {
-      console.error('Cache lookup error:', cacheError);
+      console.error('[analyze-tasks] Cache lookup error:', cacheError.message, cacheError);
       // Continue to generate fresh analysis
     }
 
@@ -98,10 +104,11 @@ Deno.serve(async (req) => {
       .eq('status', 'completed');
 
     if (tasksError) {
-      return new Response(JSON.stringify({ error: 'Failed to fetch tasks' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      console.error('[analyze-tasks] Failed to fetch tasks:', tasksError.message, tasksError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch tasks', detail: tasksError.message }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     if (!completedTasks || completedTasks.length === 0) {
@@ -127,6 +134,7 @@ Deno.serve(async (req) => {
 
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
+      console.error('[analyze-tasks] GEMINI_API_KEY not set in Edge Function secrets');
       return new Response(JSON.stringify({ error: 'Gemini API key not configured' }), {
         status: 502,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -164,13 +172,26 @@ Deno.serve(async (req) => {
 
     const text = response.text;
     if (!text) {
+      console.error('[analyze-tasks] Gemini returned no text:', JSON.stringify(response));
       return new Response(JSON.stringify({ error: 'Empty response from Gemini' }), {
         status: 502,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const analysis = JSON.parse(text);
+    let analysis: unknown;
+    try {
+      analysis = JSON.parse(text);
+    } catch (parseError) {
+      console.error('[analyze-tasks] Failed to parse Gemini response:', text, parseError);
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid JSON from Gemini',
+          detail: parseError instanceof Error ? parseError.message : String(parseError),
+        }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Save analysis to DB
     const { error: insertError } = await supabase.from('task_analyses').insert({
@@ -180,7 +201,7 @@ Deno.serve(async (req) => {
     });
 
     if (insertError) {
-      console.error('Failed to cache analysis:', insertError);
+      console.error('[analyze-tasks] Failed to cache analysis:', insertError.message, insertError);
       // Still return the analysis even if caching failed
     }
 
@@ -189,15 +210,22 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errStack = error instanceof Error ? error.stack : undefined;
+    console.error('[analyze-tasks] Uncaught error:', errMsg, errStack ?? error);
+
     if (error instanceof DOMException && error.name === 'AbortError') {
       return new Response(JSON.stringify({ error: 'Gemini request timed out' }), {
         status: 504,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({
+        error: 'Internal server error',
+        detail: errMsg,
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 });
