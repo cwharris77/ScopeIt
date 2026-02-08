@@ -36,6 +36,7 @@ function RootLayoutNav() {
       // Redirect to app if authenticated
       router.replace('/(tabs)');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, loading, segments, path]);
 
   return (
@@ -49,7 +50,7 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme] = useState<'light' | 'dark'>('dark');
 
   return (
     <SafeAreaProvider>

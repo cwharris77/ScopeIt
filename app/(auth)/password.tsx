@@ -67,9 +67,7 @@ export default function AuthPassword() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleSignInWithLink}>
-          <Text style={styles.linkText}>
-            {hasSentLink ? 'Resend link' : 'Sign in with link'}
-          </Text>
+          <Text style={styles.linkText}>{hasSentLink ? 'Resend link' : 'Sign in with link'}</Text>
         </TouchableOpacity>
       </View>
     </View>

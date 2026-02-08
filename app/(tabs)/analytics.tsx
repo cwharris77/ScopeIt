@@ -1,7 +1,7 @@
 import { ProfileButton } from '@/components/ProfileButton';
 import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
-import { TASK_STATUS } from '@/constants/taskStatus';
+import { TASK_STATUS } from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
 import { AIAnalysis, analyzeTaskPerformance } from '@/services/geminiService';
 import { calculatePerTaskAccuracy } from '@/utils/accuracy';

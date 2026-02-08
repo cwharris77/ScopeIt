@@ -11,9 +11,7 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      [
-        "expo-router"
-      ],
+      ["expo-router"],
       [
         "expo-splash-screen",
         {
@@ -41,9 +39,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#087f8c"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "icon": {

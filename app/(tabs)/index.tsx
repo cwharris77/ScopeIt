@@ -3,7 +3,7 @@ import { ProfileButton } from '@/components/ProfileButton';
 import { TaskCard } from '@/components/TaskCard';
 import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
-import { CATEGORY_ALL, SortOption, TASK_STATUS } from '@/constants/taskStatus';
+import { CATEGORY_ALL, SortOption, TASK_STATUS } from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';

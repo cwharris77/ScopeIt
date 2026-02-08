@@ -4,7 +4,7 @@
  */
 
 import { Colors } from '@/constants/colors';
-import { TASK_STATUS, TaskStatus } from '@/constants/taskStatus';
+import { TASK_STATUS, TaskStatus } from '@/constants/tasks';
 import { Task } from '@/lib/supabase';
 import { formatTime, minutesToDisplay, secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';

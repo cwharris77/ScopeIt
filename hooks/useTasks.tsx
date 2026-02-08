@@ -1,4 +1,4 @@
-import { TASK_STATUS } from '@/constants/taskStatus';
+import { TASK_STATUS } from '@/constants/tasks';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Task, TaskInsert } from '@/lib/supabase';
 import { PostgrestError } from '@supabase/supabase-js';

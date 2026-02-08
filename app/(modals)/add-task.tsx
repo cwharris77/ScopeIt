@@ -3,7 +3,7 @@
  */
 
 import { Colors } from '@/constants/colors';
-import { CATEGORIES, Category, TASK_STATUS } from '@/constants/taskStatus';
+import { CATEGORIES, Category, TASK_STATUS } from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

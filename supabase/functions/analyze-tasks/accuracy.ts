@@ -13,9 +13,7 @@ export function calculatePerTaskAccuracy(tasks: TaskForAccuracy[]): number {
     const expectedSec = (t.estimated_minutes ?? 0) * 60;
     const actualSec = t.actual_seconds ?? 0;
     if (expectedSec > 0) {
-      accuracies.push(
-        Math.max(0, (1 - Math.abs(actualSec - expectedSec) / expectedSec) * 100)
-      );
+      accuracies.push(Math.max(0, (1 - Math.abs(actualSec - expectedSec) / expectedSec) * 100));
     }
   }
   return accuracies.length > 0

@@ -3,10 +3,19 @@
  * Redesigned to remove timer controls; uses save button instead
  */
 
+import { Dropdown } from '@/components/Dropdown';
 import { Colors } from '@/constants/colors';
-import { CATEGORIES, Category } from '@/constants/taskStatus';
+import {
+  CATEGORIES,
+  Category,
+  PRIORITY_OPTIONS,
+  TaskPriority,
+  TaskPriorityName,
+  TaskPriorityValue,
+  TaskPriorityValueName,
+  TaskURLParams,
+} from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
-import { TaskURLParams } from '@/types/tasks';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -36,6 +45,7 @@ export default function EditTaskScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<Category>('work');
+  const [priority, setPriority] = useState<TaskPriorityName>('medium');
   const [expectedHours, setExpectedHours] = useState('0');
   const [expectedMins, setExpectedMins] = useState('30');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +57,7 @@ export default function EditTaskScreen() {
       setTitle(task.name || '');
       setDescription(task.description || '');
       setCategory((task.category as Category) || 'work');
+      setPriority(TaskPriorityValueName[task.priority as TaskPriorityValue] || 'medium');
       const totalMins = task.estimated_minutes || 0;
       setExpectedHours(Math.floor(totalMins / 60).toString());
       setExpectedMins((totalMins % 60).toString());
@@ -81,6 +92,7 @@ export default function EditTaskScreen() {
       name: title.trim(),
       description: description.trim() || null,
       category: category,
+      priority: TaskPriority[priority],
       estimated_minutes: totalMinutes,
     });
     setIsSubmitting(false);
@@ -176,6 +188,12 @@ export default function EditTaskScreen() {
                   </Pressable>
                 ))}
               </View>
+            </View>
+
+            {/* Priority Selection */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>PRIORITY</Text>
+              <Dropdown value={priority} options={PRIORITY_OPTIONS} onChange={setPriority} />
             </View>
 
             {/* Duration Input */}
