@@ -1,7 +1,12 @@
+/**
+ * Floating Tab Bar - Updated with Focus and Scope tabs
+ */
+
 import { Colors } from '@/constants/colors';
 import { FLOATING_TAB_BAR_BOTTOM, FLOATING_TAB_BAR_HEIGHT } from '@/constants/layout';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useRouter } from 'expo-router';
 import { ComponentProps } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -16,18 +21,20 @@ const TABS: {
   {
     name: 'index',
     route: 'index',
-    icon: { focused: 'grid', unfocused: 'grid-outline' },
-    label: 'Focus',
+    icon: { focused: 'list', unfocused: 'list-outline' },
+    label: 'Tasks',
   },
   {
     name: 'analytics',
     route: 'analytics',
     icon: { focused: 'bar-chart', unfocused: 'bar-chart-outline' },
-    label: 'Scope',
+    label: 'Insights',
   },
 ];
 
 export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <TabButton
@@ -36,6 +43,7 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
         focused={state.index === 0}
         onPress={() => navigation.navigate(TABS[0].route)}
       />
+      <AddTabButton onPress={() => router.push('/add-task')} />
       <TabButton
         icon={TABS[1].icon}
         label={TABS[1].label}
@@ -64,6 +72,21 @@ function TabButton({
       <Ionicons name={iconName} size={24} color={focused ? Colors.primary : Colors.textMuted} />
       <Text style={[styles.tabLabel, focused && styles.tabLabelFocused]}>{label}</Text>
       {focused && <View style={styles.indicator} />}
+    </Pressable>
+  );
+}
+
+const ADD_BUTTON_SIZE = 64; // Prominent primary action; fits in 75px bar
+
+function AddTabButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.addButtonWrap, pressed && styles.addButtonPressed]}
+      accessibilityLabel="Add task">
+      <View style={styles.addIconWrap}>
+        <Ionicons name="add" size={36} color={Colors.white} />
+      </View>
     </Pressable>
   );
 }
@@ -119,6 +142,39 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     backgroundColor: Colors.primary,
+  },
+  addButtonWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  addButtonPressed: {
+    transform: [{ scale: 0.94 }],
+  },
+  addIconWrap: {
+    width: ADD_BUTTON_SIZE,
+    height: ADD_BUTTON_SIZE,
+    borderRadius: ADD_BUTTON_SIZE / 2,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: Colors.primaryLight,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.primaryDark,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.45,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 14,
+      },
+    }),
+  },
+  tabLabelAdd: {
+    color: Colors.textMuted,
+    marginTop: 4,
   },
 });
 

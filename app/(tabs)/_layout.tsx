@@ -10,8 +10,8 @@ export default function TabLayout() {
         sceneStyle: { backgroundColor: Colors.background, width: '100%' },
       }}
       tabBar={(props) => <FloatingTabBar {...props} />}>
-      <Tabs.Screen name="index" options={{ title: 'Focus' }} />
-      <Tabs.Screen name="analytics" options={{ title: 'Scope' }} />
+      <Tabs.Screen name="index" options={{ title: 'Tasks' }} />
+      <Tabs.Screen name="analytics" options={{ title: 'Insights' }} />
     </Tabs>
   );
 }

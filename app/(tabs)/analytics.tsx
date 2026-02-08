@@ -82,7 +82,7 @@ export default function AnalyticsScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Analytics</Text>
+          <Text style={styles.headerTitle}>Insights</Text>
           <ProfileButton />
         </View>
         <View style={styles.emptyState}>
@@ -112,7 +112,7 @@ export default function AnalyticsScreen() {
         showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Analytics</Text>
+          <Text style={styles.headerTitle}>Insights</Text>
           <View style={styles.headerActions}>
             <ProfileButton />
           </View>
