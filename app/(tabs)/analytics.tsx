@@ -62,7 +62,7 @@ export default function AnalyticsScreen() {
     60
   );
   const chartData = completedTasks.slice(0, 5).map((t) => ({
-    name: t.name.length > 12 ? t.name.substring(0, 12) + '...' : t.name,
+    name: t.name,
     expected: t.estimated_minutes || 0,
     actual: Math.round((t.actual_seconds || 0) / 60),
   }));
@@ -130,7 +130,7 @@ export default function AnalyticsScreen() {
         <View style={styles.chartCard}>
           <View style={styles.chartHeader}>
             <Ionicons name="bar-chart" size={20} color={Colors.primary} />
-            <Text style={styles.chartTitle}>Recent Performance (min)</Text>
+            <Text style={styles.chartTitle}>Recent Performance (minutes)</Text>
           </View>
           <View style={styles.chartContent}>
             {chartData.map((item, index) => (
