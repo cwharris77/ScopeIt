@@ -3,12 +3,11 @@
  * Redesigned to remove timer controls; uses save button instead
  */
 
-import { Dropdown } from '@/components/Dropdown';
+import { PriorityPicker } from '@/components/PriorityPicker';
 import { Colors } from '@/constants/colors';
 import {
   CATEGORIES,
   Category,
-  PRIORITY_OPTIONS,
   TaskPriority,
   TaskPriorityName,
   TaskPriorityValue,
@@ -193,7 +192,7 @@ export default function EditTaskScreen() {
             {/* Priority Selection */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>PRIORITY</Text>
-              <Dropdown value={priority} options={PRIORITY_OPTIONS} onChange={setPriority} />
+              <PriorityPicker value={priority} onChange={setPriority} />
             </View>
 
             {/* Duration Input */}

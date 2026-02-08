@@ -2,8 +2,9 @@
  * Add Task Modal - Enhanced with category selection and premium styling
  */
 
+import { PriorityPicker } from '@/components/PriorityPicker';
 import { Colors } from '@/constants/colors';
-import { CATEGORIES, Category, TASK_STATUS } from '@/constants/tasks';
+import { CATEGORIES, Category, TaskPriority, TaskPriorityName, TASK_STATUS } from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -27,6 +28,7 @@ export default function AddTaskModal() {
   // Form state
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<Category>('work');
+  const [priority, setPriority] = useState<TaskPriorityName>('medium');
   const [expectedHours, setExpectedHours] = useState('0');
   const [expectedMins, setExpectedMins] = useState('30');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,6 +56,7 @@ export default function AddTaskModal() {
     const { error } = await addTask({
       name: title.trim(),
       category: category,
+      priority: TaskPriority[priority],
       estimated_minutes: totalMinutes,
       status: TASK_STATUS.PENDING,
     });
@@ -114,6 +117,12 @@ export default function AddTaskModal() {
                   </Pressable>
                 ))}
               </View>
+            </View>
+
+            {/* Priority Selection */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>PRIORITY</Text>
+              <PriorityPicker value={priority} onChange={setPriority} />
             </View>
 
             {/* Duration Input */}

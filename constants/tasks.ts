@@ -38,12 +38,6 @@ export const TaskPriorityValueName: Record<TaskPriorityValue, TaskPriorityName> 
   [TaskPriority.high]: 'high',
 };
 
-export const PRIORITY_OPTIONS: { value: TaskPriorityName; label: string }[] = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-];
-
 // --- URL Params ---
 
 export type TaskURLParams = {
