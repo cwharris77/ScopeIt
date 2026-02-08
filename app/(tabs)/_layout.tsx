@@ -8,6 +8,17 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: Colors.background, width: '100%' },
+        tabBarStyle: {
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        tabBarBackground: () => null,
       }}
       tabBar={(props) => <FloatingTabBar {...props} />}>
       <Tabs.Screen name="index" options={{ title: 'Tasks' }} />

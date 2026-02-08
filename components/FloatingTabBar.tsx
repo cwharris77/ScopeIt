@@ -32,24 +32,27 @@ const TABS: {
   },
 ];
 
-export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
+export function FloatingTabBar({ state, navigation, insets }: BottomTabBarProps) {
   const router = useRouter();
+  const bottomInset = insets?.bottom ?? 0;
 
   return (
-    <View style={styles.container}>
-      <TabButton
-        icon={TABS[0].icon}
-        label={TABS[0].label}
-        focused={state.index === 0}
-        onPress={() => navigation.navigate(TABS[0].route)}
-      />
-      <AddTabButton onPress={() => router.push('/add-task')} />
-      <TabButton
-        icon={TABS[1].icon}
-        label={TABS[1].label}
-        focused={state.index === 1}
-        onPress={() => navigation.navigate(TABS[1].route)}
-      />
+    <View style={[styles.wrapper, { paddingBottom: bottomInset }]} pointerEvents="box-none">
+      <View style={styles.container}>
+        <TabButton
+          icon={TABS[0].icon}
+          label={TABS[0].label}
+          focused={state.index === 0}
+          onPress={() => navigation.navigate(TABS[0].route)}
+        />
+        <AddTabButton onPress={() => router.push('/add-task')} />
+        <TabButton
+          icon={TABS[1].icon}
+          label={TABS[1].label}
+          focused={state.index === 1}
+          onPress={() => navigation.navigate(TABS[1].route)}
+        />
+      </View>
     </View>
   );
 }
@@ -92,11 +95,21 @@ function AddTabButton({ onPress }: { onPress: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     position: 'absolute',
-    bottom: FLOATING_TAB_BAR_BOTTOM,
-    alignSelf: 'center',
-    width: '85%',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    backgroundColor: 'transparent',
+    paddingTop: 12,
+    paddingBottom: FLOATING_TAB_BAR_BOTTOM,
+    alignItems: 'center',
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  container: {
+    maxWidth: '85%',
     height: FLOATING_TAB_BAR_HEIGHT,
     backgroundColor: Colors.backgroundSecondary,
     borderRadius: 32,
