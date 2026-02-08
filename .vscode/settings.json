@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["Ionicon", "Pressable", "scopeit", "Tamagui"]
+  "cSpell.words": ["Ionicon", "Pressable", "scopeit", "Tamagui"],
+  "deno.enablePaths": ["supabase/functions"]
 }

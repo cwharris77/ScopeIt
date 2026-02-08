@@ -2,12 +2,32 @@
 -- Realistic sample data for `public.tasks`
 
 -- Create test users in auth.users so foreign key constraints are satisfied
-INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, confirmation_token, recovery_token)
+-- GoTrue scans string columns into Go strings (not pointers), so NULLs cause scan errors.
+-- We must explicitly set email_change, phone_change, and token columns to empty strings.
+-- phone is left as NULL (default) since it has a unique constraint.
+INSERT INTO auth.users (
+  id, instance_id, aud, role, email, encrypted_password,
+  email_confirmed_at, created_at, updated_at,
+  confirmation_token, recovery_token, email_change, email_change_token_new, email_change_token_current,
+  phone_change, phone_change_token, reauthentication_token,
+  raw_app_meta_data, raw_user_meta_data, is_sso_user, is_anonymous
+)
 VALUES
-  ('11111111-1111-4111-8111-111111111111', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'alice@test.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '', ''),
-  ('22222222-2222-4222-8222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'bob@test.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '', ''),
-  ('33333333-3333-4333-8333-333333333333', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'charlie@test.com', crypt('password123', gen_salt('bf')), NOW(), NOW(), NOW(), '', '')
+  ('11111111-1111-4111-8111-111111111111', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'alice@test.com', crypt('password123', gen_salt('bf')),
+   NOW(), NOW(), NOW(), '', '', '', '', '', '', '', '', '{"provider":"email","providers":["email"]}', '{}', false, false),
+  ('22222222-2222-4222-8222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'bob@test.com', crypt('password123', gen_salt('bf')),
+   NOW(), NOW(), NOW(), '', '', '', '', '', '', '', '', '{"provider":"email","providers":["email"]}', '{}', false, false),
+  ('33333333-3333-4333-8333-333333333333', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'charlie@test.com', crypt('password123', gen_salt('bf')),
+   NOW(), NOW(), NOW(), '', '', '', '', '', '', '', '', '{"provider":"email","providers":["email"]}', '{}', false, false)
 ON CONFLICT (id) DO NOTHING;
+
+-- Create identity records (required for signInWithPassword to work)
+INSERT INTO auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
+VALUES
+  ('11111111-1111-4111-8111-111111111111', '11111111-1111-4111-8111-111111111111', '11111111-1111-4111-8111-111111111111', '{"sub":"11111111-1111-4111-8111-111111111111","email":"alice@test.com"}', 'email', NOW(), NOW(), NOW()),
+  ('22222222-2222-4222-8222-222222222222', '22222222-2222-4222-8222-222222222222', '22222222-2222-4222-8222-222222222222', '{"sub":"22222222-2222-4222-8222-222222222222","email":"bob@test.com"}', 'email', NOW(), NOW(), NOW()),
+  ('33333333-3333-4333-8333-333333333333', '33333333-3333-4333-8333-333333333333', '33333333-3333-4333-8333-333333333333', '{"sub":"33333333-3333-4333-8333-333333333333","email":"charlie@test.com"}', 'email', NOW(), NOW(), NOW())
+ON CONFLICT (provider_id, provider) DO NOTHING;
 
 INSERT INTO public.tasks (id, name, description, priority, category, status, estimated_minutes, actual_seconds, user_id, started_at, completed_at, created_at)
 VALUES

@@ -10,11 +10,11 @@
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor  > types/supabase.ts"
+    "types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor  > types/supabase.ts",
+    "functions:deploy": "supabase functions deploy"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
-    "@google/genai": "^1.36.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.9.0",
     "@supabase/supabase-js": "^2.88.0",
