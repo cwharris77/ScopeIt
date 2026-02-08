@@ -1,5 +1,6 @@
 import { ProfileButton } from '@/components/ProfileButton';
 import { Colors } from '@/constants/colors';
+import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
 import { TASK_STATUS } from '@/constants/taskStatus';
 import { useTasks } from '@/contexts/TasksContext';
 import { AIAnalysis, analyzeTaskPerformance } from '@/services/geminiService';
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   scrollContent: {
-    paddingBottom: 120,
+    paddingBottom: PAGE_BOTTOM_PADDING,
   },
   header: {
     flexDirection: 'row',

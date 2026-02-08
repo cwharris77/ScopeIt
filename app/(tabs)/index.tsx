@@ -2,6 +2,7 @@ import { FilterBar } from '@/components/FilterBar';
 import { ProfileButton } from '@/components/ProfileButton';
 import { TaskCard } from '@/components/TaskCard';
 import { Colors } from '@/constants/colors';
+import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
 import { CATEGORY_ALL, SortOption, TASK_STATUS } from '@/constants/taskStatus';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -71,9 +72,9 @@ export default function HomeScreen() {
 
   const renderSectionHeader = (title: string, count: number, isActive: boolean) => (
     <View style={styles.sectionHeader}>
-      <Text style={[styles.sectionTitle, !isActive && styles.sectionTitleMuted]}>{title}</Text>
-      <View style={[styles.countBadge, !isActive && styles.countBadgeMuted]}>
-        <Text style={[styles.countText, !isActive && styles.countTextMuted]}>{count}</Text>
+      <Text style={[styles.sectionTitle]}>{title}</Text>
+      <View style={[styles.countBadge]}>
+        <Text style={[styles.countText]}>{count}</Text>
       </View>
     </View>
   );
@@ -141,15 +142,17 @@ export default function HomeScreen() {
       {completedTasks.length > 0 && (
         <>
           {renderSectionHeader('Archive', completedTasks.length, false)}
-          {completedTasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onStart={handleStartTask}
-              onPause={handlePauseTask}
-              onComplete={handleCompleteTask}
-              onDelete={handleDeleteTask}
-            />
+          {completedTasks.map((task, index) => (
+            <React.Fragment key={task.id}>
+              {index > 0 && <View style={styles.separator} />}
+              <TaskCard
+                task={task}
+                onStart={handleStartTask}
+                onPause={handlePauseTask}
+                onComplete={handleCompleteTask}
+                onDelete={handleDeleteTask}
+              />
+            </React.Fragment>
           ))}
         </>
       )}
@@ -193,7 +196,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   listContent: {
-    paddingBottom: 120, // Space for tab bar
+    paddingBottom: PAGE_BOTTOM_PADDING, // Space for tab bar
   },
   appHeader: {
     flexDirection: 'row',
