@@ -10,7 +10,7 @@
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor  > types/supabase.ts",
+    "generate-types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor  > types/supabase.ts",
     "functions:deploy": "supabase functions deploy",
     "functions:serve": "supabase functions serve --env-file supabase/.env --no-verify-jwt"
   },
