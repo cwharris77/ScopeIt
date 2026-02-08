@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabase';
 
 export interface AIAnalysis {
   summary: string;
-  accuracyRating: number; // 0 to 100
   insights: string[];
   recommendations: string[];
 }

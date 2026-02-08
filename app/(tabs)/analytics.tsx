@@ -3,6 +3,7 @@ import { Colors } from '@/constants/colors';
 import { TASK_STATUS } from '@/constants/taskStatus';
 import { useTasks } from '@/contexts/TasksContext';
 import { AIAnalysis, analyzeTaskPerformance } from '@/services/geminiService';
+import { calculatePerTaskAccuracy } from '@/utils/accuracy';
 import { secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -27,8 +28,10 @@ export default function AnalyticsScreen() {
     setLoading(false);
   }, [completedTasks.length]);
 
+  // run on mount
   useEffect(() => {
     fetchAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRefresh = async () => {
@@ -37,28 +40,14 @@ export default function AnalyticsScreen() {
     setRefreshing(false);
   };
 
-  // Calculate stats
   const calculateStats = () => {
     if (completedTasks.length === 0) {
       return { avgAccuracy: 0, totalTime: 0, tasksCompleted: 0 };
     }
-
-    let totalExpected = 0;
-    let totalActual = 0;
-
-    completedTasks.forEach((t) => {
-      totalExpected += (t.estimated_minutes || 0) * 60;
-      totalActual += t.actual_seconds || 0;
-    });
-
-    const avgAccuracy =
-      totalExpected > 0
-        ? Math.round((1 - Math.abs(totalActual - totalExpected) / totalExpected) * 100)
-        : 100;
-
+    const totalTime = completedTasks.reduce((sum, t) => sum + (t.actual_seconds ?? 0), 0);
     return {
-      avgAccuracy: Math.max(0, avgAccuracy),
-      totalTime: totalActual,
+      avgAccuracy: calculatePerTaskAccuracy(completedTasks),
+      totalTime,
       tasksCompleted: completedTasks.length,
     };
   };
@@ -121,17 +110,17 @@ export default function AnalyticsScreen() {
         {/* Stats Cards */}
         <View style={styles.statsRow}>
           <View style={styles.statCard}>
-            <Ionicons name="checkmark-circle" size={24} color={Colors.success} />
+            <Ionicons name="checkmark-circle-outline" size={24} color={Colors.success} />
             <Text style={styles.statValue}>{stats.tasksCompleted}</Text>
             <Text style={styles.statLabel}>Completed</Text>
           </View>
           <View style={styles.statCard}>
-            <Ionicons name="time" size={24} color={Colors.primary} />
+            <Ionicons name="time-outline" size={24} color={Colors.primary} />
             <Text style={styles.statValue}>{secondsToDisplay(stats.totalTime)}</Text>
             <Text style={styles.statLabel}>Total Time</Text>
           </View>
           <View style={styles.statCard}>
-            <Ionicons name="analytics" size={24} color={Colors.warning} />
+            <Ionicons name="locate" size={24} color={Colors.warning} />
             <Text style={styles.statValue}>{stats.avgAccuracy}%</Text>
             <Text style={styles.statLabel}>Accuracy</Text>
           </View>
@@ -209,7 +198,7 @@ export default function AnalyticsScreen() {
               </View>
               <View style={styles.accuracyBadge}>
                 <Ionicons name="locate" size={14} color={Colors.white} />
-                <Text style={styles.accuracyText}>{analysis.accuracyRating}% Accuracy</Text>
+                <Text style={styles.accuracyText}>{stats.avgAccuracy}% Accuracy</Text>
               </View>
             </View>
 

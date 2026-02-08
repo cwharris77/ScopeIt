@@ -1,3 +1,4 @@
+import { calculatePerTaskAccuracy } from './accuracy.ts';
 import { GoogleGenAI, Type } from 'npm:@google/genai';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -125,10 +126,14 @@ Deno.serve(async (req) => {
       actualMin: Math.round((t.actual_seconds || 0) / 60),
     }));
 
+    const computedAccuracy = calculatePerTaskAccuracy(completedTasks);
+
     const prompt = `Analyze these task completion data points for a productivity user.
   Compare their expected vs actual times.
   Identify patterns (e.g., they are always 20% over on "Coding", but under on "Meetings").
   Provide helpful, encouraging advice to improve their "scoping" accuracy.
+
+  Their current per-task scoping accuracy is ${computedAccuracy}% (average of how close each estimate was to actual; over and under both count as error). Reference this in your summary and insights where relevant.
 
   Data: ${JSON.stringify(taskDataSummary)}`;
 
@@ -154,7 +159,6 @@ Deno.serve(async (req) => {
           type: Type.OBJECT,
           properties: {
             summary: { type: Type.STRING },
-            accuracyRating: { type: Type.NUMBER },
             insights: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
@@ -179,9 +183,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    let analysis: unknown;
+    let analysis: Record<string, unknown>;
     try {
-      analysis = JSON.parse(text);
+      analysis = JSON.parse(text) as Record<string, unknown>;
     } catch (parseError) {
       console.error('[analyze-tasks] Failed to parse Gemini response:', text, parseError);
       return new Response(
