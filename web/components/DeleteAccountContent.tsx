@@ -93,7 +93,7 @@ export default function DeleteAccountContent() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white mb-2">Delete Your Account</h1>
           <p className="text-text-secondary text-sm">
-            Sign in to permanently delete your ScopeIt account and all associated data. This
+            Sign in to permanently delete your ScopedIn account and all associated data. This
             action cannot be undone.
           </p>
         </div>

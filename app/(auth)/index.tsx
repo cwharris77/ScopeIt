@@ -21,7 +21,7 @@ export default function AuthEmail() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ScopeIt</Text>
+      <Text style={styles.title}>ScopedIn</Text>
 
       <View style={styles.form}>
         <TextInput

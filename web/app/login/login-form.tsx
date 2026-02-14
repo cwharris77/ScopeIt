@@ -37,7 +37,7 @@ export default function LoginForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="w-full max-w-md rounded-xl bg-background-secondary p-8">
-        <h1 className="text-3xl font-bold text-white mb-2">ScopeIt</h1>
+        <h1 className="text-3xl font-bold text-white mb-2">ScopedIn</h1>
         <p className="text-text-muted mb-8">Master your estimation</p>
 
         <form onSubmit={handleEmailLogin} className="space-y-4">

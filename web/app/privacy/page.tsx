@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - ScopeIt',
+  title: 'Privacy Policy - ScopedIn',
 };
 
 export default function PrivacyPage() {
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">1. Introduction</h2>
             <p>
-              ScopeIt (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is a task management
+              ScopedIn (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is a task management
               application designed to help you improve your time estimation skills. This Privacy
               Policy explains how we collect, use, and protect your information when you use our
               mobile application and web application (collectively, the &quot;Service&quot;).
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
               tasks at any time. You can also permanently delete your entire account and all
               associated data through the Settings page in the app or at{' '}
               <a href="/delete-account" className="text-primary hover:underline">
-                scopeit.app/delete-account
+                scopedin.app/delete-account
               </a>
               .
             </p>
@@ -129,8 +129,8 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-white mb-3">10. Contact Us</h2>
             <p>
               If you have questions about this Privacy Policy or your data, please contact us at{' '}
-              <a href="mailto:support@scopeit.app" className="text-primary hover:underline">
-                support@scopeit.app
+              <a href="mailto:support@scopedin.app" className="text-primary hover:underline">
+                support@scopedin.app
               </a>
               .
             </p>

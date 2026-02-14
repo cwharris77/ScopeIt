@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "ScopeIt",
-    "slug": "ScopeIt",
+    "name": "ScopedIn",
+    "slug": "ScopedIn",
     "version": "1.0.0",
-    "scheme": "scopeit",
+    "scheme": "scopedin",
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -47,7 +47,7 @@
         "light": "./assets/icons/ios-light.png",
         "tinted": "./assets/icons/ios-tinted.png"
       },
-      "bundleIdentifier": "com.cwharris77.ScopeIt",
+      "bundleIdentifier": "com.cwharris77.ScopedIn",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized productivity insights."
@@ -61,7 +61,7 @@
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#087f8c"
       },
-      "package": "com.cwharris77.ScopeIt"
+      "package": "com.cwharris77.ScopedIn"
     },
     "extra": {
       "router": {},

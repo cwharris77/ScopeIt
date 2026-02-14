@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - ScopeIt',
+  title: 'Terms of Service - ScopedIn',
 };
 
 export default function TermsPage() {
@@ -15,7 +15,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">1. Acceptance of Terms</h2>
             <p>
-              By accessing or using ScopeIt (&quot;the Service&quot;), you agree to be bound by
+              By accessing or using ScopedIn (&quot;the Service&quot;), you agree to be bound by
               these Terms of Service. If you do not agree to these terms, do not use the Service.
             </p>
           </section>
@@ -23,7 +23,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">2. Description of Service</h2>
             <p>
-              ScopeIt is a task management application that helps users track their tasks, compare
+              ScopedIn is a task management application that helps users track their tasks, compare
               estimated vs. actual completion times, and improve their time estimation accuracy
               through analytics and AI-powered insights. The Service is available as a mobile
               application (iOS and Android) and a web application.
@@ -84,7 +84,7 @@ export default function TermsPage() {
             <p>
               You may delete your account at any time through the Settings page in the app or at{' '}
               <a href="/delete-account" className="text-primary hover:underline">
-                scopeit.app/delete-account
+                scopedin.app/delete-account
               </a>
               . Account deletion is permanent and will remove all your data, including tasks,
               analytics, and AI analysis history.
@@ -114,7 +114,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">10. Limitation of Liability</h2>
             <p>
-              To the maximum extent permitted by law, ScopeIt shall not be liable for any indirect,
+              To the maximum extent permitted by law, ScopedIn shall not be liable for any indirect,
               incidental, special, consequential, or punitive damages, or any loss of data, use, or
               profits, arising out of or related to your use of the Service.
             </p>
@@ -133,8 +133,8 @@ export default function TermsPage() {
             <h2 className="text-xl font-semibold text-white mb-3">12. Contact Us</h2>
             <p>
               If you have questions about these Terms of Service, please contact us at{' '}
-              <a href="mailto:support@scopeit.app" className="text-primary hover:underline">
-                support@scopeit.app
+              <a href="mailto:support@scopedin.app" className="text-primary hover:underline">
+                support@scopedin.app
               </a>
               .
             </p>
