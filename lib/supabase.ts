@@ -47,3 +47,8 @@ export type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
 export type Project = Tables<'projects'>;
 export type ProjectInsert = Database['public']['Tables']['projects']['Insert'];
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
+
+export type Tag = Tables<'tags'>;
+export type TagInsert = Database['public']['Tables']['tags']['Insert'];
+export type TagUpdate = Database['public']['Tables']['tags']['Update'];
+export type TaskTag = Tables<'task_tags'>;
