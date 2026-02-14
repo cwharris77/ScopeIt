@@ -11,7 +11,7 @@ type Props = {
 
 type Analysis = {
   summary: string;
-  key_insights: string[];
+  insights: string[];
   recommendations: string[];
 };
 
@@ -29,13 +29,9 @@ export function AiInsights({ tasks }: Props) {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (!session) {
-        setError('Not authenticated');
-        setLoading(false);
-        return;
-      }
 
       const taskIds = tasks.map((t) => t.id);
+      const token = session?.access_token;
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/analyze-tasks`,
@@ -43,16 +39,19 @@ export function AiInsights({ tasks }: Props) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           body: JSON.stringify({ taskIds }),
         }
       );
 
-      if (!response.ok) throw new Error('Failed to fetch insights');
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `HTTP ${response.status}`);
+      }
 
       const data = await response.json();
-      setAnalysis(data.analysis);
+      setAnalysis(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     }
@@ -101,11 +100,11 @@ export function AiInsights({ tasks }: Props) {
         <>
           <p className="text-text-secondary">{analysis.summary}</p>
 
-          {analysis.key_insights?.length > 0 && (
+          {analysis.insights?.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-white mb-2">Key Insights</h3>
               <ul className="space-y-1">
-                {analysis.key_insights.map((insight, i) => (
+                {analysis.insights.map((insight, i) => (
                   <li key={i} className="text-text-secondary text-sm flex gap-2">
                     <span className="text-primary">&bull;</span> {insight}
                   </li>
