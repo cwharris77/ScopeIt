@@ -20,11 +20,7 @@ export default function TagsPage() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
-    const { data } = await supabase
-      .from('tags')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('name');
+    const { data } = await supabase.from('tags').select('*').eq('user_id', user.id).order('name');
     setTags(data || []);
     setLoading(false);
   }, [supabase]);
@@ -89,8 +85,7 @@ export default function TagsPage() {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-light"
-          >
+            className="hover:bg-primary-light flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition">
             <Plus size={18} />
             Add Tag
           </button>
@@ -99,7 +94,7 @@ export default function TagsPage() {
 
       {/* Create / Edit Form */}
       {showForm && (
-        <div className="mb-6 rounded-xl bg-background-secondary p-6">
+        <div className="bg-background-secondary mb-6 rounded-xl p-6">
           <h2 className="mb-4 text-lg font-semibold text-white">
             {editingId ? 'Edit Tag' : 'New Tag'}
           </h2>
@@ -107,13 +102,13 @@ export default function TagsPage() {
           <div className="space-y-4">
             {/* Name input */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-text-secondary">Name</label>
+              <label className="text-text-secondary mb-1.5 block text-sm font-medium">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Tag name"
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-white placeholder-text-muted outline-none focus:border-primary"
+                className="border-border placeholder-text-muted w-full rounded-lg border bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSave();
@@ -124,7 +119,7 @@ export default function TagsPage() {
 
             {/* Color swatches */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-text-secondary">Color</label>
+              <label className="text-text-secondary mb-1.5 block text-sm font-medium">Color</label>
               <div className="flex flex-wrap gap-2">
                 {PROJECT_COLORS.map((color) => (
                   <button
@@ -132,8 +127,7 @@ export default function TagsPage() {
                     type="button"
                     onClick={() => setSelectedColor(color)}
                     className="flex h-8 w-8 items-center justify-center rounded-full transition hover:scale-110"
-                    style={{ backgroundColor: color }}
-                  >
+                    style={{ backgroundColor: color }}>
                     {selectedColor === color && <Check size={16} className="text-white" />}
                   </button>
                 ))}
@@ -145,14 +139,12 @@ export default function TagsPage() {
               <button
                 onClick={handleSave}
                 disabled={!name.trim()}
-                className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-light disabled:opacity-50"
-              >
+                className="hover:bg-primary-light rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white transition disabled:opacity-50">
                 {editingId ? 'Save Changes' : 'Create Tag'}
               </button>
               <button
                 onClick={resetForm}
-                className="rounded-lg border border-border px-5 py-2 text-sm text-text-secondary transition hover:text-white"
-              >
+                className="border-border text-text-secondary rounded-lg border px-5 py-2 text-sm transition hover:text-white">
                 Cancel
               </button>
             </div>
@@ -162,7 +154,7 @@ export default function TagsPage() {
 
       {/* Tag list */}
       {tags.length === 0 ? (
-        <div className="rounded-xl bg-background-secondary p-8 text-center">
+        <div className="bg-background-secondary rounded-xl p-8 text-center">
           <p className="text-text-muted">No tags yet. Create one to organize your tasks!</p>
         </div>
       ) : (
@@ -170,8 +162,7 @@ export default function TagsPage() {
           {tags.map((tag) => (
             <div
               key={tag.id}
-              className="flex items-center justify-between rounded-xl bg-background-secondary p-4 transition hover:bg-background-tertiary"
-            >
+              className="bg-background-secondary hover:bg-background-tertiary flex items-center justify-between rounded-xl p-4 transition">
               <div className="flex items-center gap-3">
                 <div
                   className="h-4 w-4 shrink-0 rounded-full"
@@ -182,16 +173,14 @@ export default function TagsPage() {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleEdit(tag)}
-                  className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-primary"
-                  title="Edit"
-                >
+                  className="text-text-secondary rounded-lg p-2 transition hover:bg-background hover:text-primary"
+                  title="Edit">
                   <Pencil size={16} />
                 </button>
                 <button
                   onClick={() => handleDelete(tag.id)}
-                  className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-danger"
-                  title="Delete"
-                >
+                  className="text-text-secondary rounded-lg p-2 transition hover:bg-background hover:text-danger"
+                  title="Delete">
                   <Trash2 size={16} />
                 </button>
               </div>

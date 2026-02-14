@@ -50,16 +50,13 @@ export function TagChipPicker({ value, onChange }: TagChipPickerProps) {
                   ? { backgroundColor: tagColor, borderColor: tagColor }
                   : { backgroundColor: 'transparent', borderColor: tagColor },
               ]}>
-              <Text
-                style={[styles.chipText, { color: isSelected ? Colors.white : tagColor }]}>
+              <Text style={[styles.chipText, { color: isSelected ? Colors.white : tagColor }]}>
                 {tag.name}
               </Text>
             </Pressable>
           );
         })}
-        <Pressable
-          onPress={() => setShowCreate(!showCreate)}
-          style={[styles.chip, styles.addChip]}>
+        <Pressable onPress={() => setShowCreate(!showCreate)} style={[styles.chip, styles.addChip]}>
           <Ionicons name="add" size={16} color={Colors.white} />
           <Text style={[styles.chipText, { color: Colors.white }]}>New</Text>
         </Pressable>

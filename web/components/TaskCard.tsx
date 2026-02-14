@@ -47,12 +47,11 @@ export function TaskCard({ task, tags, onStart, onPause, onComplete, onDelete }:
 
   const elapsed =
     isRunning && task.started_at
-      ? (task.actual_seconds || 0) +
-        Math.floor((now - new Date(task.started_at).getTime()) / 1000)
+      ? (task.actual_seconds || 0) + Math.floor((now - new Date(task.started_at).getTime()) / 1000)
       : task.actual_seconds || 0;
 
   return (
-    <div className="group flex items-center gap-4 rounded-xl bg-background-secondary p-4 transition hover:bg-background-tertiary">
+    <div className="bg-background-secondary hover:bg-background-tertiary group flex items-center gap-4 rounded-xl p-4 transition">
       {/* Priority dot */}
       <div className={`h-3 w-3 shrink-0 rounded-full ${priorityColors[priorityName]}`} />
 
@@ -60,8 +59,7 @@ export function TaskCard({ task, tags, onStart, onPause, onComplete, onDelete }:
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <h3
-            className={`truncate font-semibold ${isCompleted ? 'text-text-muted line-through' : 'text-white'}`}
-          >
+            className={`truncate font-semibold ${isCompleted ? 'text-text-muted line-through' : 'text-white'}`}>
             {task.name}
           </h3>
           {tags && tags.length > 0 ? (
@@ -72,24 +70,24 @@ export function TaskCard({ task, tags, onStart, onPause, onComplete, onDelete }:
                 style={{
                   backgroundColor: `${tag.color || '#6b7280'}20`,
                   color: tag.color || '#6b7280',
-                }}
-              >
+                }}>
                 {tag.name}
               </span>
             ))
           ) : (
-            <span className="shrink-0 rounded-full bg-background-tertiary px-2.5 py-0.5 text-xs capitalize text-text-secondary">
+            <span className="bg-background-tertiary text-text-secondary shrink-0 rounded-full px-2.5 py-0.5 text-xs capitalize">
               {task.category}
             </span>
           )}
           {tags && tags.length > 3 && (
-            <span className="shrink-0 text-xs text-text-muted">+{tags.length - 3}</span>
+            <span className="text-text-muted shrink-0 text-xs">+{tags.length - 3}</span>
           )}
-          <span className={`shrink-0 text-xs font-medium capitalize ${priorityTextColors[priorityName]}`}>
+          <span
+            className={`shrink-0 text-xs font-medium capitalize ${priorityTextColors[priorityName]}`}>
             {priorityName}
           </span>
         </div>
-        <div className="mt-1 flex items-center gap-4 text-xs text-text-muted">
+        <div className="text-text-muted mt-1 flex items-center gap-4 text-xs">
           <span className="flex items-center gap-1">
             <Clock size={12} />
             Est: {minutesToDisplay(task.estimated_minutes)}
@@ -111,38 +109,33 @@ export function TaskCard({ task, tags, onStart, onPause, onComplete, onDelete }:
             <button
               onClick={() => onPause(task.id)}
               title="Pause"
-              className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-warning"
-            >
+              className="text-text-secondary hover:text-warning rounded-lg p-2 transition hover:bg-background">
               <Pause size={16} />
             </button>
           ) : (
             <button
               onClick={() => onStart(task.id)}
               title="Start"
-              className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-success"
-            >
+              className="text-text-secondary hover:text-success rounded-lg p-2 transition hover:bg-background">
               <Play size={16} />
             </button>
           )}
           <button
             onClick={() => onComplete(task.id)}
             title="Complete"
-            className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-success"
-          >
+            className="text-text-secondary hover:text-success rounded-lg p-2 transition hover:bg-background">
             <Check size={16} />
           </button>
           <Link
             href={`/tasks/${task.id}/edit`}
             title="Edit"
-            className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-primary"
-          >
+            className="text-text-secondary rounded-lg p-2 transition hover:bg-background hover:text-primary">
             <Pencil size={16} />
           </Link>
           <button
             onClick={() => onDelete(task.id)}
             title="Delete"
-            className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-danger"
-          >
+            className="text-text-secondary rounded-lg p-2 transition hover:bg-background hover:text-danger">
             <Trash2 size={16} />
           </button>
         </div>
@@ -153,8 +146,7 @@ export function TaskCard({ task, tags, onStart, onPause, onComplete, onDelete }:
           <button
             onClick={() => onDelete(task.id)}
             title="Delete"
-            className="rounded-lg p-2 text-text-secondary transition hover:bg-background hover:text-danger"
-          >
+            className="text-text-secondary rounded-lg p-2 transition hover:bg-background hover:text-danger">
             <Trash2 size={16} />
           </button>
         </div>

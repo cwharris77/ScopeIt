@@ -77,15 +77,13 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={handleBackdropClick}
-    >
-      <div className="w-full max-w-md rounded-2xl bg-background-secondary p-6 shadow-xl">
+      onClick={handleBackdropClick}>
+      <div className="bg-background-secondary w-full max-w-md rounded-2xl p-6 shadow-xl">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">Add Task</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-text-secondary transition hover:text-white"
-          >
+            className="text-text-secondary rounded-lg p-1 transition hover:text-white">
             <X size={20} />
           </button>
         </div>
@@ -93,7 +91,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">
               Task Name
             </label>
             <input
@@ -102,13 +100,13 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-white placeholder-text-muted outline-none focus:border-primary"
+              className="border-border placeholder-text-muted w-full rounded-lg border bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">Tags</label>
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">Tags</label>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => {
                 const isSelected = selectedTagIds.has(tag.id);
@@ -129,25 +127,22 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                         ? 'text-white'
                         : 'bg-background-tertiary text-text-secondary hover:text-white'
                     }`}
-                    style={
-                      isSelected ? { backgroundColor: tag.color || '#087f8c' } : undefined
-                    }
-                  >
+                    style={isSelected ? { backgroundColor: tag.color || '#087f8c' } : undefined}>
                     {tag.name}
                   </button>
                 );
               })}
               {tags.length === 0 && (
-                <p className="text-xs text-text-muted">No tags yet. Create tags from the Tags page.</p>
+                <p className="text-text-muted text-xs">
+                  No tags yet. Create tags from the Tags page.
+                </p>
               )}
             </div>
           </div>
 
           {/* Priority */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
-              Priority
-            </label>
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">Priority</label>
             <div className="flex gap-2">
               {priorities.map((p) => (
                 <button
@@ -158,8 +153,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                     priority === p.value
                       ? `${p.color} text-white`
                       : 'bg-background-tertiary text-text-secondary hover:text-white'
-                  }`}
-                >
+                  }`}>
                   {p.name}
                 </button>
               ))}
@@ -168,7 +162,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
 
           {/* Duration */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">
               Estimated Duration
             </label>
             <div className="flex items-center gap-3">
@@ -179,9 +173,9 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                   max={23}
                   value={hours}
                   onChange={(e) => setHours(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-16 rounded-lg border border-border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
+                  className="border-border w-16 rounded-lg border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
                 />
-                <span className="text-sm text-text-muted">hrs</span>
+                <span className="text-text-muted text-sm">hrs</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <input
@@ -190,9 +184,9 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                   max={59}
                   value={minutes}
                   onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-16 rounded-lg border border-border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
+                  className="border-border w-16 rounded-lg border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
                 />
-                <span className="text-sm text-text-muted">min</span>
+                <span className="text-text-muted text-sm">min</span>
               </div>
             </div>
           </div>
@@ -200,8 +194,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light"
-          >
+            className="hover:bg-primary-light w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition">
             Create Task
           </button>
         </form>

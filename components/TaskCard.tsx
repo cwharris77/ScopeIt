@@ -22,7 +22,15 @@ interface TaskCardProps {
   onDelete: (id: string) => void;
 }
 
-export function TaskCard({ task, project, tags, onStart, onPause, onComplete, onDelete }: TaskCardProps) {
+export function TaskCard({
+  task,
+  project,
+  tags,
+  onStart,
+  onPause,
+  onComplete,
+  onDelete,
+}: TaskCardProps) {
   const router = useRouter();
   const [now, setNow] = useState(Date.now());
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -133,7 +141,10 @@ export function TaskCard({ task, project, tags, onStart, onPause, onComplete, on
                   key={tag.id}
                   style={[
                     styles.tagBadge,
-                    { backgroundColor: `${tag.color || Colors.textMuted}20`, borderColor: tag.color || Colors.textMuted },
+                    {
+                      backgroundColor: `${tag.color || Colors.textMuted}20`,
+                      borderColor: tag.color || Colors.textMuted,
+                    },
                   ]}>
                   <Text style={[styles.tagText, { color: tag.color || Colors.textMuted }]}>
                     {tag.name}

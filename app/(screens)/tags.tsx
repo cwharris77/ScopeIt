@@ -127,9 +127,7 @@ export default function TagsScreen() {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.tagCard}>
-            <View
-              style={[styles.tagColorBar, { backgroundColor: item.color ?? Colors.primary }]}
-            />
+            <View style={[styles.tagColorBar, { backgroundColor: item.color ?? Colors.primary }]} />
             <View style={styles.tagInfo}>
               <Text style={styles.tagName}>{item.name}</Text>
             </View>

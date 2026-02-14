@@ -2,11 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client';
 import { Task, Tag } from '@shared/types';
-import {
-  TaskPriority,
-  TaskPriorityValueName,
-  type TaskPriorityName,
-} from '@shared/constants';
+import { TaskPriority, TaskPriorityValueName, type TaskPriorityName } from '@shared/constants';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
@@ -118,39 +114,38 @@ export default function EditTaskContent() {
     <div className="mx-auto max-w-2xl">
       <Link
         href="/"
-        className="mb-6 flex items-center gap-2 text-text-secondary transition hover:text-white"
-      >
+        className="text-text-secondary mb-6 flex items-center gap-2 transition hover:text-white">
         <ArrowLeft size={20} />
         Back to tasks
       </Link>
 
-      <div className="space-y-6 rounded-xl bg-background-secondary p-6">
+      <div className="bg-background-secondary space-y-6 rounded-xl p-6">
         <h1 className="text-xl font-bold text-white">Edit Task</h1>
 
         {/* Name */}
         <div>
-          <label className="mb-1 block text-sm text-text-secondary">Name</label>
+          <label className="text-text-secondary mb-1 block text-sm">Name</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-border bg-background p-3 text-white focus:border-primary focus:outline-none"
+            className="border-border w-full rounded-lg border bg-background p-3 text-white focus:border-primary focus:outline-none"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="mb-1 block text-sm text-text-secondary">Description</label>
+          <label className="text-text-secondary mb-1 block text-sm">Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="w-full resize-none rounded-lg border border-border bg-background p-3 text-white focus:border-primary focus:outline-none"
+            className="border-border w-full resize-none rounded-lg border bg-background p-3 text-white focus:border-primary focus:outline-none"
           />
         </div>
 
         {/* Tags */}
         <div>
-          <label className="mb-2 block text-sm text-text-secondary">Tags</label>
+          <label className="text-text-secondary mb-2 block text-sm">Tags</label>
           <div className="flex flex-wrap gap-2">
             {allTags.map((tag) => {
               const isSelected = selectedTagIds.has(tag.id);
@@ -171,14 +166,13 @@ export default function EditTaskContent() {
                       ? 'text-white'
                       : 'bg-background-tertiary text-text-secondary hover:text-white'
                   }`}
-                  style={isSelected ? { backgroundColor: tag.color || '#087f8c' } : undefined}
-                >
+                  style={isSelected ? { backgroundColor: tag.color || '#087f8c' } : undefined}>
                   {tag.name}
                 </button>
               );
             })}
             {allTags.length === 0 && (
-              <p className="text-xs text-text-muted">
+              <p className="text-text-muted text-xs">
                 No tags yet. Create tags from the Tags page.
               </p>
             )}
@@ -187,7 +181,7 @@ export default function EditTaskContent() {
 
         {/* Priority */}
         <div>
-          <label className="mb-2 block text-sm text-text-secondary">Priority</label>
+          <label className="text-text-secondary mb-2 block text-sm">Priority</label>
           <div className="flex gap-2">
             {(Object.entries(TaskPriority) as [TaskPriorityName, number][]).map(
               ([pName, pValue]) => (
@@ -198,8 +192,7 @@ export default function EditTaskContent() {
                     priority === pValue
                       ? `${priorityColors[pName]} text-white`
                       : 'bg-background-tertiary text-text-secondary hover:text-white'
-                  }`}
-                >
+                  }`}>
                   {pName}
                 </button>
               )
@@ -209,7 +202,7 @@ export default function EditTaskContent() {
 
         {/* Duration */}
         <div>
-          <label className="mb-2 block text-sm text-text-secondary">Estimated Duration</label>
+          <label className="text-text-secondary mb-2 block text-sm">Estimated Duration</label>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <input
@@ -217,9 +210,9 @@ export default function EditTaskContent() {
                 min={0}
                 value={hours}
                 onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                className="w-20 rounded-lg border border-border bg-background p-3 text-center text-white focus:border-primary focus:outline-none"
+                className="border-border w-20 rounded-lg border bg-background p-3 text-center text-white focus:border-primary focus:outline-none"
               />
-              <span className="text-sm text-text-secondary">hrs</span>
+              <span className="text-text-secondary text-sm">hrs</span>
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -228,9 +221,9 @@ export default function EditTaskContent() {
                 max={59}
                 value={minutes}
                 onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                className="w-20 rounded-lg border border-border bg-background p-3 text-center text-white focus:border-primary focus:outline-none"
+                className="border-border w-20 rounded-lg border bg-background p-3 text-center text-white focus:border-primary focus:outline-none"
               />
-              <span className="text-sm text-text-secondary">min</span>
+              <span className="text-text-secondary text-sm">min</span>
             </div>
           </div>
         </div>
@@ -240,14 +233,12 @@ export default function EditTaskContent() {
           <button
             onClick={handleSave}
             disabled={saving || !name.trim()}
-            className="rounded-lg bg-primary px-6 py-2.5 font-semibold text-white transition hover:bg-primary-dark disabled:opacity-50"
-          >
+            className="hover:bg-primary-dark rounded-lg bg-primary px-6 py-2.5 font-semibold text-white transition disabled:opacity-50">
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
           <Link
             href="/"
-            className="rounded-lg border border-border px-6 py-2.5 text-text-secondary transition hover:text-white"
-          >
+            className="border-border text-text-secondary rounded-lg border px-6 py-2.5 transition hover:text-white">
             Cancel
           </Link>
         </div>

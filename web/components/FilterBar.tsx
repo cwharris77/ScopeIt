@@ -29,8 +29,7 @@ export function FilterBar({
             selectedTagIds.size === 0
               ? 'bg-primary text-white'
               : 'bg-background-tertiary text-text-secondary hover:text-white'
-          }`}
-        >
+          }`}>
           All
         </button>
         {tags.map((tag) => {
@@ -44,8 +43,7 @@ export function FilterBar({
                   ? 'text-white'
                   : 'bg-background-tertiary text-text-secondary hover:text-white'
               }`}
-              style={isActive ? { backgroundColor: tag.color || '#087f8c' } : undefined}
-            >
+              style={isActive ? { backgroundColor: tag.color || '#087f8c' } : undefined}>
               {tag.name}
             </button>
           );
@@ -55,8 +53,7 @@ export function FilterBar({
       <select
         value={sortOption}
         onChange={(e) => onSortChange(e.target.value as SortOption)}
-        className="rounded-lg border border-border bg-background-secondary px-3 py-1.5 text-sm text-text-primary outline-none focus:border-primary"
-      >
+        className="border-border bg-background-secondary text-text-primary rounded-lg border px-3 py-1.5 text-sm outline-none focus:border-primary">
         {SORT_OPTIONS.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

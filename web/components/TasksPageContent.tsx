@@ -224,8 +224,7 @@ export function TasksPageContent() {
         <h1 className="text-2xl font-bold text-white">Tasks</h1>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-light"
-        >
+          className="hover:bg-primary-light flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition">
           <Plus size={18} />
           Add Task
         </button>
@@ -242,11 +241,11 @@ export function TasksPageContent() {
 
       {/* Active Tasks */}
       <section className="mt-6">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted">
+        <h2 className="text-text-muted mb-3 text-sm font-semibold uppercase tracking-wider">
           Active ({activeTasks.length})
         </h2>
         {activeTasks.length === 0 ? (
-          <p className="rounded-xl bg-background-secondary p-6 text-center text-sm text-text-muted">
+          <p className="bg-background-secondary text-text-muted rounded-xl p-6 text-center text-sm">
             No active tasks. Add one to get started!
           </p>
         ) : (
@@ -269,7 +268,7 @@ export function TasksPageContent() {
       {/* Completed Tasks */}
       {completedTasks.length > 0 && (
         <section className="mt-8">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <h2 className="text-text-muted mb-3 text-sm font-semibold uppercase tracking-wider">
             Completed ({completedTasks.length})
           </h2>
           <div className="space-y-2">
