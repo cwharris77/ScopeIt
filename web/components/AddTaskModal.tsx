@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { TaskPriority, type TaskPriorityName } from '@shared/constants';
 import { Tag, TaskInsert } from '@shared/types';
 import { X } from 'lucide-react';
+import { TagCreatePopover } from './TagCreatePopover';
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -129,11 +130,12 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                   </button>
                 );
               })}
-              {tags.length === 0 && (
-                <p className="text-text-muted text-xs">
-                  No tags yet. Create tags from the Tags page.
-                </p>
-              )}
+              <TagCreatePopover
+                onTagCreated={(tag) => {
+                  setTags((prev) => [...prev, tag].sort((a, b) => a.name.localeCompare(b.name)));
+                  setSelectedTagIds((prev) => new Set([...prev, tag.id]));
+                }}
+              />
             </div>
           </div>
 

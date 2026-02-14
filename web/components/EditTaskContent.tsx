@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { TaskPriority, type TaskPriorityName } from '@shared/constants';
 import { Tag, Task } from '@shared/types';
 import { ArrowLeft } from 'lucide-react';
+import { TagCreatePopover } from './TagCreatePopover';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -170,7 +171,12 @@ export default function EditTaskContent() {
                 </button>
               );
             })}
-            {}
+            <TagCreatePopover
+              onTagCreated={(tag) => {
+                setAllTags((prev) => [...prev, tag].sort((a, b) => a.name.localeCompare(b.name)));
+                setSelectedTagIds((prev) => new Set([...prev, tag.id]));
+              }}
+            />
           </div>
         </div>
 
