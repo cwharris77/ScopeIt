@@ -65,7 +65,7 @@ export default function AnalyticsContent() {
       />
       <AccuracyTrend tasks={completedTasks} />
       <PerformanceChart tasks={completedTasks.slice(0, 5)} />
-      <AiInsights tasks={completedTasks} />
+      <AiInsights />
     </div>
   );
 }
