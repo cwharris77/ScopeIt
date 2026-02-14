@@ -5,7 +5,13 @@
 import { PriorityPicker } from '@/components/PriorityPicker';
 import { ProjectPicker } from '@/components/ProjectPicker';
 import { Colors } from '@/constants/colors';
-import { CATEGORIES, Category, TaskPriority, TaskPriorityName, TASK_STATUS } from '@/constants/tasks';
+import {
+  CATEGORIES,
+  Category,
+  TaskPriority,
+  TaskPriorityName,
+  TASK_STATUS,
+} from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

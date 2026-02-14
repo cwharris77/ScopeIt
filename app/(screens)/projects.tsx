@@ -3,15 +3,7 @@ import { useProjects } from '@/contexts/ProjectsContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProjectsScreen() {
@@ -145,7 +137,9 @@ export default function ProjectsScreen() {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.projectCard}>
-            <View style={[styles.projectColorBar, { backgroundColor: item.color ?? Colors.primary }]} />
+            <View
+              style={[styles.projectColorBar, { backgroundColor: item.color ?? Colors.primary }]}
+            />
             <View style={styles.projectInfo}>
               <Text style={styles.projectName}>{item.name}</Text>
             </View>

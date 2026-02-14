@@ -47,7 +47,9 @@ export function FilterBar({
             <Pressable
               onPress={() => onProjectChange(null)}
               style={[styles.pill, !selectedProjectId && styles.pillActive]}>
-              <Text style={[styles.pillText, !selectedProjectId && styles.pillTextActive]}>All</Text>
+              <Text style={[styles.pillText, !selectedProjectId && styles.pillTextActive]}>
+                All
+              </Text>
             </Pressable>
             {projects.map((project) => {
               const isActive = selectedProjectId === project.id;
@@ -58,9 +60,9 @@ export function FilterBar({
                   style={[
                     styles.pill,
                     isActive && {
-                    backgroundColor: project.color || Colors.primary,
-                    borderColor: project.color || Colors.primary,
-                  },
+                      backgroundColor: project.color || Colors.primary,
+                      borderColor: project.color || Colors.primary,
+                    },
                   ]}>
                   <Text style={[styles.pillText, isActive && styles.pillTextActive]}>
                     {project.name}

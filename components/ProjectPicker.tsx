@@ -45,8 +45,7 @@ export function ProjectPicker({ value, onChange }: ProjectPickerProps) {
                 onChange(null);
                 setOpen(false);
               }}
-              style={[styles.option, value === null && styles.optionSelected]}
-            >
+              style={[styles.option, value === null && styles.optionSelected]}>
               <View style={styles.optionContent}>
                 <View style={[styles.colorDot, { backgroundColor: Colors.textMuted }]} />
                 <Text style={[styles.optionText, value === null && styles.optionTextSelected]}>
@@ -66,8 +65,7 @@ export function ProjectPicker({ value, onChange }: ProjectPickerProps) {
                     onChange(project.id);
                     setOpen(false);
                   }}
-                  style={[styles.option, isSelected && styles.optionSelected]}
-                >
+                  style={[styles.option, isSelected && styles.optionSelected]}>
                   <View style={styles.optionContent}>
                     <View
                       style={[
