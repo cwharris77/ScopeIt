@@ -32,6 +32,7 @@ export function PerformanceChart({ tasks }: Props) {
             }}
           />
           <Tooltip
+            cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
             contentStyle={{
               backgroundColor: '#1f2937',
               border: '1px solid #433e3f',
@@ -40,7 +41,7 @@ export function PerformanceChart({ tasks }: Props) {
             labelStyle={{ color: '#f3f4f6' }}
             itemStyle={{ color: '#f3f4f6' }}
           />
-          <Legend />
+          <Legend wrapperStyle={{ color: '#9ca3af' }} />
           <Bar dataKey="estimated" name="Estimated" fill="#087f8c" radius={[4, 4, 0, 0]} />
           <Bar dataKey="actual" name="Actual" fill="#f59e0b" radius={[4, 4, 0, 0]} />
         </BarChart>
