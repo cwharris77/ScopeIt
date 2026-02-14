@@ -4,6 +4,7 @@
 
 import { Dropdown } from '@/components/Dropdown';
 import { Colors } from '@/constants/colors';
+import { Project } from '@/lib/supabase';
 import { CATEGORIES, CATEGORY_ALL, SORT_OPTIONS, SortOption } from '@/constants/tasks';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -15,6 +16,9 @@ interface FilterBarProps {
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   itemCount: number;
+  projects: Project[];
+  selectedProjectId: string | null;
+  onProjectChange: (projectId: string | null) => void;
 }
 
 export function FilterBar({
@@ -23,12 +27,53 @@ export function FilterBar({
   sortBy,
   onSortChange,
   itemCount,
+  projects,
+  selectedProjectId,
+  onProjectChange,
 }: FilterBarProps) {
   const allCategories = [CATEGORY_ALL, ...CATEGORIES];
   const isAllSelected = selectedCategories.size === 0;
 
   return (
     <View style={styles.container}>
+      {/* Project Filter Pills */}
+      {projects.length > 0 && (
+        <View style={styles.filterRow}>
+          <Ionicons name="folder-outline" size={14} color={Colors.textMuted} />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.pillsContainer}>
+            <Pressable
+              onPress={() => onProjectChange(null)}
+              style={[styles.pill, !selectedProjectId && styles.pillActive]}>
+              <Text style={[styles.pillText, !selectedProjectId && styles.pillTextActive]}>
+                All
+              </Text>
+            </Pressable>
+            {projects.map((project) => {
+              const isActive = selectedProjectId === project.id;
+              return (
+                <Pressable
+                  key={project.id}
+                  onPress={() => onProjectChange(isActive ? null : project.id)}
+                  style={[
+                    styles.pill,
+                    isActive && {
+                      backgroundColor: project.color || Colors.primary,
+                      borderColor: project.color || Colors.primary,
+                    },
+                  ]}>
+                  <Text style={[styles.pillText, isActive && styles.pillTextActive]}>
+                    {project.name}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
+
       {/* Category Filter Pills */}
       <View style={styles.filterRow}>
         <Ionicons name="filter-outline" size={14} color={Colors.textMuted} />

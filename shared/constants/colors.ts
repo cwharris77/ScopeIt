@@ -41,3 +41,13 @@ export const Colors = {
 } as const;
 
 export type ColorKey = keyof typeof Colors;
+
+export const PROJECT_COLORS = [
+  '#087f8c', // teal (primary)
+  '#10b981', // green
+  '#f59e0b', // amber
+  '#EF4444', // red
+  '#8b5cf6', // purple
+  '#ec4899', // pink
+  '#6b7280', // gray
+] as const;

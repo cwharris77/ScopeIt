@@ -5,7 +5,7 @@
 
 import { Colors } from '@/constants/colors';
 import { TASK_STATUS, TaskStatus } from '@/constants/tasks';
-import { Task } from '@/lib/supabase';
+import { Project, Task } from '@/lib/supabase';
 import { formatTime, minutesToDisplay, secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -14,13 +14,14 @@ import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'r
 
 interface TaskCardProps {
   task: Task;
+  project?: Project | null;
   onStart: (id: string) => void;
   onPause: (id: string) => void;
   onComplete: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskCardProps) {
+export function TaskCard({ task, project, onStart, onPause, onComplete, onDelete }: TaskCardProps) {
   const router = useRouter();
   const [now, setNow] = useState(Date.now());
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -98,6 +99,21 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
         isRunning && styles.containerRunning,
         isCompleted && styles.containerCompleted,
       ]}>
+      {/* Project color indicator */}
+      {project && (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 16,
+            bottom: 16,
+            width: 3,
+            borderRadius: 2,
+            backgroundColor: project.color || Colors.primary,
+          }}
+        />
+      )}
+
       {/* Flowing top border for active task */}
       {isRunning && <View style={styles.flowingBorder} />}
 

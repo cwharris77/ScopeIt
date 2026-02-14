@@ -4,6 +4,7 @@
  */
 
 import { PriorityPicker } from '@/components/PriorityPicker';
+import { ProjectPicker } from '@/components/ProjectPicker';
 import { Colors } from '@/constants/colors';
 import {
   CATEGORIES,
@@ -47,6 +48,7 @@ export default function EditTaskScreen() {
   const [priority, setPriority] = useState<TaskPriorityName>('medium');
   const [expectedHours, setExpectedHours] = useState('0');
   const [expectedMins, setExpectedMins] = useState('30');
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -60,6 +62,7 @@ export default function EditTaskScreen() {
       const totalMins = task.estimated_minutes || 0;
       setExpectedHours(Math.floor(totalMins / 60).toString());
       setExpectedMins((totalMins % 60).toString());
+      setProjectId(task.project_id || null);
       setIsLoading(false);
     } else if (id) {
       // Task not found
@@ -93,6 +96,7 @@ export default function EditTaskScreen() {
       category: category,
       priority: TaskPriority[priority],
       estimated_minutes: totalMinutes,
+      project_id: projectId,
     });
     setIsSubmitting(false);
 
@@ -187,6 +191,12 @@ export default function EditTaskScreen() {
                   </Pressable>
                 ))}
               </View>
+            </View>
+
+            {/* Project Selection */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>PROJECT</Text>
+              <ProjectPicker value={projectId} onChange={setProjectId} />
             </View>
 
             {/* Priority Selection */}
