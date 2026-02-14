@@ -1,5 +1,7 @@
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ProjectsProvider } from '@/contexts/ProjectsContext';
+import { TagsProvider } from '@/contexts/TagsContext';
+import { TaskTagsProvider } from '@/contexts/TaskTagsContext';
 import { TasksProvider } from '@/contexts/TasksContext';
 import { Stack, usePathname, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -54,7 +56,11 @@ export default function RootLayout() {
       <AuthProvider>
         <TasksProvider>
           <ProjectsProvider>
-            <RootLayoutNav />
+            <TagsProvider>
+              <TaskTagsProvider>
+                <RootLayoutNav />
+              </TaskTagsProvider>
+            </TagsProvider>
           </ProjectsProvider>
         </TasksProvider>
       </AuthProvider>
