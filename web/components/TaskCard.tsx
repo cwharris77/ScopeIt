@@ -33,7 +33,7 @@ export function TaskCard({ task, tags, onStart, onPause, onComplete, onDelete }:
   const isRunning = task.status === TASK_STATUS.RUNNING;
   const isCompleted = task.status === TASK_STATUS.COMPLETED;
 
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (!isRunning || !task.started_at) return;

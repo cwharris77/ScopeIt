@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/client';
 import { Tag } from '@shared/types';
 import { PROJECT_COLORS } from '@shared/constants';
-import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
+import { Plus, Pencil, Trash2, Check } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function TagsPage() {
@@ -26,7 +26,8 @@ export default function TagsPage() {
   }, [supabase]);
 
   useEffect(() => {
-    fetchTags();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on mount
+    void fetchTags();
   }, [fetchTags]);
 
   const resetForm = () => {

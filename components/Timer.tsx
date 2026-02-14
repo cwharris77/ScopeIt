@@ -60,8 +60,7 @@ export function Timer({ task, onUpdate }: TimerProps) {
       {/* Play/Pause */}
       <Pressable
         onPress={handleToggle}
-        className={`h-16 w-16 items-center justify-center rounded-full ${isRunning ? 'bg-orange-500' : 'bg-green-500'}`}
-      >
+        className={`h-16 w-16 items-center justify-center rounded-full ${isRunning ? 'bg-orange-500' : 'bg-green-500'}`}>
         <Text className="text-2xl text-white">{isRunning ? '⏸' : '▶'}</Text>
       </Pressable>
 

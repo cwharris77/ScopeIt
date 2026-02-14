@@ -59,8 +59,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-primary p-3 text-white font-semibold hover:bg-primary-dark transition disabled:opacity-50"
-          >
+            className="w-full rounded-lg bg-primary p-3 text-white font-semibold hover:bg-primary-dark transition disabled:opacity-50">
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
@@ -74,14 +73,12 @@ export default function LoginForm() {
         <div className="space-y-3">
           <button
             onClick={() => handleOAuth('google')}
-            className="w-full rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition"
-          >
+            className="w-full rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition">
             Continue with Google
           </button>
           <button
             onClick={() => handleOAuth('github')}
-            className="w-full rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition"
-          >
+            className="w-full rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition">
             Continue with GitHub
           </button>
         </div>

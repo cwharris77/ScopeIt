@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/client';
 import { Task, TaskInsert, Tag } from '@shared/types';
 import { TASK_STATUS, type SortOption } from '@shared/constants';
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { TaskCard } from '@/components/TaskCard';
 import { FilterBar } from '@/components/FilterBar';
 import { AddTaskModal } from '@/components/AddTaskModal';
@@ -12,7 +11,6 @@ import { Plus } from 'lucide-react';
 
 export function TasksPageContent() {
   const supabase = createClient();
-  const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -67,7 +65,8 @@ export function TasksPageContent() {
   }, [supabase]);
 
   useEffect(() => {
-    fetchTasks();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on mount
+    void fetchTasks();
   }, [fetchTasks]);
 
   // Filter and sort logic

@@ -1,12 +1,12 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { Task, Tag } from '@shared/types';
-import { TaskPriority, TaskPriorityValueName, type TaskPriorityName } from '@shared/constants';
-import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { TaskPriority, type TaskPriorityName } from '@shared/constants';
+import { Tag, Task } from '@shared/types';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function EditTaskContent() {
   const { id } = useParams<{ id: string }>();
@@ -55,7 +55,8 @@ export default function EditTaskContent() {
   }, [id, supabase]);
 
   useEffect(() => {
-    fetchTask();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on mount
+    void fetchTask();
   }, [fetchTask]);
 
   const handleSave = async () => {
@@ -102,8 +103,6 @@ export default function EditTaskContent() {
     );
   }
 
-  const priorityName =
-    TaskPriorityValueName[priority as keyof typeof TaskPriorityValueName] || 'low';
   const priorityColors: Record<TaskPriorityName, string> = {
     low: 'bg-success',
     medium: 'bg-warning',
@@ -171,11 +170,7 @@ export default function EditTaskContent() {
                 </button>
               );
             })}
-            {allTags.length === 0 && (
-              <p className="text-text-muted text-xs">
-                No tags yet. Create tags from the Tags page.
-              </p>
-            )}
+            {}
           </div>
         </div>
 

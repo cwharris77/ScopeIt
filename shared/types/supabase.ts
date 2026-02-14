@@ -1,401 +1,393 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   graphql_public: {
     Tables: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
       graphql: {
         Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
+          extensions?: Json;
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+        };
+        Returns: Json;
+      };
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       daily_logs: {
         Row: {
-          accuracy: number | null
-          created_at: string
-          date: string
-          id: string
-          tasks_completed: number | null
-          total_actual_seconds: number | null
-          total_estimated_seconds: number | null
-          user_id: string
-        }
+          accuracy: number | null;
+          created_at: string;
+          date: string;
+          id: string;
+          tasks_completed: number | null;
+          total_actual_seconds: number | null;
+          total_estimated_seconds: number | null;
+          user_id: string;
+        };
         Insert: {
-          accuracy?: number | null
-          created_at?: string
-          date: string
-          id?: string
-          tasks_completed?: number | null
-          total_actual_seconds?: number | null
-          total_estimated_seconds?: number | null
-          user_id: string
-        }
+          accuracy?: number | null;
+          created_at?: string;
+          date: string;
+          id?: string;
+          tasks_completed?: number | null;
+          total_actual_seconds?: number | null;
+          total_estimated_seconds?: number | null;
+          user_id: string;
+        };
         Update: {
-          accuracy?: number | null
-          created_at?: string
-          date?: string
-          id?: string
-          tasks_completed?: number | null
-          total_actual_seconds?: number | null
-          total_estimated_seconds?: number | null
-          user_id?: string
-        }
-        Relationships: []
-      }
+          accuracy?: number | null;
+          created_at?: string;
+          date?: string;
+          id?: string;
+          tasks_completed?: number | null;
+          total_actual_seconds?: number | null;
+          total_estimated_seconds?: number | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       projects: {
         Row: {
-          archived: boolean | null
-          color: string | null
-          created_at: string
-          id: string
-          name: string
-          user_id: string
-        }
+          archived: boolean | null;
+          color: string | null;
+          created_at: string;
+          id: string;
+          name: string;
+          user_id: string;
+        };
         Insert: {
-          archived?: boolean | null
-          color?: string | null
-          created_at?: string
-          id?: string
-          name: string
-          user_id: string
-        }
+          archived?: boolean | null;
+          color?: string | null;
+          created_at?: string;
+          id?: string;
+          name: string;
+          user_id: string;
+        };
         Update: {
-          archived?: boolean | null
-          color?: string | null
-          created_at?: string
-          id?: string
-          name?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          archived?: boolean | null;
+          color?: string | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       tags: {
         Row: {
-          color: string | null
-          created_at: string
-          id: string
-          name: string
-          user_id: string
-        }
+          color: string | null;
+          created_at: string;
+          id: string;
+          name: string;
+          user_id: string;
+        };
         Insert: {
-          color?: string | null
-          created_at?: string
-          id?: string
-          name: string
-          user_id: string
-        }
+          color?: string | null;
+          created_at?: string;
+          id?: string;
+          name: string;
+          user_id: string;
+        };
         Update: {
-          color?: string | null
-          created_at?: string
-          id?: string
-          name?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          color?: string | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       task_analyses: {
         Row: {
-          analysis: Json
-          completed_count: number
-          created_at: string
-          id: string
-          user_id: string
-        }
+          analysis: Json;
+          completed_count: number;
+          created_at: string;
+          id: string;
+          user_id: string;
+        };
         Insert: {
-          analysis: Json
-          completed_count: number
-          created_at?: string
-          id?: string
-          user_id: string
-        }
+          analysis: Json;
+          completed_count: number;
+          created_at?: string;
+          id?: string;
+          user_id: string;
+        };
         Update: {
-          analysis?: Json
-          completed_count?: number
-          created_at?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          analysis?: Json;
+          completed_count?: number;
+          created_at?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       task_tags: {
         Row: {
-          tag_id: string
-          task_id: string
-        }
+          tag_id: string;
+          task_id: string;
+        };
         Insert: {
-          tag_id: string
-          task_id: string
-        }
+          tag_id: string;
+          task_id: string;
+        };
         Update: {
-          tag_id?: string
-          task_id?: string
-        }
+          tag_id?: string;
+          task_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "task_tags_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "tags"
-            referencedColumns: ["id"]
+            foreignKeyName: 'task_tags_tag_id_fkey';
+            columns: ['tag_id'];
+            isOneToOne: false;
+            referencedRelation: 'tags';
+            referencedColumns: ['id'];
           },
           {
-            foreignKeyName: "task_tags_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
+            foreignKeyName: 'task_tags_task_id_fkey';
+            columns: ['task_id'];
+            isOneToOne: false;
+            referencedRelation: 'tasks';
+            referencedColumns: ['id'];
           },
-        ]
-      }
+        ];
+      };
       tasks: {
         Row: {
-          actual_seconds: number | null
-          category: string
-          completed_at: string | null
-          created_at: string
-          description: string | null
-          estimated_minutes: number
-          id: string
-          name: string
-          priority: number
-          project_id: string | null
-          started_at: string | null
-          status: string | null
-          user_id: string
-        }
+          actual_seconds: number | null;
+          category: string;
+          completed_at: string | null;
+          created_at: string;
+          description: string | null;
+          estimated_minutes: number;
+          id: string;
+          name: string;
+          priority: number;
+          project_id: string | null;
+          started_at: string | null;
+          status: string | null;
+          user_id: string;
+        };
         Insert: {
-          actual_seconds?: number | null
-          category?: string
-          completed_at?: string | null
-          created_at?: string
-          description?: string | null
-          estimated_minutes: number
-          id?: string
-          name: string
-          priority?: number
-          project_id?: string | null
-          started_at?: string | null
-          status?: string | null
-          user_id: string
-        }
+          actual_seconds?: number | null;
+          category?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          description?: string | null;
+          estimated_minutes: number;
+          id?: string;
+          name: string;
+          priority?: number;
+          project_id?: string | null;
+          started_at?: string | null;
+          status?: string | null;
+          user_id: string;
+        };
         Update: {
-          actual_seconds?: number | null
-          category?: string
-          completed_at?: string | null
-          created_at?: string
-          description?: string | null
-          estimated_minutes?: number
-          id?: string
-          name?: string
-          priority?: number
-          project_id?: string | null
-          started_at?: string | null
-          status?: string | null
-          user_id?: string
-        }
+          actual_seconds?: number | null;
+          category?: string;
+          completed_at?: string | null;
+          created_at?: string;
+          description?: string | null;
+          estimated_minutes?: number;
+          id?: string;
+          name?: string;
+          priority?: number;
+          project_id?: string | null;
+          started_at?: string | null;
+          status?: string | null;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "tasks_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            foreignKeyName: 'tasks_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
           },
-        ]
-      }
+        ];
+      };
       templates: {
         Row: {
-          category: string | null
-          created_at: string
-          description: string | null
-          estimated_minutes: number
-          id: string
-          name: string
-          priority: number | null
-          use_count: number | null
-          user_id: string
-        }
+          category: string | null;
+          created_at: string;
+          description: string | null;
+          estimated_minutes: number;
+          id: string;
+          name: string;
+          priority: number | null;
+          use_count: number | null;
+          user_id: string;
+        };
         Insert: {
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          estimated_minutes: number
-          id?: string
-          name: string
-          priority?: number | null
-          use_count?: number | null
-          user_id: string
-        }
+          category?: string | null;
+          created_at?: string;
+          description?: string | null;
+          estimated_minutes: number;
+          id?: string;
+          name: string;
+          priority?: number | null;
+          use_count?: number | null;
+          user_id: string;
+        };
         Update: {
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          estimated_minutes?: number
-          id?: string
-          name?: string
-          priority?: number | null
-          use_count?: number | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
+          category?: string | null;
+          created_at?: string;
+          description?: string | null;
+          estimated_minutes?: number;
+          id?: string;
+          name?: string;
+          priority?: number | null;
+          use_count?: number | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+      Insert: infer I;
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+      Update: infer U;
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+    : never;
 
 export const Constants = {
   graphql_public: {
@@ -404,5 +396,4 @@ export const Constants = {
   public: {
     Enums: {},
   },
-} as const
-
+} as const;

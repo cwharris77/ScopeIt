@@ -67,10 +67,7 @@ Deno.serve(async (req) => {
     ];
 
     for (const table of tablesToDelete) {
-      const { error: delError } = await adminClient
-        .from(table)
-        .delete()
-        .eq('user_id', user.id);
+      const { error: delError } = await adminClient.from(table).delete().eq('user_id', user.id);
 
       if (delError) {
         console.error(`[delete-account] Failed to delete ${table}:`, delError.message);
@@ -101,9 +98,9 @@ Deno.serve(async (req) => {
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
     console.error('[delete-account] Uncaught error:', errMsg);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error', detail: errMsg }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: 'Internal server error', detail: errMsg }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

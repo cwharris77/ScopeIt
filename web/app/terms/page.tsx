@@ -33,9 +33,9 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">3. User Accounts</h2>
             <p className="mb-3">
-              You must create an account to use the Service. You are responsible for maintaining
-              the confidentiality of your account credentials and for all activities that occur
-              under your account.
+              You must create an account to use the Service. You are responsible for maintaining the
+              confidentiality of your account credentials and for all activities that occur under
+              your account.
             </p>
             <p>
               You may sign up using an email address and password, or through a third-party
@@ -74,8 +74,8 @@ export default function TermsPage() {
             <p>
               The Service includes AI-powered analysis features provided by Google Gemini. AI
               insights are generated based on your task data and are provided for informational
-              purposes only. We make no guarantees about the accuracy or completeness of AI-generated
-              insights.
+              purposes only. We make no guarantees about the accuracy or completeness of
+              AI-generated insights.
             </p>
           </section>
 
@@ -101,9 +101,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">
-              9. Disclaimer of Warranties
-            </h2>
+            <h2 className="text-xl font-semibold text-white mb-3">9. Disclaimer of Warranties</h2>
             <p>
               The Service is provided &quot;as is&quot; and &quot;as available&quot; without
               warranties of any kind, either express or implied, including but not limited to
