@@ -5,16 +5,16 @@
 
 import { PriorityPicker } from '@/components/PriorityPicker';
 import { ProjectPicker } from '@/components/ProjectPicker';
+import { TagChipPicker } from '@/components/TagChipPicker';
 import { Colors } from '@/constants/colors';
 import {
-  CATEGORIES,
-  Category,
   TaskPriority,
   TaskPriorityName,
   TaskPriorityValue,
   TaskPriorityValueName,
   TaskURLParams,
 } from '@/constants/tasks';
+import { useTaskTags } from '@/contexts/TaskTagsContext';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -37,6 +37,7 @@ export default function EditTaskScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<TaskURLParams>();
   const { tasks, updateTask } = useTasks();
+  const { getTagsForTask, setTaskTags } = useTaskTags();
 
   // Find the task
   const task = tasks.find((t) => t.id === id);
@@ -44,7 +45,7 @@ export default function EditTaskScreen() {
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<Category>('work');
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [priority, setPriority] = useState<TaskPriorityName>('medium');
   const [expectedHours, setExpectedHours] = useState('0');
   const [expectedMins, setExpectedMins] = useState('30');
@@ -57,7 +58,7 @@ export default function EditTaskScreen() {
     if (task) {
       setTitle(task.name || '');
       setDescription(task.description || '');
-      setCategory((task.category as Category) || 'work');
+      setSelectedTagIds(getTagsForTask(task.id).map((t) => t.id));
       setPriority(TaskPriorityValueName[task.priority as TaskPriorityValue] || 'medium');
       const totalMins = task.estimated_minutes || 0;
       setExpectedHours(Math.floor(totalMins / 60).toString());
@@ -68,7 +69,7 @@ export default function EditTaskScreen() {
       // Task not found
       setIsLoading(false);
     }
-  }, [task, id]);
+  }, [task, id, getTagsForTask]);
 
   const handleClose = () => {
     router.back();
@@ -93,18 +94,19 @@ export default function EditTaskScreen() {
     const { error } = await updateTask(id as string, {
       name: title.trim(),
       description: description.trim() || null,
-      category: category,
       priority: TaskPriority[priority],
       estimated_minutes: totalMinutes,
       project_id: projectId,
     });
-    setIsSubmitting(false);
 
     if (error) {
+      setIsSubmitting(false);
       Alert.alert('Error', 'Failed to update task');
       return;
     }
 
+    await setTaskTags(id as string, selectedTagIds);
+    setIsSubmitting(false);
     handleClose();
   };
 
@@ -175,22 +177,10 @@ export default function EditTaskScreen() {
               />
             </View>
 
-            {/* Category Selection */}
+            {/* Tags Selection */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>CATEGORY</Text>
-              <View style={styles.categoryGrid}>
-                {CATEGORIES.map((cat) => (
-                  <Pressable
-                    key={cat}
-                    onPress={() => setCategory(cat)}
-                    style={[styles.categoryPill, category === cat && styles.categoryPillActive]}>
-                    <Text
-                      style={[styles.categoryText, category === cat && styles.categoryTextActive]}>
-                      {cat}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+              <Text style={styles.label}>TAGS</Text>
+              <TagChipPicker value={selectedTagIds} onChange={setSelectedTagIds} />
             </View>
 
             {/* Project Selection */}
@@ -351,33 +341,6 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 100,
     paddingTop: 16,
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  categoryPill: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: Colors.backgroundTertiary,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  categoryPillActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: Colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  categoryTextActive: {
-    color: Colors.white,
   },
   durationContainer: {
     flexDirection: 'row',

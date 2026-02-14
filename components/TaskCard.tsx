@@ -5,7 +5,7 @@
 
 import { Colors } from '@/constants/colors';
 import { TASK_STATUS, TaskStatus } from '@/constants/tasks';
-import { Project, Task } from '@/lib/supabase';
+import { Project, Tag, Task } from '@/lib/supabase';
 import { formatTime, minutesToDisplay, secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -15,13 +15,22 @@ import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'r
 interface TaskCardProps {
   task: Task;
   project?: Project | null;
+  tags?: Tag[];
   onStart: (id: string) => void;
   onPause: (id: string) => void;
   onComplete: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export function TaskCard({ task, project, onStart, onPause, onComplete, onDelete }: TaskCardProps) {
+export function TaskCard({
+  task,
+  project,
+  tags,
+  onStart,
+  onPause,
+  onComplete,
+  onDelete,
+}: TaskCardProps) {
   const router = useRouter();
   const [now, setNow] = useState(Date.now());
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -124,6 +133,29 @@ export function TaskCard({ task, project, onStart, onPause, onComplete, onDelete
             <View style={styles.liveBadge}>
               <View style={styles.liveDot} />
               <Text style={styles.liveText}>LIVE</Text>
+            </View>
+          ) : tags && tags.length > 0 ? (
+            <View style={{ flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
+              {tags.slice(0, 3).map((tag) => (
+                <View
+                  key={tag.id}
+                  style={[
+                    styles.tagBadge,
+                    {
+                      backgroundColor: `${tag.color || Colors.textMuted}20`,
+                      borderColor: tag.color || Colors.textMuted,
+                    },
+                  ]}>
+                  <Text style={[styles.tagText, { color: tag.color || Colors.textMuted }]}>
+                    {tag.name}
+                  </Text>
+                </View>
+              ))}
+              {tags.length > 3 && (
+                <View style={styles.tagOverflow}>
+                  <Text style={styles.tagOverflowText}>+{tags.length - 3}</Text>
+                </View>
+              )}
             </View>
           ) : (
             <View style={styles.categoryBadge}>
@@ -459,6 +491,29 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  tagBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  tagText: {
+    fontSize: 9,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  tagOverflow: {
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: `${Colors.textMuted}20`,
+  },
+  tagOverflowText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: Colors.textMuted,
   },
 });
 

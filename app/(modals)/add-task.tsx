@@ -4,14 +4,10 @@
 
 import { PriorityPicker } from '@/components/PriorityPicker';
 import { ProjectPicker } from '@/components/ProjectPicker';
+import { TagChipPicker } from '@/components/TagChipPicker';
 import { Colors } from '@/constants/colors';
-import {
-  CATEGORIES,
-  Category,
-  TaskPriority,
-  TaskPriorityName,
-  TASK_STATUS,
-} from '@/constants/tasks';
+import { TaskPriority, TaskPriorityName, TASK_STATUS } from '@/constants/tasks';
+import { useTaskTags } from '@/contexts/TaskTagsContext';
 import { useTasks } from '@/contexts/TasksContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -31,10 +27,11 @@ import {
 export default function AddTaskModal() {
   const router = useRouter();
   const { addTask } = useTasks();
+  const { setTaskTags } = useTaskTags();
 
   // Form state
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<Category>('work');
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [priority, setPriority] = useState<TaskPriorityName>('medium');
   const [expectedHours, setExpectedHours] = useState('0');
   const [expectedMins, setExpectedMins] = useState('30');
@@ -61,21 +58,25 @@ export default function AddTaskModal() {
     }
 
     setIsSubmitting(true);
-    const { error } = await addTask({
+    const { data, error } = await addTask({
       name: title.trim(),
-      category: category,
       priority: TaskPriority[priority],
       estimated_minutes: totalMinutes,
       status: TASK_STATUS.PENDING,
       project_id: projectId,
     });
-    setIsSubmitting(false);
 
     if (error) {
+      setIsSubmitting(false);
       Alert.alert('Error', 'Failed to create task');
       return;
     }
 
+    if (data && selectedTagIds.length > 0) {
+      await setTaskTags(data.id, selectedTagIds);
+    }
+
+    setIsSubmitting(false);
     handleClose();
   };
 
@@ -110,22 +111,10 @@ export default function AddTaskModal() {
               />
             </View>
 
-            {/* Category Selection */}
+            {/* Tags Selection */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>CATEGORY</Text>
-              <View style={styles.categoryGrid}>
-                {CATEGORIES.map((cat) => (
-                  <Pressable
-                    key={cat}
-                    onPress={() => setCategory(cat)}
-                    style={[styles.categoryPill, category === cat && styles.categoryPillActive]}>
-                    <Text
-                      style={[styles.categoryText, category === cat && styles.categoryTextActive]}>
-                      {cat}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+              <Text style={styles.label}>TAGS</Text>
+              <TagChipPicker value={selectedTagIds} onChange={setSelectedTagIds} />
             </View>
 
             {/* Project Selection */}
@@ -258,33 +247,6 @@ const styles = StyleSheet.create({
     color: Colors.text,
     borderWidth: 1,
     borderColor: Colors.border,
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  categoryPill: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: Colors.backgroundSecondary,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  categoryPillActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: Colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  categoryTextActive: {
-    color: Colors.white,
   },
   durationContainer: {
     flexDirection: 'row',

@@ -1,12 +1,8 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { Task, TaskInsert } from '@shared/types';
-import {
-  CATEGORIES,
-  TASK_STATUS,
-  type SortOption,
-} from '@shared/constants';
+import { Task, TaskInsert, Tag } from '@shared/types';
+import { TASK_STATUS, type SortOption } from '@shared/constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TaskCard } from '@/components/TaskCard';
@@ -19,7 +15,9 @@ export function TasksPageContent() {
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
+  const [tagsByTaskId, setTagsByTaskId] = useState<Map<string, Tag[]>>(new Map());
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -36,6 +34,35 @@ export function TasksPageContent() {
       .order('created_at', { ascending: false });
 
     setTasks(data || []);
+
+    // Fetch tags
+    const { data: tagsData } = await supabase
+      .from('tags')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('name');
+    setTags(tagsData || []);
+
+    // Fetch task_tags joined with tags
+    const taskIds = (data || []).map((t) => t.id);
+    if (taskIds.length > 0) {
+      const { data: taskTagsData } = await supabase
+        .from('task_tags')
+        .select('task_id, tags(*)')
+        .in('task_id', taskIds);
+
+      const map = new Map<string, Tag[]>();
+      for (const row of taskTagsData || []) {
+        const tag = row.tags as unknown as Tag;
+        if (!tag) continue;
+        if (!map.has(row.task_id)) map.set(row.task_id, []);
+        map.get(row.task_id)!.push(tag);
+      }
+      setTagsByTaskId(map);
+    } else {
+      setTagsByTaskId(new Map());
+    }
+
     setLoading(false);
   }, [supabase]);
 
@@ -46,8 +73,11 @@ export function TasksPageContent() {
   // Filter and sort logic
   const filterTasks = (taskList: Task[]) => {
     let filtered = taskList;
-    if (selectedCategories.size > 0) {
-      filtered = filtered.filter((t) => selectedCategories.has(t.category));
+    if (selectedTagIds.size > 0) {
+      filtered = filtered.filter((t) => {
+        const taskTags = tagsByTaskId.get(t.id) || [];
+        return taskTags.some((tag) => selectedTagIds.has(tag.id));
+      });
     }
     return sortTasks(filtered);
   };
@@ -148,7 +178,7 @@ export function TasksPageContent() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const addTask = async (taskData: Omit<TaskInsert, 'user_id'>) => {
+  const addTask = async (taskData: Omit<TaskInsert, 'user_id'>, tagIds: string[] = []) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -158,24 +188,26 @@ export function TasksPageContent() {
       .insert({ ...taskData, user_id: user.id })
       .select()
       .single();
-    if (data) setTasks((prev) => [data, ...prev]);
+    if (data) {
+      if (tagIds.length > 0) {
+        await supabase
+          .from('task_tags')
+          .insert(tagIds.map((tagId) => ({ task_id: data.id, tag_id: tagId })));
+        await fetchTasks();
+      } else {
+        setTasks((prev) => [data, ...prev]);
+      }
+    }
     setShowAddModal(false);
   };
 
-  const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) => {
+  const handleTagToggle = (tagId: string) => {
+    setSelectedTagIds((prev) => {
       const next = new Set(prev);
-      if (next.has(category)) {
-        next.delete(category);
-      } else {
-        next.add(category);
-      }
+      if (next.has(tagId)) next.delete(tagId);
+      else next.add(tagId);
       return next;
     });
-  };
-
-  const handleClearFilters = () => {
-    setSelectedCategories(new Set());
   };
 
   if (loading) {
@@ -192,29 +224,28 @@ export function TasksPageContent() {
         <h1 className="text-2xl font-bold text-white">Tasks</h1>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-light"
-        >
+          className="hover:bg-primary-light flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition">
           <Plus size={18} />
           Add Task
         </button>
       </div>
 
       <FilterBar
-        categories={CATEGORIES}
-        selectedCategories={selectedCategories}
-        onCategoryToggle={handleCategoryToggle}
-        onClearFilters={handleClearFilters}
+        tags={tags}
+        selectedTagIds={selectedTagIds}
+        onTagToggle={handleTagToggle}
+        onClearFilters={() => setSelectedTagIds(new Set())}
         sortOption={sortOption}
         onSortChange={setSortOption}
       />
 
       {/* Active Tasks */}
       <section className="mt-6">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted">
+        <h2 className="text-text-muted mb-3 text-sm font-semibold uppercase tracking-wider">
           Active ({activeTasks.length})
         </h2>
         {activeTasks.length === 0 ? (
-          <p className="rounded-xl bg-background-secondary p-6 text-center text-sm text-text-muted">
+          <p className="bg-background-secondary text-text-muted rounded-xl p-6 text-center text-sm">
             No active tasks. Add one to get started!
           </p>
         ) : (
@@ -223,6 +254,7 @@ export function TasksPageContent() {
               <TaskCard
                 key={task.id}
                 task={task}
+                tags={tagsByTaskId.get(task.id)}
                 onStart={startTask}
                 onPause={pauseTask}
                 onComplete={completeTask}
@@ -236,7 +268,7 @@ export function TasksPageContent() {
       {/* Completed Tasks */}
       {completedTasks.length > 0 && (
         <section className="mt-8">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-muted">
+          <h2 className="text-text-muted mb-3 text-sm font-semibold uppercase tracking-wider">
             Completed ({completedTasks.length})
           </h2>
           <div className="space-y-2">
@@ -244,6 +276,7 @@ export function TasksPageContent() {
               <TaskCard
                 key={task.id}
                 task={task}
+                tags={tagsByTaskId.get(task.id)}
                 onStart={startTask}
                 onPause={pauseTask}
                 onComplete={completeTask}

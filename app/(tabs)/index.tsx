@@ -3,8 +3,10 @@ import { ProfileButton } from '@/components/ProfileButton';
 import { TaskCard } from '@/components/TaskCard';
 import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
-import { CATEGORY_ALL, SortOption, TASK_STATUS } from '@/constants/tasks';
+import { SortOption, TASK_STATUS } from '@/constants/tasks';
 import { useProjects } from '@/contexts/ProjectsContext';
+import { useTags } from '@/contexts/TagsContext';
+import { useTaskTags } from '@/contexts/TaskTagsContext';
 import { useTasks } from '@/contexts/TasksContext';
 import { Project } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,25 +19,20 @@ export default function HomeScreen() {
   const router = useRouter();
   const { tasks, refetch, startTask, pauseTask, completeTask, deleteTask } = useTasks();
   const { projects } = useProjects();
+  const { tags } = useTags();
+  const { getTagsForTask } = useTaskTags();
 
   // Filter & Sort State
-  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+  const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleCategoryToggle = (category: string) => {
-    if (category === CATEGORY_ALL) {
-      setSelectedCategories(new Set());
-      return;
-    }
-    setSelectedCategories((prev) => {
+  const handleTagToggle = (tagId: string) => {
+    setSelectedTagIds((prev) => {
       const next = new Set(prev);
-      if (next.has(category)) {
-        next.delete(category);
-      } else {
-        next.add(category);
-      }
+      if (next.has(tagId)) next.delete(tagId);
+      else next.add(tagId);
       return next;
     });
   };
@@ -49,9 +46,12 @@ export default function HomeScreen() {
       result = result.filter((t) => t.project_id === selectedProjectId);
     }
 
-    // Filter by selected categories
-    if (selectedCategories.size > 0) {
-      result = result.filter((t) => selectedCategories.has(t.category));
+    // Filter by selected tags
+    if (selectedTagIds.size > 0) {
+      result = result.filter((t) => {
+        const taskTags = getTagsForTask(t.id);
+        return taskTags.some((tag) => selectedTagIds.has(tag.id));
+      });
     }
 
     // Sort tasks
@@ -69,7 +69,7 @@ export default function HomeScreen() {
     });
 
     return result;
-  }, [tasks, selectedCategories, sortBy, selectedProjectId]);
+  }, [tasks, selectedTagIds, getTagsForTask, sortBy, selectedProjectId]);
 
   const projectMap = useMemo(() => {
     const map = new Map<string, Project>();
@@ -126,7 +126,7 @@ export default function HomeScreen() {
     <View style={styles.emptyState}>
       <Ionicons name="filter-outline" size={48} color={Colors.textMuted} />
       <Text style={styles.emptyTitle}>No tasks match filter</Text>
-      <Pressable onPress={() => setSelectedCategories(new Set())}>
+      <Pressable onPress={() => setSelectedTagIds(new Set())}>
         <Text style={styles.resetFilter}>Reset Filter</Text>
       </Pressable>
     </View>
@@ -145,8 +145,8 @@ export default function HomeScreen() {
           </Text>
         </View>
         <View style={styles.headerActions}>
-          <Pressable onPress={() => router.push('/projects')} style={styles.projectsButton}>
-            <Ionicons name="folder-outline" size={22} color={Colors.text} />
+          <Pressable onPress={() => router.push('/tags')} style={styles.tagsButton}>
+            <Ionicons name="pricetag-outline" size={22} color={Colors.text} />
           </Pressable>
           <ProfileButton />
         </View>
@@ -155,8 +155,10 @@ export default function HomeScreen() {
       {/* Filter Bar */}
       {tasks.length > 0 && (
         <FilterBar
-          selectedCategories={selectedCategories}
-          onCategoryToggle={handleCategoryToggle}
+          tags={tags}
+          selectedTagIds={selectedTagIds}
+          onTagToggle={handleTagToggle}
+          onClearTagFilters={() => setSelectedTagIds(new Set())}
           sortBy={sortBy}
           onSortChange={setSortBy}
           itemCount={processedTasks.length}
@@ -187,6 +189,7 @@ export default function HomeScreen() {
               <TaskCard
                 task={task}
                 project={task.project_id ? projectMap.get(task.project_id) : null}
+                tags={getTagsForTask(task.id)}
                 onStart={handleStartTask}
                 onPause={handlePauseTask}
                 onComplete={handleCompleteTask}
@@ -207,6 +210,7 @@ export default function HomeScreen() {
           <TaskCard
             task={item}
             project={item.project_id ? projectMap.get(item.project_id) : null}
+            tags={getTagsForTask(item.id)}
             onStart={handleStartTask}
             onPause={handlePauseTask}
             onComplete={handleCompleteTask}
@@ -270,7 +274,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
-  projectsButton: {
+  tagsButton: {
     width: 44,
     height: 44,
     backgroundColor: Colors.backgroundSecondary,

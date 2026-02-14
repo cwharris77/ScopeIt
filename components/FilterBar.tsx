@@ -4,15 +4,17 @@
 
 import { Dropdown } from '@/components/Dropdown';
 import { Colors } from '@/constants/colors';
-import { Project } from '@/lib/supabase';
-import { CATEGORIES, CATEGORY_ALL, SORT_OPTIONS, SortOption } from '@/constants/tasks';
+import { SORT_OPTIONS, SortOption } from '@/constants/tasks';
+import { Project, Tag } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface FilterBarProps {
-  selectedCategories: Set<string>;
-  onCategoryToggle: (category: string) => void;
+  tags: Tag[];
+  selectedTagIds: Set<string>;
+  onTagToggle: (tagId: string) => void;
+  onClearTagFilters: () => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   itemCount: number;
@@ -22,8 +24,10 @@ interface FilterBarProps {
 }
 
 export function FilterBar({
-  selectedCategories,
-  onCategoryToggle,
+  tags,
+  selectedTagIds,
+  onTagToggle,
+  onClearTagFilters,
   sortBy,
   onSortChange,
   itemCount,
@@ -31,9 +35,6 @@ export function FilterBar({
   selectedProjectId,
   onProjectChange,
 }: FilterBarProps) {
-  const allCategories = [CATEGORY_ALL, ...CATEGORIES];
-  const isAllSelected = selectedCategories.size === 0;
-
   return (
     <View style={styles.container}>
       {/* Project Filter Pills */}
@@ -74,26 +75,41 @@ export function FilterBar({
         </View>
       )}
 
-      {/* Category Filter Pills */}
-      <View style={styles.filterRow}>
-        <Ionicons name="filter-outline" size={14} color={Colors.textMuted} />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.pillsContainer}>
-          {allCategories.map((cat) => {
-            const isActive = cat === CATEGORY_ALL ? isAllSelected : selectedCategories.has(cat);
-            return (
-              <Pressable
-                key={cat}
-                onPress={() => onCategoryToggle(cat)}
-                style={[styles.pill, isActive && styles.pillActive]}>
-                <Text style={[styles.pillText, isActive && styles.pillTextActive]}>{cat}</Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
-      </View>
+      {/* Tag Filter Pills */}
+      {tags.length > 0 && (
+        <View style={styles.filterRow}>
+          <Ionicons name="pricetag-outline" size={14} color={Colors.textMuted} />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.pillsContainer}>
+            <Pressable
+              onPress={onClearTagFilters}
+              style={[styles.pill, selectedTagIds.size === 0 && styles.pillActive]}>
+              <Text style={[styles.pillText, selectedTagIds.size === 0 && styles.pillTextActive]}>
+                All
+              </Text>
+            </Pressable>
+            {tags.map((tag) => {
+              const isActive = selectedTagIds.has(tag.id);
+              const tagColor = tag.color || Colors.primary;
+              return (
+                <Pressable
+                  key={tag.id}
+                  onPress={() => onTagToggle(tag.id)}
+                  style={[
+                    styles.pill,
+                    isActive && { backgroundColor: tagColor, borderColor: tagColor },
+                  ]}>
+                  <Text style={[styles.pillText, isActive && styles.pillTextActive]}>
+                    {tag.name}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
 
       {/* Sort and Count Row */}
       <View style={styles.sortRow}>

@@ -1,25 +1,21 @@
 'use client';
 
-import {
-  CATEGORIES,
-  CATEGORY_ALL,
-  SORT_OPTIONS,
-  type SortOption,
-} from '@shared/constants';
+import { Tag } from '@shared/types';
+import { SORT_OPTIONS, type SortOption } from '@shared/constants';
 
 interface FilterBarProps {
-  categories: readonly string[];
-  selectedCategories: Set<string>;
-  onCategoryToggle: (category: string) => void;
+  tags: Tag[];
+  selectedTagIds: Set<string>;
+  onTagToggle: (tagId: string) => void;
   onClearFilters: () => void;
   sortOption: SortOption;
   onSortChange: (sort: SortOption) => void;
 }
 
 export function FilterBar({
-  categories,
-  selectedCategories,
-  onCategoryToggle,
+  tags,
+  selectedTagIds,
+  onTagToggle,
   onClearFilters,
   sortOption,
   onSortChange,
@@ -30,33 +26,34 @@ export function FilterBar({
         <button
           onClick={onClearFilters}
           className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-            selectedCategories.size === 0
+            selectedTagIds.size === 0
               ? 'bg-primary text-white'
               : 'bg-background-tertiary text-text-secondary hover:text-white'
-          }`}
-        >
-          {CATEGORY_ALL}
+          }`}>
+          All
         </button>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => onCategoryToggle(cat)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium capitalize transition ${
-              selectedCategories.has(cat)
-                ? 'bg-primary text-white'
-                : 'bg-background-tertiary text-text-secondary hover:text-white'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+        {tags.map((tag) => {
+          const isActive = selectedTagIds.has(tag.id);
+          return (
+            <button
+              key={tag.id}
+              onClick={() => onTagToggle(tag.id)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                isActive
+                  ? 'text-white'
+                  : 'bg-background-tertiary text-text-secondary hover:text-white'
+              }`}
+              style={isActive ? { backgroundColor: tag.color || '#087f8c' } : undefined}>
+              {tag.name}
+            </button>
+          );
+        })}
       </div>
 
       <select
         value={sortOption}
         onChange={(e) => onSortChange(e.target.value as SortOption)}
-        className="rounded-lg border border-border bg-background-secondary px-3 py-1.5 text-sm text-text-primary outline-none focus:border-primary"
-      >
+        className="border-border bg-background-secondary text-text-primary rounded-lg border px-3 py-1.5 text-sm outline-none focus:border-primary">
         {SORT_OPTIONS.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

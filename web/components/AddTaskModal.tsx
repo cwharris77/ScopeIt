@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { CATEGORIES, TaskPriority, type TaskPriorityName } from '@shared/constants';
-import { TaskInsert } from '@shared/types';
+import { createClient } from '@/lib/supabase/client';
+import { TaskPriority, type TaskPriorityName } from '@shared/constants';
+import { Tag, TaskInsert } from '@shared/types';
 import { X } from 'lucide-react';
 
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (task: Omit<TaskInsert, 'user_id'>) => void;
+  onAdd: (task: Omit<TaskInsert, 'user_id'>, tagIds: string[]) => void;
 }
 
 const priorities: { name: TaskPriorityName; value: number; color: string }[] = [
@@ -19,20 +20,36 @@ const priorities: { name: TaskPriorityName; value: number; color: string }[] = [
 
 export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
   const [name, setName] = useState('');
-  const [category, setCategory] = useState<string>('work');
   const [priority, setPriority] = useState<number>(TaskPriority.low);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(30);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       setName('');
-      setCategory('work');
       setPriority(TaskPriority.low);
       setHours(0);
       setMinutes(30);
+      setSelectedTagIds(new Set());
       setTimeout(() => nameRef.current?.focus(), 100);
+
+      const fetchTags = async () => {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data } = await supabase
+          .from('tags')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('name');
+        setTags(data || []);
+      };
+      fetchTags();
     }
   }, [isOpen]);
 
@@ -42,13 +59,15 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
     e.preventDefault();
     if (!name.trim()) return;
     const estimatedMinutes = hours * 60 + minutes;
-    onAdd({
-      name: name.trim(),
-      category,
-      priority,
-      estimated_minutes: estimatedMinutes,
-      status: 'pending',
-    });
+    onAdd(
+      {
+        name: name.trim(),
+        priority,
+        estimated_minutes: estimatedMinutes,
+        status: 'pending',
+      },
+      Array.from(selectedTagIds)
+    );
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -58,15 +77,13 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={handleBackdropClick}
-    >
-      <div className="w-full max-w-md rounded-2xl bg-background-secondary p-6 shadow-xl">
+      onClick={handleBackdropClick}>
+      <div className="bg-background-secondary w-full max-w-md rounded-2xl p-6 shadow-xl">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-white">Add Task</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-text-secondary transition hover:text-white"
-          >
+            className="text-text-secondary rounded-lg p-1 transition hover:text-white">
             <X size={20} />
           </button>
         </div>
@@ -74,7 +91,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">
               Task Name
             </label>
             <input
@@ -83,38 +100,49 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="What needs to be done?"
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-white placeholder-text-muted outline-none focus:border-primary"
+              className="border-border placeholder-text-muted w-full rounded-lg border bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary"
             />
           </div>
 
-          {/* Category */}
+          {/* Tags */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
-              Category
-            </label>
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">Tags</label>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategory(cat)}
-                  className={`rounded-full px-3 py-1 text-sm font-medium capitalize transition ${
-                    category === cat
-                      ? 'bg-primary text-white'
-                      : 'bg-background-tertiary text-text-secondary hover:text-white'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+              {tags.map((tag) => {
+                const isSelected = selectedTagIds.has(tag.id);
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedTagIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(tag.id)) next.delete(tag.id);
+                        else next.add(tag.id);
+                        return next;
+                      });
+                    }}
+                    className={`rounded-full px-3 py-1 text-sm font-medium transition ${
+                      isSelected
+                        ? 'text-white'
+                        : 'bg-background-tertiary text-text-secondary hover:text-white'
+                    }`}
+                    style={isSelected ? { backgroundColor: tag.color || '#087f8c' } : undefined}>
+                    {tag.name}
+                  </button>
+                );
+              })}
+              {tags.length === 0 && (
+                <p className="text-text-muted text-xs">
+                  No tags yet. Create tags from the Tags page.
+                </p>
+              )}
             </div>
           </div>
 
           {/* Priority */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
-              Priority
-            </label>
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">Priority</label>
             <div className="flex gap-2">
               {priorities.map((p) => (
                 <button
@@ -125,8 +153,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                     priority === p.value
                       ? `${p.color} text-white`
                       : 'bg-background-tertiary text-text-secondary hover:text-white'
-                  }`}
-                >
+                  }`}>
                   {p.name}
                 </button>
               ))}
@@ -135,7 +162,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
 
           {/* Duration */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+            <label className="text-text-secondary mb-1.5 block text-sm font-medium">
               Estimated Duration
             </label>
             <div className="flex items-center gap-3">
@@ -146,9 +173,9 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                   max={23}
                   value={hours}
                   onChange={(e) => setHours(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-16 rounded-lg border border-border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
+                  className="border-border w-16 rounded-lg border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
                 />
-                <span className="text-sm text-text-muted">hrs</span>
+                <span className="text-text-muted text-sm">hrs</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <input
@@ -157,9 +184,9 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
                   max={59}
                   value={minutes}
                   onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-16 rounded-lg border border-border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
+                  className="border-border w-16 rounded-lg border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
                 />
-                <span className="text-sm text-text-muted">min</span>
+                <span className="text-text-muted text-sm">min</span>
               </div>
             </div>
           </div>
@@ -167,8 +194,7 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light"
-          >
+            className="hover:bg-primary-light w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition">
             Create Task
           </button>
         </form>
