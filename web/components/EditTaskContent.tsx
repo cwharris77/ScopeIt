@@ -4,10 +4,10 @@ import { createClient } from '@/lib/supabase/client';
 import { TaskPriority, type TaskPriorityName } from '@shared/constants';
 import { Tag, Task } from '@shared/types';
 import { ArrowLeft } from 'lucide-react';
-import { TagCreatePopover } from './TagCreatePopover';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { TagCreatePopover } from './TagCreatePopover';
 
 export default function EditTaskContent() {
   const { id } = useParams<{ id: string }>();
@@ -22,8 +22,10 @@ export default function EditTaskContent() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<number>(1);
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(30);
+  const [hoursStr, setHoursStr] = useState('0');
+  const [minutesStr, setMinutesStr] = useState('30');
+  const hoursRef = useRef<HTMLInputElement>(null);
+  const minutesRef = useRef<HTMLInputElement>(null);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
 
@@ -34,8 +36,8 @@ export default function EditTaskContent() {
       setName(data.name);
       setDescription(data.description || '');
       setPriority(data.priority);
-      setHours(Math.floor(data.estimated_minutes / 60));
-      setMinutes(data.estimated_minutes % 60);
+      setHoursStr(String(Math.floor(data.estimated_minutes / 60)));
+      setMinutesStr(String(data.estimated_minutes % 60));
 
       // Fetch all tags for the user
       const { data: tagsData } = await supabase
@@ -63,7 +65,7 @@ export default function EditTaskContent() {
   const handleSave = async () => {
     if (!task) return;
     setSaving(true);
-    const estimated_minutes = hours * 60 + minutes;
+    const estimated_minutes = (parseInt(hoursStr) || 0) * 60 + (parseInt(minutesStr) || 0);
 
     await supabase
       .from('tasks')
@@ -119,7 +121,7 @@ export default function EditTaskContent() {
         Back to tasks
       </Link>
 
-      <div className="bg-background-secondary space-y-6 rounded-xl p-6">
+      <div className="bg-background-secondary space-y-8 rounded-xl p-6">
         <h1 className="text-xl font-bold text-white">Edit Task</h1>
 
         {/* Name */}
@@ -181,15 +183,15 @@ export default function EditTaskContent() {
         </div>
 
         {/* Priority */}
-        <div>
-          <label className="text-text-secondary mb-2 block text-sm">Priority</label>
-          <div className="flex gap-2">
+        <div className="flex w-full flex-col">
+          <label className="text-text-secondary mb-2 block text-sm ">Priority</label>
+          <div className="flex gap-2 justify-center">
             {(Object.entries(TaskPriority) as [TaskPriorityName, number][]).map(
               ([pName, pValue]) => (
                 <button
                   key={pName}
                   onClick={() => setPriority(pValue)}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium capitalize transition ${
+                  className={`rounded-full w-1/3 px-4 py-1.5 text-sm font-medium capitalize transition ${
                     priority === pValue
                       ? `${priorityColors[pName]} text-white`
                       : 'bg-background-tertiary text-text-secondary hover:text-white'
@@ -204,42 +206,55 @@ export default function EditTaskContent() {
         {/* Duration */}
         <div>
           <label className="text-text-secondary mb-2 block text-sm">Estimated Duration</label>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
+          <div className="flex gap-3">
+            <div
+              onClick={() => hoursRef.current?.focus()}
+              className="border-border flex flex-1 cursor-text flex-col items-center rounded-xl border bg-background px-3 py-2">
+              <span className="text-text-muted text-xs uppercase tracking-wide">Hours</span>
               <input
-                type="number"
-                min={0}
-                value={hours}
-                onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                className="border-border w-20 rounded-lg border bg-background p-3 text-center text-white focus:border-primary focus:outline-none"
+                ref={hoursRef}
+                type="text"
+                inputMode="numeric"
+                value={hoursStr}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/\D/g, '');
+                  setHoursStr(v);
+                }}
+                onBlur={() => setHoursStr(String(parseInt(hoursStr) || 0))}
+                className="w-25 bg-transparent text-center text-3xl font-bold text-white outline-none"
               />
-              <span className="text-text-secondary text-sm">hrs</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div
+              onClick={() => minutesRef.current?.focus()}
+              className="border-border flex flex-1 cursor-text flex-col items-center rounded-xl border bg-background px-3 py-2">
+              <span className="text-text-muted text-xs uppercase tracking-wide">Minutes</span>
               <input
-                type="number"
-                min={0}
-                max={59}
-                value={minutes}
-                onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                className="border-border w-20 rounded-lg border bg-background p-3 text-center text-white focus:border-primary focus:outline-none"
+                ref={minutesRef}
+                type="text"
+                inputMode="numeric"
+                value={minutesStr}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/\D/g, '');
+                  if (v === '' || parseInt(v) <= 59) setMinutesStr(v);
+                }}
+                onBlur={() => setMinutesStr(String(parseInt(minutesStr) || 0))}
+                className="w-25 bg-transparent text-center text-3xl font-bold text-white outline-none"
               />
-              <span className="text-text-secondary text-sm">min</span>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-3 pt-2 justify-center">
           <button
             onClick={handleSave}
             disabled={saving || !name.trim()}
-            className="hover:bg-primary-dark rounded-lg bg-primary px-6 py-2.5 font-semibold text-white transition disabled:opacity-50">
+            className="hover:bg-primary-dark rounded-lg bg-primary px-6 py-2.5 font-semibold text-white transition disabled:opacity-50 w-1/3">
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
           <Link
             href="/"
-            className="border-border text-text-secondary rounded-lg border px-6 py-2.5 transition hover:text-white">
+            className="border-border text-text-secondary rounded-lg border px-6 py-2.5 transition hover:text-white w-1/3 flex items-center justify-center">
             Cancel
           </Link>
         </div>
