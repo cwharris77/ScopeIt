@@ -49,7 +49,11 @@
       },
       "bundleIdentifier": "com.cwharris77.ScopeIt",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized productivity insights."
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": []
       }
     },
     "android": {
