@@ -7,6 +7,7 @@ import { secondsToDisplay } from '@shared/utils';
 import { calculatePerTaskAccuracy } from '@shared/utils/accuracy';
 import { useCallback, useEffect, useState } from 'react';
 import { StatsCards } from './StatsCards';
+import { AccuracyTrend } from './AccuracyTrend';
 import { PerformanceChart } from './PerformanceChart';
 import { AiInsights } from './AiInsights';
 
@@ -62,6 +63,7 @@ export default function AnalyticsContent() {
         totalTime={secondsToDisplay(totalSeconds)}
         accuracy={accuracy}
       />
+      <AccuracyTrend tasks={completedTasks} />
       <PerformanceChart tasks={completedTasks.slice(0, 5)} />
       <AiInsights tasks={completedTasks} />
     </div>
