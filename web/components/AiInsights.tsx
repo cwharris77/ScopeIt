@@ -1,13 +1,8 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { Task } from '@shared/types';
 import { Sparkles } from 'lucide-react';
-import { useState } from 'react';
-
-type Props = {
-  tasks: Task[];
-};
+import { useEffect, useState } from 'react';
 
 type Analysis = {
   summary: string;
@@ -15,79 +10,45 @@ type Analysis = {
   recommendations: string[];
 };
 
-export function AiInsights({ tasks }: Props) {
+export function AiInsights() {
   const supabase = createClient();
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const fetchInsights = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      const taskIds = tasks.map((t) => t.id);
-      const token = session?.access_token;
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/analyze-tasks`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ taskIds }),
-        }
-      );
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || `HTTP ${response.status}`);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        setLoading(false);
+        return;
       }
-
-      const data = await response.json();
-      setAnalysis(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
-    }
-    setLoading(false);
-  };
-
-  if (!analysis && !loading) {
-    return (
-      <div className="rounded-xl bg-background-secondary p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles size={20} className="text-primary" />
-            <h2 className="text-lg font-semibold text-white">AI Insights</h2>
-          </div>
-          <button
-            onClick={fetchInsights}
-            className="rounded-lg bg-primary px-4 py-2 text-sm text-white hover:bg-primary-dark transition"
-          >
-            Analyze
-          </button>
-        </div>
-        {error && <p className="text-danger text-sm mt-2">{error}</p>}
-      </div>
-    );
-  }
+      supabase
+        .from('task_analyses')
+        .select('analysis')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.analysis) {
+            setAnalysis(data.analysis as Analysis);
+          }
+          setLoading(false);
+        });
+    });
+  }, [supabase]);
 
   if (loading) {
     return (
       <div className="rounded-xl bg-background-secondary p-6">
         <div className="flex items-center gap-2">
           <Sparkles size={20} className="text-primary animate-pulse" />
-          <p className="text-text-secondary">Analyzing your tasks...</p>
+          <p className="text-text-secondary">Loading insights...</p>
         </div>
       </div>
     );
   }
+
+  if (!analysis) return null;
 
   return (
     <div className="rounded-xl bg-background-secondary p-6 space-y-4">
