@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Task } from '@shared/types';
 import { TASK_STATUS, TaskPriorityValueName, type TaskPriorityValue } from '@shared/constants';
 import { secondsToDisplay, minutesToDisplay } from '@shared/utils';
@@ -31,7 +32,23 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
   const isRunning = task.status === TASK_STATUS.RUNNING;
   const isCompleted = task.status === TASK_STATUS.COMPLETED;
 
-  const elapsed = task.actual_seconds || 0;
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    if (!isRunning || !task.started_at) return;
+
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, task.started_at]);
+
+  const elapsed =
+    isRunning && task.started_at
+      ? (task.actual_seconds || 0) +
+        Math.floor((now - new Date(task.started_at).getTime()) / 1000)
+      : task.actual_seconds || 0;
 
   return (
     <div className="group flex items-center gap-4 rounded-xl bg-background-secondary p-4 transition hover:bg-background-tertiary">
