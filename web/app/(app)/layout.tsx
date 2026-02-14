@@ -8,9 +8,9 @@ const Sidebar = dynamic(() => import('@/components/Sidebar').then((mod) => mod.S
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto p-8">{children}</main>
+      <main className="ml-64 min-h-screen overflow-y-auto p-8">{children}</main>
     </div>
   );
 }

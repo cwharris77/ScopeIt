@@ -31,7 +31,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="flex w-64 flex-col border-r border-border bg-background-secondary min-h-screen">
+    <aside className="fixed top-0 left-0 flex w-64 flex-col border-r border-border bg-background-secondary h-screen overflow-y-auto">
       <div className="p-6">
         <h1 className="text-xl font-bold text-white">
           Scoped<span className="text-primary">In</span>
