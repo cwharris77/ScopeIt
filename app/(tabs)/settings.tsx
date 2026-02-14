@@ -1,16 +1,15 @@
 import { Colors } from '@/constants/colors';
+import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function SettingsScreen() {
+export default function SettingsTab() {
   const { session, signOut } = useAuth();
-  const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
   const handleDeleteAccount = () => {
@@ -69,16 +68,12 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color={Colors.white} />
-        </Pressable>
         <Text style={styles.title}>Settings</Text>
-        <View style={styles.backButton} />
       </View>
 
-      <View style={styles.content}>
+      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
           <View style={styles.card}>
@@ -128,7 +123,7 @@ export default function SettingsScreen() {
             </Pressable>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -145,21 +140,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.white,
+    fontSize: 20,
+    fontWeight: '800',
+    color: Colors.text,
   },
   content: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 16,
+    paddingBottom: PAGE_BOTTOM_PADDING,
   },
   section: {
     marginBottom: 24,
