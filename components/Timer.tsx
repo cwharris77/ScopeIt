@@ -1,7 +1,6 @@
 import { Task } from '@/lib/supabase';
-import { Pause, Play } from '@tamagui/lucide-icons';
 import { useEffect, useState } from 'react';
-import { Button, Input, Text, XStack, YStack } from 'tamagui';
+import { Pressable, Text, TextInput, View } from 'react-native';
 
 type TimerProps = {
   task: Task;
@@ -14,34 +13,17 @@ export function Timer({ task, onUpdate }: TimerProps) {
 
   useEffect(() => {
     if (!isRunning) return;
-
-    const interval = setInterval(() => {
-      setNow(Date.now());
-    }, 1000);
-
+    const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, [isRunning]);
 
   const handleToggle = () => {
     if (isRunning) {
-      // Pause
       const start = new Date(task.started_at!).getTime();
       const delta = Math.floor((Date.now() - start) / 1000);
-      onUpdate(
-        {
-          actual_seconds: (task.actual_seconds || 0) + delta,
-          started_at: null,
-        },
-        true
-      );
+      onUpdate({ actual_seconds: (task.actual_seconds || 0) + delta, started_at: null }, true);
     } else {
-      // Play
-      onUpdate(
-        {
-          started_at: new Date().toISOString(),
-        },
-        true
-      );
+      onUpdate({ started_at: new Date().toISOString() }, true);
     }
   };
 
@@ -60,47 +42,36 @@ export function Timer({ task, onUpdate }: TimerProps) {
   };
 
   return (
-    <XStack alignItems="center" justifyContent="space-between" gap={12} paddingVertical={8}>
+    <View className="flex-row items-center justify-between gap-3 py-2">
       {/* Estimate */}
-      <YStack gap={4} flex={1}>
-        <Text fontSize={12} color="$color11" fontWeight="bold">
-          ESTIMATE (MIN)
-        </Text>
-        <Input
-          size="$md"
-          style={{ fontSize: 16 }}
+      <View className="flex-1 gap-1">
+        <Text className="text-xs font-bold text-gray-400">ESTIMATE (MIN)</Text>
+        <TextInput
+          className="p-0 text-base text-white"
           value={task.estimated_minutes?.toString()}
-          onChange={(e: any) => {
-            const text = e.nativeEvent.text;
-            const val = parseInt(text) || 0;
+          onChange={(e) => {
+            const val = parseInt(e.nativeEvent.text) || 0;
             onUpdate({ estimated_minutes: val });
           }}
           keyboardType="numeric"
-          backgroundColor="transparent"
-          borderWidth={0}
-          padding={0}
         />
-      </YStack>
+      </View>
 
       {/* Play/Pause */}
-      <Button
-        circular
-        size="$xl"
-        icon={isRunning ? Pause : Play}
+      <Pressable
         onPress={handleToggle}
-        backgroundColor={isRunning ? '$orange10' : '$green10'}
-        hoverStyle={{ backgroundColor: isRunning ? '$orange11' : '$green11' }}
-      />
+        className={`h-16 w-16 items-center justify-center rounded-full ${isRunning ? 'bg-orange-500' : 'bg-green-500'}`}
+      >
+        <Text className="text-2xl text-white">{isRunning ? '⏸' : '▶'}</Text>
+      </Pressable>
 
       {/* Elapsed */}
-      <YStack gap={4} flex={1} alignItems="flex-end">
-        <Text fontSize={12} color="$color11" fontWeight="bold">
-          ELAPSED
-        </Text>
-        <Text fontSize={24} fontWeight="bold" fontFamily="$mono">
+      <View className="flex-1 items-end gap-1">
+        <Text className="text-xs font-bold text-gray-400">ELAPSED</Text>
+        <Text className="font-mono text-2xl font-bold text-white">
           {formatTime(getElapsedSeconds())}
         </Text>
-      </YStack>
-    </XStack>
+      </View>
+    </View>
   );
 }
