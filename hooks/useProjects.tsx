@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { Project, ProjectInsert, supabase } from '@/lib/supabase';
+import { Project, ProjectInsert, ProjectUpdate, supabase } from '@/lib/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -57,7 +57,7 @@ export function useProjects() {
     [session?.user.id]
   );
 
-  const updateProject = useCallback(async (id: string, updates: Partial<Project>) => {
+  const updateProject = useCallback(async (id: string, updates: ProjectUpdate) => {
     const { data, error } = await supabase
       .from('projects')
       .update(updates)
