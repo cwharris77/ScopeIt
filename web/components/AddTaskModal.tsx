@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { TaskPriority, type TaskPriorityName } from '@shared/constants';
+import { TaskPriority } from '@shared/constants';
 import { Tag, TaskInsert } from '@shared/types';
 import { X } from 'lucide-react';
-import { TagCreatePopover } from './TagCreatePopover';
+import { TaskFormFields } from './TaskFormFields';
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -13,17 +13,12 @@ interface AddTaskModalProps {
   onAdd: (task: Omit<TaskInsert, 'user_id'>, tagIds: string[]) => void;
 }
 
-const priorities: { name: TaskPriorityName; value: number; color: string }[] = [
-  { name: 'low', value: TaskPriority.low, color: 'bg-low-priority' },
-  { name: 'medium', value: TaskPriority.medium, color: 'bg-medium-priority' },
-  { name: 'high', value: TaskPriority.high, color: 'bg-high-priority' },
-];
-
 export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<number>(TaskPriority.low);
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(30);
+  const [hoursStr, setHoursStr] = useState('0');
+  const [minutesStr, setMinutesStr] = useState('30');
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
   const nameRef = useRef<HTMLInputElement>(null);
@@ -33,9 +28,10 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reset form state when modal opens
     setName('');
+    setDescription('');
     setPriority(TaskPriority.low);
-    setHours(0);
-    setMinutes(30);
+    setHoursStr('0');
+    setMinutesStr('30');
     setSelectedTagIds(new Set());
     setTimeout(() => nameRef.current?.focus(), 100);
 
@@ -56,10 +52,11 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    const estimatedMinutes = hours * 60 + minutes;
+    const estimatedMinutes = (parseInt(hoursStr) || 0) * 60 + (parseInt(minutesStr) || 0);
     onAdd(
       {
         name: name.trim(),
+        description: description.trim() || null,
         priority,
         estimated_minutes: estimatedMinutes,
         status: 'pending',
@@ -102,93 +99,32 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
             />
           </div>
 
-          {/* Tags */}
-          <div>
-            <label className="text-text-secondary mb-1.5 block text-sm font-medium">Tags</label>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => {
-                const isSelected = selectedTagIds.has(tag.id);
-                return (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedTagIds((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(tag.id)) next.delete(tag.id);
-                        else next.add(tag.id);
-                        return next;
-                      });
-                    }}
-                    className={`rounded-full px-3 py-1 text-sm font-medium transition ${
-                      isSelected
-                        ? 'text-white'
-                        : 'bg-background-tertiary text-text-secondary hover:text-white'
-                    }`}
-                    style={isSelected ? { backgroundColor: tag.color || '#087f8c' } : undefined}>
-                    {tag.name}
-                  </button>
-                );
-              })}
-              <TagCreatePopover
-                onTagCreated={(tag) => {
-                  setTags((prev) => [...prev, tag].sort((a, b) => a.name.localeCompare(b.name)));
-                  setSelectedTagIds((prev) => new Set([...prev, tag.id]));
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Priority */}
-          <div>
-            <label className="text-text-secondary mb-1.5 block text-sm font-medium">Priority</label>
-            <div className="flex gap-2">
-              {priorities.map((p) => (
-                <button
-                  key={p.name}
-                  type="button"
-                  onClick={() => setPriority(p.value)}
-                  className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium capitalize transition ${
-                    priority === p.value
-                      ? `${p.color} text-white`
-                      : 'bg-background-tertiary text-text-secondary hover:text-white'
-                  }`}>
-                  {p.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Duration */}
+          {/* Description */}
           <div>
             <label className="text-text-secondary mb-1.5 block text-sm font-medium">
-              Estimated Duration
+              Description
             </label>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5">
-                <input
-                  type="number"
-                  min={0}
-                  max={23}
-                  value={hours}
-                  onChange={(e) => setHours(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="border-border w-16 rounded-lg border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
-                />
-                <span className="text-text-muted text-sm">hrs</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <input
-                  type="number"
-                  min={0}
-                  max={59}
-                  value={minutes}
-                  onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="border-border w-16 rounded-lg border bg-background px-2 py-2 text-center text-sm text-white outline-none focus:border-primary"
-                />
-                <span className="text-text-muted text-sm">min</span>
-              </div>
-            </div>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Add details (optional)"
+              rows={3}
+              className="border-border placeholder-text-muted w-full resize-none rounded-lg border bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary"
+            />
           </div>
+
+          <TaskFormFields
+            tags={tags}
+            selectedTagIds={selectedTagIds}
+            onTagsChange={setTags}
+            onSelectedTagIdsChange={setSelectedTagIds}
+            priority={priority}
+            onPriorityChange={setPriority}
+            hoursStr={hoursStr}
+            onHoursChange={setHoursStr}
+            minutesStr={minutesStr}
+            onMinutesChange={setMinutesStr}
+          />
 
           {/* Submit */}
           <button
