@@ -25,6 +25,12 @@ const TABS: {
     label: 'Tasks',
   },
   {
+    name: 'projects',
+    route: 'projects',
+    icon: { focused: 'folder', unfocused: 'folder-outline' },
+    label: 'Projects',
+  },
+  {
     name: 'analytics',
     route: 'analytics',
     icon: { focused: 'bar-chart', unfocused: 'bar-chart-outline' },
@@ -45,12 +51,18 @@ export function FloatingTabBar({ state, navigation, insets }: BottomTabBarProps)
           focused={state.index === 0}
           onPress={() => navigation.navigate(TABS[0].route)}
         />
-        <AddTabButton onPress={() => router.push('/add-task')} />
         <TabButton
           icon={TABS[1].icon}
           label={TABS[1].label}
           focused={state.index === 1}
           onPress={() => navigation.navigate(TABS[1].route)}
+        />
+        <AddTabButton onPress={() => router.push('/add-task')} />
+        <TabButton
+          icon={TABS[2].icon}
+          label={TABS[2].label}
+          focused={state.index === 2}
+          onPress={() => navigation.navigate(TABS[2].route)}
         />
       </View>
     </View>

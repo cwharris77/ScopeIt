@@ -145,9 +145,6 @@ export default function HomeScreen() {
           </Text>
         </View>
         <View style={styles.headerActions}>
-          <Pressable onPress={() => router.push('/projects')} style={styles.projectsButton}>
-            <Ionicons name="folder-outline" size={22} color={Colors.text} />
-          </Pressable>
           <ProfileButton />
         </View>
       </View>
@@ -273,14 +270,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     letterSpacing: 2,
     textTransform: 'uppercase',
-  },
-  projectsButton: {
-    width: 44,
-    height: 44,
-    backgroundColor: Colors.backgroundSecondary,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   addButton: {
     width: 52,
