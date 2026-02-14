@@ -55,32 +55,30 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    // Delete user's task analyses
-    const { error: analysesError } = await adminClient
-      .from('task_analyses')
-      .delete()
-      .eq('user_id', user.id);
+    // Delete user data in dependency order.
+    // task_tags is cleaned up automatically via ON DELETE CASCADE from tasks and tags.
+    const tablesToDelete = [
+      'task_analyses',
+      'daily_logs',
+      'templates',
+      'tasks',
+      'tags',
+      'projects',
+    ];
 
-    if (analysesError) {
-      console.error('[delete-account] Failed to delete task_analyses:', analysesError.message);
-      return new Response(
-        JSON.stringify({ error: 'Failed to delete user data', detail: analysesError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    for (const table of tablesToDelete) {
+      const { error: delError } = await adminClient
+        .from(table)
+        .delete()
+        .eq('user_id', user.id);
 
-    // Delete user's tasks
-    const { error: tasksError } = await adminClient
-      .from('tasks')
-      .delete()
-      .eq('user_id', user.id);
-
-    if (tasksError) {
-      console.error('[delete-account] Failed to delete tasks:', tasksError.message);
-      return new Response(
-        JSON.stringify({ error: 'Failed to delete user data', detail: tasksError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      if (delError) {
+        console.error(`[delete-account] Failed to delete ${table}:`, delError.message);
+        return new Response(
+          JSON.stringify({ error: 'Failed to delete user data', detail: delError.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     // Delete the auth user record using admin API
