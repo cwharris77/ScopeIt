@@ -1,10 +1,10 @@
+import { ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Spinner } from 'tamagui';
 
 export default function Loading() {
   return (
     <SafeAreaView className="flex-1 items-center justify-center">
-      <Spinner size="large" color="" />
+      <ActivityIndicator size="large" color="#087f8c" />
     </SafeAreaView>
   );
 }
