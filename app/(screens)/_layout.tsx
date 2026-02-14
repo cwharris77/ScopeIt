@@ -6,6 +6,7 @@ export default function ScreensLayout() {
       <Stack.Screen name="edit-task" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="projects" />
+      <Stack.Screen name="tags" />
     </Stack>
   );
 }
