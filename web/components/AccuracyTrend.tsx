@@ -40,21 +40,15 @@ export function AccuracyTrend({ tasks }: Props) {
           <button
             onClick={() => setView('weekly')}
             className={`px-3 py-1.5 text-sm font-medium transition ${
-              view === 'weekly'
-                ? 'bg-primary text-white'
-                : 'text-text-secondary hover:text-white'
-            }`}
-          >
+              view === 'weekly' ? 'bg-primary text-white' : 'text-text-secondary hover:text-white'
+            }`}>
             Weekly
           </button>
           <button
             onClick={() => setView('rolling')}
             className={`px-3 py-1.5 text-sm font-medium transition ${
-              view === 'rolling'
-                ? 'bg-primary text-white'
-                : 'text-text-secondary hover:text-white'
-            }`}
-          >
+              view === 'rolling' ? 'bg-primary text-white' : 'text-text-secondary hover:text-white'
+            }`}>
             Rolling
           </button>
         </div>

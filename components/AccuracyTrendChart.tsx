@@ -67,16 +67,14 @@ export function AccuracyTrendChart({ tasks }: AccuracyTrendChartProps) {
       <View style={styles.toggleContainer}>
         <Pressable
           style={[styles.toggleButton, mode === 'weekly' && styles.toggleButtonActive]}
-          onPress={() => setMode('weekly')}
-        >
+          onPress={() => setMode('weekly')}>
           <Text style={[styles.toggleText, mode === 'weekly' && styles.toggleTextActive]}>
             Weekly
           </Text>
         </Pressable>
         <Pressable
           style={[styles.toggleButton, mode === 'rolling' && styles.toggleButtonActive]}
-          onPress={() => setMode('rolling')}
-        >
+          onPress={() => setMode('rolling')}>
           <Text style={[styles.toggleText, mode === 'rolling' && styles.toggleTextActive]}>
             Rolling
           </Text>
@@ -173,8 +171,7 @@ export function AccuracyTrendChart({ tasks }: AccuracyTrendChartProps) {
                     left: getX(i),
                     transform: [{ translateX: -20 }],
                   },
-                ]}
-              >
+                ]}>
                 {point.label}
               </Text>
             );

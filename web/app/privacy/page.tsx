@@ -45,7 +45,9 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white mb-3">3. How We Use Your Information</h2>
+            <h2 className="text-xl font-semibold text-white mb-3">
+              3. How We Use Your Information
+            </h2>
             <ul className="list-disc pl-6 space-y-2">
               <li>To provide and maintain the Service</li>
               <li>To authenticate your identity and secure your account</li>
@@ -119,8 +121,8 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">9. Changes to This Policy</h2>
             <p>
-              We may update this Privacy Policy from time to time. We will notify you of any
-              changes by posting the new Privacy Policy on this page and updating the &quot;Last
+              We may update this Privacy Policy from time to time. We will notify you of any changes
+              by posting the new Privacy Policy on this page and updating the &quot;Last
               updated&quot; date.
             </p>
           </section>

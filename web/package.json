@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint && prettier -c \"**/*.{ts,tsx,js,jsx,json}\"",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\""
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
@@ -24,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

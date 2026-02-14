@@ -94,8 +94,7 @@ export default function SettingsScreen() {
           <View style={styles.card}>
             <Pressable
               style={styles.row}
-              onPress={() => Linking.openURL('https://scopedin.app/privacy')}
-            >
+              onPress={() => Linking.openURL('https://scopedin.app/privacy')}>
               <Ionicons name="shield-outline" size={20} color={Colors.textSecondary} />
               <Text style={styles.rowText}>Privacy Policy</Text>
               <Ionicons name="open-outline" size={16} color={Colors.textMuted} />
@@ -103,8 +102,7 @@ export default function SettingsScreen() {
             <View style={styles.divider} />
             <Pressable
               style={styles.row}
-              onPress={() => Linking.openURL('https://scopedin.app/terms')}
-            >
+              onPress={() => Linking.openURL('https://scopedin.app/terms')}>
               <Ionicons name="document-text-outline" size={20} color={Colors.textSecondary} />
               <Text style={styles.rowText}>Terms of Service</Text>
               <Ionicons name="open-outline" size={16} color={Colors.textMuted} />

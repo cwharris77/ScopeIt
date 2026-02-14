@@ -77,8 +77,7 @@ export default function DeleteAccountContent() {
             </p>
             <button
               onClick={() => router.push('/login')}
-              className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-primary/80 transition"
-            >
+              className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white hover:bg-primary/80 transition">
               Return to Home
             </button>
           </div>
@@ -93,8 +92,8 @@ export default function DeleteAccountContent() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white mb-2">Delete Your Account</h1>
           <p className="text-text-secondary text-sm">
-            Sign in to permanently delete your ScopedIn account and all associated data. This
-            action cannot be undone.
+            Sign in to permanently delete your ScopedIn account and all associated data. This action
+            cannot be undone.
           </p>
         </div>
 
@@ -117,8 +116,7 @@ export default function DeleteAccountContent() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-text-secondary mb-1"
-            >
+              className="block text-sm font-medium text-text-secondary mb-1">
               Password
             </label>
             <input
@@ -132,15 +130,12 @@ export default function DeleteAccountContent() {
             />
           </div>
 
-          {error && (
-            <p className="text-sm text-danger">{error}</p>
-          )}
+          {error && <p className="text-sm text-danger">{error}</p>}
 
           <button
             type="submit"
             disabled={deleting}
-            className="w-full rounded-lg bg-danger py-2.5 text-sm font-medium text-white hover:bg-danger/80 transition disabled:opacity-50"
-          >
+            className="w-full rounded-lg bg-danger py-2.5 text-sm font-medium text-white hover:bg-danger/80 transition disabled:opacity-50">
             {deleting ? 'Deleting account...' : 'Delete My Account'}
           </button>
 

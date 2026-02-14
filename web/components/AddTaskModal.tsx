@@ -28,29 +28,26 @@ export function AddTaskModal({ isOpen, onClose, onAdd }: AddTaskModalProps) {
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      setName('');
-      setPriority(TaskPriority.low);
-      setHours(0);
-      setMinutes(30);
-      setSelectedTagIds(new Set());
-      setTimeout(() => nameRef.current?.focus(), 100);
+    if (!isOpen) return;
 
-      const fetchTags = async () => {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) return;
-        const { data } = await supabase
-          .from('tags')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('name');
-        setTags(data || []);
-      };
-      fetchTags();
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset form state when modal opens
+    setName('');
+    setPriority(TaskPriority.low);
+    setHours(0);
+    setMinutes(30);
+    setSelectedTagIds(new Set());
+    setTimeout(() => nameRef.current?.focus(), 100);
+
+    const fetchTags = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('tags').select('*').eq('user_id', user.id).order('name');
+      setTags(data || []);
+    };
+    void fetchTags();
   }, [isOpen]);
 
   if (!isOpen) return null;

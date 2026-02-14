@@ -31,7 +31,8 @@ export default function AnalyticsContent() {
   }, [supabase]);
 
   useEffect(() => {
-    fetchTasks();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on mount
+    void fetchTasks();
   }, [fetchTasks]);
 
   const completedTasks = tasks.filter((t) => t.status === TASK_STATUS.COMPLETED);

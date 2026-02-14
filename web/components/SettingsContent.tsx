@@ -75,8 +75,7 @@ export default function SettingsContent() {
           <a
             href="/privacy"
             target="_blank"
-            className="flex items-center gap-2 text-sm text-text-secondary hover:text-white transition"
-          >
+            className="flex items-center gap-2 text-sm text-text-secondary hover:text-white transition">
             Privacy Policy
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -90,8 +89,7 @@ export default function SettingsContent() {
           <a
             href="/terms"
             target="_blank"
-            className="flex items-center gap-2 text-sm text-text-secondary hover:text-white transition"
-          >
+            className="flex items-center gap-2 text-sm text-text-secondary hover:text-white transition">
             Terms of Service
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -113,8 +111,7 @@ export default function SettingsContent() {
         {!showConfirm ? (
           <button
             onClick={() => setShowConfirm(true)}
-            className="rounded-lg bg-danger/10 px-4 py-2 text-sm font-medium text-danger hover:bg-danger/20 transition"
-          >
+            className="rounded-lg bg-danger/10 px-4 py-2 text-sm font-medium text-danger hover:bg-danger/20 transition">
             Delete Account
           </button>
         ) : (
@@ -122,14 +119,12 @@ export default function SettingsContent() {
             <button
               onClick={handleDeleteAccount}
               disabled={deleting}
-              className="rounded-lg bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger/80 transition disabled:opacity-50"
-            >
+              className="rounded-lg bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger/80 transition disabled:opacity-50">
               {deleting ? 'Deleting...' : 'Yes, delete my account'}
             </button>
             <button
               onClick={() => setShowConfirm(false)}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-text-secondary hover:text-white transition"
-            >
+              className="rounded-lg px-4 py-2 text-sm font-medium text-text-secondary hover:text-white transition">
               Cancel
             </button>
           </div>
