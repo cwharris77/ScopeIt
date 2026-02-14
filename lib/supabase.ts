@@ -1,4 +1,4 @@
-import { Database } from '@/supabase/types';
+import { Database } from '../shared/types/supabase';
 import { createClient } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
