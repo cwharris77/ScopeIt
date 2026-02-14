@@ -43,3 +43,7 @@ export type Tables<T extends keyof Database['public']['Tables']> =
 export type Task = Tables<'tasks'>;
 export type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
 export type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
+
+export type Project = Tables<'projects'>;
+export type ProjectInsert = Database['public']['Tables']['projects']['Insert'];
+export type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
