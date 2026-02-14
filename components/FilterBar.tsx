@@ -4,8 +4,8 @@
 
 import { Dropdown } from '@/components/Dropdown';
 import { Colors } from '@/constants/colors';
-import { Project } from '@/lib/supabase';
 import { CATEGORIES, CATEGORY_ALL, SORT_OPTIONS, SortOption } from '@/constants/tasks';
+import { Project } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
