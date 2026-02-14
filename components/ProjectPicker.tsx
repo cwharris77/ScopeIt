@@ -2,7 +2,7 @@ import { Colors } from '@/constants/colors';
 import { useProjects } from '@/contexts/ProjectsContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface ProjectPickerProps {
   value: string | null;
@@ -39,50 +39,48 @@ export function ProjectPicker({ value, onChange }: ProjectPickerProps) {
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
           <View style={styles.dropdown}>
-            <ScrollView style={styles.optionsList}>
-              {/* No project option */}
-              <Pressable
-                onPress={() => {
-                  onChange(null);
-                  setOpen(false);
-                }}
-                style={[styles.option, value === null && styles.optionSelected]}>
-                <View style={styles.optionContent}>
-                  <View style={[styles.colorDot, { backgroundColor: Colors.textMuted }]} />
-                  <Text style={[styles.optionText, value === null && styles.optionTextSelected]}>
-                    No project
-                  </Text>
-                </View>
-                {value === null && <Ionicons name="checkmark" size={16} color={Colors.primary} />}
-              </Pressable>
+            {/* No project option */}
+            <Pressable
+              onPress={() => {
+                onChange(null);
+                setOpen(false);
+              }}
+              style={[styles.option, value === null && styles.optionSelected]}>
+              <View style={styles.optionContent}>
+                <View style={[styles.colorDot, { backgroundColor: Colors.textMuted }]} />
+                <Text style={[styles.optionText, value === null && styles.optionTextSelected]}>
+                  No project
+                </Text>
+              </View>
+              {value === null && <Ionicons name="checkmark" size={16} color={Colors.primary} />}
+            </Pressable>
 
-              {/* Project options */}
-              {projects.map((project) => {
-                const isSelected = project.id === value;
-                return (
-                  <Pressable
-                    key={project.id}
-                    onPress={() => {
-                      onChange(project.id);
-                      setOpen(false);
-                    }}
-                    style={[styles.option, isSelected && styles.optionSelected]}>
-                    <View style={styles.optionContent}>
-                      <View
-                        style={[
-                          styles.colorDot,
-                          { backgroundColor: project.color || Colors.textMuted },
-                        ]}
-                      />
-                      <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
-                        {project.name}
-                      </Text>
-                    </View>
-                    {isSelected && <Ionicons name="checkmark" size={16} color={Colors.primary} />}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
+            {/* Project options */}
+            {projects.map((project) => {
+              const isSelected = project.id === value;
+              return (
+                <Pressable
+                  key={project.id}
+                  onPress={() => {
+                    onChange(project.id);
+                    setOpen(false);
+                  }}
+                  style={[styles.option, isSelected && styles.optionSelected]}>
+                  <View style={styles.optionContent}>
+                    <View
+                      style={[
+                        styles.colorDot,
+                        { backgroundColor: project.color || Colors.textMuted },
+                      ]}
+                    />
+                    <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
+                      {project.name}
+                    </Text>
+                  </View>
+                  {isSelected && <Ionicons name="checkmark" size={16} color={Colors.primary} />}
+                </Pressable>
+              );
+            })}
           </View>
         </Pressable>
       </Modal>
@@ -134,10 +132,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundTertiary,
     borderWidth: 1,
     borderColor: Colors.border,
-    maxHeight: 400,
-  },
-  optionsList: {
-    maxHeight: 340,
   },
   option: {
     flexDirection: 'row',
