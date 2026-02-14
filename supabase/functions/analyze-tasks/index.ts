@@ -1,17 +1,14 @@
 import { calculatePerTaskAccuracy } from './accuracy.ts';
+import { getCorsHeaders } from '../_shared/cors.ts';
 import { GoogleGenAI, Type } from 'npm:@google/genai';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 const NEW_TASKS_THRESHOLD = 5;
 
-const corsHeaders = {
-  // TODO update to only allow requests from the app when I have a domain
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
