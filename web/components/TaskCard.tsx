@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Task } from '@shared/types';
+import { Task, Tag } from '@shared/types';
 import { TASK_STATUS, TaskPriorityValueName, type TaskPriorityValue } from '@shared/constants';
 import { secondsToDisplay, minutesToDisplay } from '@shared/utils';
 import { Play, Pause, Check, Pencil, Trash2, Clock } from 'lucide-react';
@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 interface TaskCardProps {
   task: Task;
+  tags?: Tag[];
   onStart: (id: string) => void;
   onPause: (id: string) => void;
   onComplete: (id: string) => void;
@@ -27,7 +28,7 @@ const priorityTextColors: Record<string, string> = {
   high: 'text-high-priority',
 };
 
-export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskCardProps) {
+export function TaskCard({ task, tags, onStart, onPause, onComplete, onDelete }: TaskCardProps) {
   const priorityName = TaskPriorityValueName[task.priority as TaskPriorityValue] || 'low';
   const isRunning = task.status === TASK_STATUS.RUNNING;
   const isCompleted = task.status === TASK_STATUS.COMPLETED;
@@ -63,9 +64,27 @@ export function TaskCard({ task, onStart, onPause, onComplete, onDelete }: TaskC
           >
             {task.name}
           </h3>
-          <span className="shrink-0 rounded-full bg-background-tertiary px-2.5 py-0.5 text-xs capitalize text-text-secondary">
-            {task.category}
-          </span>
+          {tags && tags.length > 0 ? (
+            tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag.id}
+                className="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                style={{
+                  backgroundColor: `${tag.color || '#6b7280'}20`,
+                  color: tag.color || '#6b7280',
+                }}
+              >
+                {tag.name}
+              </span>
+            ))
+          ) : (
+            <span className="shrink-0 rounded-full bg-background-tertiary px-2.5 py-0.5 text-xs capitalize text-text-secondary">
+              {task.category}
+            </span>
+          )}
+          {tags && tags.length > 3 && (
+            <span className="shrink-0 text-xs text-text-muted">+{tags.length - 3}</span>
+          )}
           <span className={`shrink-0 text-xs font-medium capitalize ${priorityTextColors[priorityName]}`}>
             {priorityName}
           </span>
