@@ -1,7 +1,12 @@
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-bold text-white">ScopeIt</h1>
-    </div>
-  );
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const TasksPageContent = dynamic(
+  () => import('@/components/TasksPageContent').then((mod) => mod.TasksPageContent),
+  { ssr: false }
+);
+
+export default function TasksPage() {
+  return <TasksPageContent />;
 }
