@@ -1,27 +1,20 @@
 /**
- * Header profile button — tap to show log out confirmation.
+ * Header profile button — tap to open settings screen.
  */
 
 import { Colors } from '@/constants/colors';
-import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
-import { Alert, Pressable, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet } from 'react-native';
 
 export function ProfileButton() {
-  const { signOut } = useAuth();
-
-  const handlePress = () => {
-    Alert.alert('Log out', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Log out', style: 'destructive', onPress: () => signOut() },
-    ]);
-  };
+  const router = useRouter();
 
   return (
     <Pressable
-      onPress={handlePress}
+      onPress={() => router.push('/settings')}
       style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-      accessibilityLabel="Profile and log out"
+      accessibilityLabel="Settings"
       accessibilityRole="button">
       <Ionicons name="person-circle-outline" size={28} color={Colors.textSecondary} />
     </Pressable>

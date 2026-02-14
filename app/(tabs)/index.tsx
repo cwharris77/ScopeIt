@@ -121,7 +121,7 @@ export default function HomeScreen() {
       <View style={styles.appHeader}>
         <View style={styles.appTitleBlock}>
           <Text style={styles.appTitle} numberOfLines={1}>
-            ScopeIt
+            ScopedIn
           </Text>
           <Text style={styles.appSubtitle} numberOfLines={1}>
             MASTER YOUR ESTIMATION

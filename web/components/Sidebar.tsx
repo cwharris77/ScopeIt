@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { BarChart3, LayoutDashboard, LogOut } from 'lucide-react';
+import { BarChart3, LayoutDashboard, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 const navItems = [
   { href: '/', label: 'Tasks', icon: LayoutDashboard },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -33,7 +34,7 @@ export function Sidebar() {
     <aside className="flex w-64 flex-col border-r border-border bg-background-secondary min-h-screen">
       <div className="p-6">
         <h1 className="text-xl font-bold text-white">
-          Scope<span className="text-primary">It</span>
+          Scoped<span className="text-primary">In</span>
         </h1>
       </div>
 

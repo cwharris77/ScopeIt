@@ -1,5 +1,5 @@
 /**
- * Color constants for the ScopeIt app
+ * Color constants for the ScopedIn app
  * Mobile brand color: teal (#087f8c) instead of web's indigo
  */
 
