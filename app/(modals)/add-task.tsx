@@ -3,6 +3,7 @@
  */
 
 import { PriorityPicker } from '@/components/PriorityPicker';
+import { ProjectPicker } from '@/components/ProjectPicker';
 import { Colors } from '@/constants/colors';
 import { CATEGORIES, Category, TaskPriority, TaskPriorityName, TASK_STATUS } from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
@@ -31,6 +32,7 @@ export default function AddTaskModal() {
   const [priority, setPriority] = useState<TaskPriorityName>('medium');
   const [expectedHours, setExpectedHours] = useState('0');
   const [expectedMins, setExpectedMins] = useState('30');
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
@@ -59,6 +61,7 @@ export default function AddTaskModal() {
       priority: TaskPriority[priority],
       estimated_minutes: totalMinutes,
       status: TASK_STATUS.PENDING,
+      project_id: projectId,
     });
     setIsSubmitting(false);
 
@@ -117,6 +120,12 @@ export default function AddTaskModal() {
                   </Pressable>
                 ))}
               </View>
+            </View>
+
+            {/* Project Selection */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>PROJECT</Text>
+              <ProjectPicker value={projectId} onChange={setProjectId} />
             </View>
 
             {/* Priority Selection */}
