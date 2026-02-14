@@ -4,7 +4,9 @@ import { TaskCard } from '@/components/TaskCard';
 import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
 import { CATEGORY_ALL, SortOption, TASK_STATUS } from '@/constants/tasks';
+import { useProjects } from '@/contexts/ProjectsContext';
 import { useTasks } from '@/contexts/TasksContext';
+import { Project } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
@@ -12,10 +14,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const { tasks, refetch, startTask, pauseTask, completeTask, deleteTask } = useTasks();
+  const { projects } = useProjects();
 
   // Filter & Sort State
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const handleCategoryToggle = (category: string) => {
@@ -38,6 +42,11 @@ export default function HomeScreen() {
   const processedTasks = useMemo(() => {
     let result = [...tasks];
 
+    // Filter by selected project
+    if (selectedProjectId) {
+      result = result.filter((t) => t.project_id === selectedProjectId);
+    }
+
     // Filter by selected categories
     if (selectedCategories.size > 0) {
       result = result.filter((t) => selectedCategories.has(t.category));
@@ -58,7 +67,13 @@ export default function HomeScreen() {
     });
 
     return result;
-  }, [tasks, selectedCategories, sortBy]);
+  }, [tasks, selectedCategories, sortBy, selectedProjectId]);
+
+  const projectMap = useMemo(() => {
+    const map = new Map<string, Project>();
+    projects.forEach((p) => map.set(p.id, p));
+    return map;
+  }, [projects]);
 
   // Separate active and completed tasks
   const activeTasks = processedTasks.filter((t) => t.status !== TASK_STATUS.COMPLETED);
@@ -140,6 +155,9 @@ export default function HomeScreen() {
           sortBy={sortBy}
           onSortChange={setSortBy}
           itemCount={processedTasks.length}
+          projects={projects}
+          selectedProjectId={selectedProjectId}
+          onProjectChange={setSelectedProjectId}
         />
       )}
 
@@ -163,6 +181,7 @@ export default function HomeScreen() {
               {index > 0 && <View style={styles.separator} />}
               <TaskCard
                 task={task}
+                project={task.project_id ? projectMap.get(task.project_id) : null}
                 onStart={handleStartTask}
                 onPause={handlePauseTask}
                 onComplete={handleCompleteTask}
@@ -182,6 +201,7 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <TaskCard
             task={item}
+            project={item.project_id ? projectMap.get(item.project_id) : null}
             onStart={handleStartTask}
             onPause={handlePauseTask}
             onComplete={handleCompleteTask}

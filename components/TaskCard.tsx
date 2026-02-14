@@ -109,7 +109,7 @@ export function TaskCard({ task, project, onStart, onPause, onComplete, onDelete
             bottom: 16,
             width: 3,
             borderRadius: 2,
-            backgroundColor: project.color,
+            backgroundColor: project.color || Colors.primary,
           }}
         />
       )}
