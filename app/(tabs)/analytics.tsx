@@ -1,3 +1,4 @@
+import { AccuracyTrendChart } from '@/components/AccuracyTrendChart';
 import { ProfileButton } from '@/components/ProfileButton';
 import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
@@ -126,6 +127,9 @@ export default function AnalyticsScreen() {
             <Text style={styles.statLabel}>Accuracy</Text>
           </View>
         </View>
+
+        {/* Accuracy Trend */}
+        <AccuracyTrendChart tasks={completedTasks} />
 
         {/* Recent Performance */}
         <View style={styles.chartCard}>
