@@ -1,5 +1,4 @@
 import { AccuracyTrendChart } from '@/components/AccuracyTrendChart';
-import { ProfileButton } from '@/components/ProfileButton';
 import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
 import { TASK_STATUS } from '@/constants/tasks';
@@ -74,7 +73,6 @@ export default function AnalyticsScreen() {
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Insights</Text>
-          <ProfileButton />
         </View>
         <View style={styles.emptyState}>
           <View style={styles.emptyIcon}>
@@ -104,9 +102,6 @@ export default function AnalyticsScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Insights</Text>
-          <View style={styles.headerActions}>
-            <ProfileButton />
-          </View>
         </View>
 
         {/* Stats Cards */}

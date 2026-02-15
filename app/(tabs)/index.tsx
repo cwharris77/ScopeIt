@@ -1,5 +1,4 @@
 import { FilterBar } from '@/components/FilterBar';
-import { ProfileButton } from '@/components/ProfileButton';
 import { TaskCard } from '@/components/TaskCard';
 import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
@@ -10,13 +9,11 @@ import { useTaskTags } from '@/contexts/TaskTagsContext';
 import { useTasks } from '@/contexts/TasksContext';
 import { Project } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const router = useRouter();
   const { tasks, refetch, startTask, pauseTask, completeTask, deleteTask } = useTasks();
   const { projects } = useProjects();
   const { tags } = useTags();
@@ -144,12 +141,6 @@ export default function HomeScreen() {
             MASTER YOUR ESTIMATION
           </Text>
         </View>
-        <View style={styles.headerActions}>
-          <Pressable onPress={() => router.push('/tags')} style={styles.tagsButton}>
-            <Ionicons name="pricetag-outline" size={22} color={Colors.text} />
-          </Pressable>
-          <ProfileButton />
-        </View>
       </View>
 
       {/* Filter Bar */}
@@ -255,12 +246,6 @@ const styles = StyleSheet.create({
     minWidth: 0,
     marginRight: 12,
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flexShrink: 0,
-  },
   appTitle: {
     fontSize: 28,
     fontWeight: '900',
@@ -273,22 +258,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     letterSpacing: 2,
     textTransform: 'uppercase',
-  },
-  tagsButton: {
-    width: 44,
-    height: 44,
-    backgroundColor: Colors.backgroundSecondary,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addButton: {
-    width: 52,
-    height: 52,
-    backgroundColor: Colors.primary,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   sectionHeader: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
 /**
- * Floating Tab Bar - Updated with Focus and Scope tabs
+ * Floating Tab Bar - 4 icon-only tabs + center FAB
  */
 
 import { Colors } from '@/constants/colors';
@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useRouter } from 'expo-router';
 import { ComponentProps } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 type IoniconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -16,25 +16,26 @@ const TABS: {
   name: string;
   route: string;
   icon: { focused: IoniconName; unfocused: IoniconName };
-  label: string;
 }[] = [
   {
     name: 'index',
     route: 'index',
     icon: { focused: 'list', unfocused: 'list-outline' },
-    label: 'Tasks',
   },
   {
     name: 'projects',
     route: 'projects',
     icon: { focused: 'folder', unfocused: 'folder-outline' },
-    label: 'Projects',
   },
   {
     name: 'analytics',
     route: 'analytics',
     icon: { focused: 'bar-chart', unfocused: 'bar-chart-outline' },
-    label: 'Insights',
+  },
+  {
+    name: 'settings',
+    route: 'settings',
+    icon: { focused: 'settings', unfocused: 'settings-outline' },
   },
 ];
 
@@ -45,24 +46,31 @@ export function FloatingTabBar({ state, navigation, insets }: BottomTabBarProps)
   return (
     <View style={[styles.wrapper, { paddingBottom: bottomInset }]} pointerEvents="box-none">
       <View style={styles.container}>
+        {/* Tasks */}
         <TabButton
           icon={TABS[0].icon}
-          label={TABS[0].label}
           focused={state.index === 0}
           onPress={() => navigation.navigate(TABS[0].route)}
         />
+        {/* Manage */}
         <TabButton
           icon={TABS[1].icon}
-          label={TABS[1].label}
           focused={state.index === 1}
           onPress={() => navigation.navigate(TABS[1].route)}
         />
+        {/* FAB */}
         <AddTabButton onPress={() => router.push('/add-task')} />
+        {/* Insights */}
         <TabButton
           icon={TABS[2].icon}
-          label={TABS[2].label}
           focused={state.index === 2}
           onPress={() => navigation.navigate(TABS[2].route)}
+        />
+        {/* Settings */}
+        <TabButton
+          icon={TABS[3].icon}
+          focused={state.index === 3}
+          onPress={() => navigation.navigate(TABS[3].route)}
         />
       </View>
     </View>
@@ -71,12 +79,10 @@ export function FloatingTabBar({ state, navigation, insets }: BottomTabBarProps)
 
 function TabButton({
   icon,
-  label,
   focused,
   onPress,
 }: {
   icon: { focused: IoniconName; unfocused: IoniconName };
-  label: string;
   focused: boolean;
   onPress: () => void;
 }) {
@@ -85,13 +91,12 @@ function TabButton({
   return (
     <Pressable onPress={onPress} style={styles.tabButton}>
       <Ionicons name={iconName} size={24} color={focused ? Colors.primary : Colors.textMuted} />
-      <Text style={[styles.tabLabel, focused && styles.tabLabelFocused]}>{label}</Text>
       {focused && <View style={styles.indicator} />}
     </Pressable>
   );
 }
 
-const ADD_BUTTON_SIZE = 64; // Prominent primary action; fits in 75px bar
+const ADD_BUTTON_SIZE = 50;
 
 function AddTabButton({ onPress }: { onPress: () => void }) {
   return (
@@ -100,7 +105,7 @@ function AddTabButton({ onPress }: { onPress: () => void }) {
       style={({ pressed }) => [styles.addButtonWrap, pressed && styles.addButtonPressed]}
       accessibilityLabel="Add task">
       <View style={styles.addIconWrap}>
-        <Ionicons name="add" size={36} color={Colors.white} />
+        <Ionicons name="add" size={28} color={Colors.white} />
       </View>
     </Pressable>
   );
@@ -146,22 +151,11 @@ const styles = StyleSheet.create({
   tabButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 8,
     position: 'relative',
     flex: 1,
     minWidth: 0,
-  },
-  tabLabel: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: Colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginTop: 4,
-  },
-  tabLabelFocused: {
-    color: Colors.primary,
   },
   indicator: {
     position: 'absolute',
@@ -174,7 +168,7 @@ const styles = StyleSheet.create({
   addButtonWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
   },
   addButtonPressed: {
     transform: [{ scale: 0.94 }],
@@ -199,10 +193,6 @@ const styles = StyleSheet.create({
         elevation: 14,
       },
     }),
-  },
-  tabLabelAdd: {
-    color: Colors.textMuted,
-    marginTop: 4,
   },
 });
 
