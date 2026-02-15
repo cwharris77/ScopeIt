@@ -31,12 +31,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const publicPaths = ['/login', '/privacy', '/terms', '/delete-account', '/auth/callback'];
+  const publicPaths = ['/login', '/about', '/privacy', '/terms', '/delete-account', '/auth/callback'];
   const isPublic = publicPaths.some((p) => request.nextUrl.pathname.startsWith(p));
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
+    url.pathname = '/about';
     return NextResponse.redirect(url);
   }
 
