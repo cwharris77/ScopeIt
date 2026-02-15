@@ -8,4 +8,7 @@ export {
   type TagInsert,
   type TagUpdate,
   type TaskTag,
+  type Project,
+  type ProjectInsert,
+  type ProjectUpdate,
 } from './task';
