@@ -1,13 +1,22 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Project, ProjectInsert, ProjectUpdate, supabase } from '@/lib/supabase';
-import { PostgrestError } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
+
+/**
+ * Minimal error interface to avoid direct dependency on @supabase/supabase-js
+ */
+export interface MinimalPostgrestError {
+  message: string;
+  details: string;
+  hint: string;
+  code: string;
+}
 
 export function useProjects() {
   const { session } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<PostgrestError | null>(null);
+  const [error, setError] = useState<MinimalPostgrestError | null>(null);
 
   const fetchProjects = useCallback(async () => {
     if (!session?.user.id) {

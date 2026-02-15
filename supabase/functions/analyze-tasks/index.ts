@@ -1,10 +1,11 @@
-import { calculatePerTaskAccuracy } from './accuracy.ts';
-import { getCorsHeaders } from '../_shared/cors.ts';
 import { GoogleGenAI, Type } from 'npm:@google/genai';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { getCorsHeaders } from '../_shared/cors.ts';
+import { calculatePerTaskAccuracy } from './accuracy.ts';
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 const NEW_TASKS_THRESHOLD = 5;
+const MODEL = 'gemini-2.5-flash-lite';
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -99,7 +100,9 @@ Deno.serve(async (req) => {
       .from('tasks')
       .select('name, category, estimated_minutes, actual_seconds, status')
       .eq('user_id', user.id)
-      .eq('status', 'completed');
+      .eq('status', 'completed')
+      .order('completed_at', { ascending: false })
+      .limit(5);
 
     if (tasksError) {
       console.error('[analyze-tasks] Failed to fetch tasks:', tasksError.message, tasksError);
@@ -145,9 +148,12 @@ Deno.serve(async (req) => {
 
     const ai = new GoogleGenAI({ apiKey });
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout
+    const timeout = setTimeout(() => controller.abort(), 50000); // 50 seconds timeout
+
+    console.log(`[analyze-tasks] Generating content with ${MODEL} (5 tasks)...`);
+    // TODO: figure out model usage/cost timeouts and spikes are making it unaivailable. Maybe make it a pro plan add on?
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite',
+      model: MODEL,
       contents: prompt,
       config: {
         abortSignal: controller.signal,
