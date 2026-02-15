@@ -3,8 +3,10 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { getCorsHeaders } from '../_shared/cors.ts';
 import { calculatePerTaskAccuracy } from './accuracy.ts';
 
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
-const NEW_TASKS_THRESHOLD = 5;
+const TIER_LIMITS: Record<string, { cacheTtlMs: number; taskThreshold: number }> = {
+  free: { cacheTtlMs: 7 * 24 * 60 * 60 * 1000, taskThreshold: 5 },
+  pro: { cacheTtlMs: 3 * 24 * 60 * 60 * 1000, taskThreshold: 2 },
+};
 const MODEL = 'gemini-2.5-flash-lite';
 
 Deno.serve(async (req) => {
@@ -45,6 +47,16 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Fetch user tier
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('tier')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    const tier = profile?.tier ?? 'free';
+    const limits = TIER_LIMITS[tier] ?? TIER_LIMITS.free;
 
     // Count completed tasks for this user
     const { count: completedCount, error: countError } = await supabase
@@ -87,7 +99,7 @@ Deno.serve(async (req) => {
       const ageMs = Date.now() - new Date(cached.created_at).getTime();
       const newTasksSince = completedCount - cached.completed_count;
 
-      if (ageMs < SEVEN_DAYS_MS && newTasksSince < NEW_TASKS_THRESHOLD) {
+      if (ageMs < limits.cacheTtlMs && newTasksSince < limits.taskThreshold) {
         return new Response(JSON.stringify(cached.analysis), {
           status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -150,8 +162,7 @@ Deno.serve(async (req) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 50000); // 50 seconds timeout
 
-    console.log(`[analyze-tasks] Generating content with ${MODEL} (5 tasks)...`);
-    // TODO: figure out model usage/cost timeouts and spikes are making it unaivailable. Maybe make it a pro plan add on?
+    console.log(`[analyze-tasks] Generating content with ${MODEL} (5 tasks, tier=${tier})...`);
     const response = await ai.models.generateContent({
       model: MODEL,
       contents: prompt,

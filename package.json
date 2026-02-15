@@ -16,7 +16,7 @@
     "mobile:android": "npm run android -w mobile",
     "mobile:lint": "npm run lint -w mobile",
     "mobile:typecheck": "npm run typecheck -w mobile",
-    "generate-types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor > shared/types/supabase.ts",
+    "generate-types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor 2>/dev/null > shared/types/supabase.ts",
     "functions:deploy": "supabase functions deploy",
     "functions:serve": "supabase functions serve --env-file supabase/.env --no-verify-jwt"
   },

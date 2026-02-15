@@ -42,6 +42,15 @@ VALUES
 ON CONFLICT (provider_id, provider) DO NOTHING;
 
 -- ============================================================================
+-- user_profiles (tier assignment: alice=pro, bob/charlie=free)
+-- ============================================================================
+INSERT INTO public.user_profiles (id, tier, created_at, updated_at) VALUES
+  ('11111111-1111-4111-8111-111111111111', 'pro',  NOW(), NOW()),
+  ('22222222-2222-4222-8222-222222222222', 'free', NOW(), NOW()),
+  ('33333333-3333-4333-8333-333333333333', 'free', NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
 -- projects (~3 per user)
 -- ============================================================================
 INSERT INTO public.projects (id, name, color, user_id, created_at) VALUES
