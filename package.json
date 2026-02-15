@@ -18,10 +18,21 @@
     "mobile:typecheck": "npm run typecheck -w mobile",
     "generate-types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor 2>/dev/null > shared/types/supabase.ts",
     "functions:deploy": "supabase functions deploy",
-    "functions:serve": "supabase functions serve --env-file supabase/.env --no-verify-jwt"
+    "functions:serve": "supabase functions serve --env-file supabase/.env --no-verify-jwt",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:changed": "vitest run --changed"
   },
   "overrides": {
     "react": "19.1.0",
     "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@vitejs/plugin-react": "^5.1.4",
+    "jsdom": "^28.1.0",
+    "vitest": "^4.0.18"
   }
 }
