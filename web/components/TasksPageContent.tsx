@@ -1,73 +1,35 @@
 'use client';
 
-import { createClient } from '@/lib/supabase/client';
-import { Task, TaskInsert, Tag } from '@shared/types';
-import { TASK_STATUS, type SortOption } from '@shared/constants';
-import { useCallback, useEffect, useState } from 'react';
-import { TaskCard } from '@/components/TaskCard';
-import { FilterBar } from '@/components/FilterBar';
 import { AddTaskModal } from '@/components/AddTaskModal';
+import { FilterBar } from '@/components/FilterBar';
+import { TaskCard } from '@/components/TaskCard';
+import { TASK_STATUS, type SortOption } from '@shared/constants';
+import { useTags } from '@shared/hooks/useTags';
+import { useTasks } from '@shared/hooks/useTasks';
+import { useTaskTags } from '@shared/hooks/useTaskTags';
+import { Task, TaskInsert } from '@shared/types';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 
 export function TasksPageContent() {
-  const supabase = createClient();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [tags, setTags] = useState<Tag[]>([]);
+  const {
+    tasks,
+    loading: tasksLoading,
+    addTask: sharedAddTask,
+    startTask,
+    pauseTask,
+    completeTask,
+    deleteTask,
+  } = useTasks();
+
+  const { tags, loading: tagsLoading } = useTags();
+  const { tagsByTaskId, setTaskTags, loading: taskTagsLoading } = useTaskTags();
+
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
-  const [tagsByTaskId, setTagsByTaskId] = useState<Map<string, Tag[]>>(new Map());
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  const fetchTasks = useCallback(async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    setTasks(data || []);
-
-    // Fetch tags
-    const { data: tagsData } = await supabase
-      .from('tags')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('name');
-    setTags(tagsData || []);
-
-    // Fetch task_tags joined with tags
-    const taskIds = (data || []).map((t) => t.id);
-    if (taskIds.length > 0) {
-      const { data: taskTagsData } = await supabase
-        .from('task_tags')
-        .select('task_id, tags(*)')
-        .in('task_id', taskIds);
-
-      const map = new Map<string, Tag[]>();
-      for (const row of taskTagsData || []) {
-        const tag = row.tags as unknown as Tag;
-        if (!tag) continue;
-        if (!map.has(row.task_id)) map.set(row.task_id, []);
-        map.get(row.task_id)!.push(tag);
-      }
-      setTagsByTaskId(map);
-    } else {
-      setTagsByTaskId(new Map());
-    }
-
-    setLoading(false);
-  }, [supabase]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch on mount
-    void fetchTasks();
-  }, [fetchTasks]);
+  const loading = tasksLoading || tagsLoading || taskTagsLoading;
 
   // Filter and sort logic
   const filterTasks = (taskList: Task[]) => {
@@ -99,103 +61,10 @@ export function TasksPageContent() {
   const activeTasks = filterTasks(tasks.filter((t) => t.status !== TASK_STATUS.COMPLETED));
   const completedTasks = filterTasks(tasks.filter((t) => t.status === TASK_STATUS.COMPLETED));
 
-  // Task actions
-  const startTask = async (id: string) => {
-    const running = tasks.find((t) => t.status === TASK_STATUS.RUNNING && t.id !== id);
-    if (running) await pauseTask(running.id);
-
-    const now = new Date().toISOString();
-    await supabase
-      .from('tasks')
-      .update({ status: TASK_STATUS.RUNNING, started_at: now })
-      .eq('id', id);
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: TASK_STATUS.RUNNING, started_at: now } : t))
-    );
-  };
-
-  const pauseTask = async (id: string) => {
-    const task = tasks.find((t) => t.id === id);
-    if (!task?.started_at) return;
-    const delta = Math.max(
-      0,
-      Math.floor((Date.now() - new Date(task.started_at).getTime()) / 1000)
-    );
-    const newSeconds = (task.actual_seconds || 0) + delta;
-
-    await supabase
-      .from('tasks')
-      .update({ status: TASK_STATUS.PAUSED, started_at: null, actual_seconds: newSeconds })
-      .eq('id', id);
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? { ...t, status: TASK_STATUS.PAUSED, started_at: null, actual_seconds: newSeconds }
-          : t
-      )
-    );
-  };
-
-  const completeTask = async (id: string) => {
-    const task = tasks.find((t) => t.id === id);
-    if (!task) return;
-    let finalSeconds = task.actual_seconds || 0;
-    if (task.status === TASK_STATUS.RUNNING && task.started_at) {
-      finalSeconds += Math.max(
-        0,
-        Math.floor((Date.now() - new Date(task.started_at).getTime()) / 1000)
-      );
-    }
-    const now = new Date().toISOString();
-
-    await supabase
-      .from('tasks')
-      .update({
-        status: TASK_STATUS.COMPLETED,
-        started_at: null,
-        actual_seconds: finalSeconds,
-        completed_at: now,
-      })
-      .eq('id', id);
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? {
-              ...t,
-              status: TASK_STATUS.COMPLETED,
-              started_at: null,
-              actual_seconds: finalSeconds,
-              completed_at: now,
-            }
-          : t
-      )
-    );
-  };
-
-  const deleteTask = async (id: string) => {
-    await supabase.from('tasks').delete().eq('id', id);
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-  };
-
   const addTask = async (taskData: Omit<TaskInsert, 'user_id'>, tagIds: string[] = []) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data } = await supabase
-      .from('tasks')
-      .insert({ ...taskData, user_id: user.id })
-      .select()
-      .single();
-    if (data) {
-      if (tagIds.length > 0) {
-        await supabase
-          .from('task_tags')
-          .insert(tagIds.map((tagId) => ({ task_id: data.id, tag_id: tagId })));
-        await fetchTasks();
-      } else {
-        setTasks((prev) => [data, ...prev]);
-      }
+    const { data } = await sharedAddTask(taskData);
+    if (data && tagIds.length > 0) {
+      await setTaskTags(data.id, tagIds);
     }
     setShowAddModal(false);
   };
@@ -209,7 +78,7 @@ export function TasksPageContent() {
     });
   };
 
-  if (loading) {
+  if (loading && tasks.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />

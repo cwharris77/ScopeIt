@@ -1,6 +1,6 @@
-import { TASK_STATUS } from '@/constants/tasks';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Task, TaskInsert } from '@/lib/supabase';
+import { TASK_STATUS } from '@shared/constants/tasks';
 import { PostgrestError } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
 
