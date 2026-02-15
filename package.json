@@ -19,5 +19,9 @@
     "generate-types": "npx supabase gen types typescript --project-id ouscsamzunholiaysnor > shared/types/supabase.ts",
     "functions:deploy": "supabase functions deploy",
     "functions:serve": "supabase functions serve --env-file supabase/.env --no-verify-jwt"
+  },
+  "overrides": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
