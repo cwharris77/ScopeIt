@@ -3,10 +3,11 @@ import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
 import { TASK_STATUS } from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
-import { AIAnalysis, analyzeTaskPerformance } from '@/services/geminiService';
+import { supabase } from '@/lib/supabase';
 import { calculatePerTaskAccuracy } from '@/utils/accuracy';
 import { secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';
+import { AIAnalysis, analyzeTaskPerformance } from '@shared/services/geminiService';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,7 +23,7 @@ export default function AnalyticsScreen() {
   const fetchAnalysis = useCallback(async () => {
     if (completedTasks.length === 0) return;
     setLoading(true);
-    const result = await analyzeTaskPerformance();
+    const result = await analyzeTaskPerformance(supabase);
     if (result) {
       setAnalysis(result);
     }

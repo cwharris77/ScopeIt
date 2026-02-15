@@ -1,41 +1,35 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
+import { TASK_STATUS } from '@shared/constants';
+import { useTasks } from '@shared/hooks/useTasks';
+import { AIAnalysis, analyzeTaskPerformance } from '@shared/services/geminiService';
 import { Sparkles } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
-type Analysis = {
-  summary: string;
-  insights: string[];
-  recommendations: string[];
-};
+import { useCallback, useEffect, useState } from 'react';
 
 export function AiInsights() {
   const supabase = createClient();
-  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [analysis, setAnalysis] = useState<AIAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
+  const { tasks } = useTasks();
 
+  const completedTasks = tasks.filter((t) => t.status === TASK_STATUS.COMPLETED);
+
+  const fetchAnalysis = useCallback(async () => {
+    if (completedTasks.length === 0) return;
+    setLoading(true);
+    const result = await analyzeTaskPerformance(supabase);
+    if (result) {
+      setAnalysis(result);
+    }
+    setLoading(false);
+  }, [completedTasks.length]);
+
+  // run on mount
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-      supabase
-        .from('task_analyses')
-        .select('analysis')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data?.analysis) {
-            setAnalysis(data.analysis as Analysis);
-          }
-          setLoading(false);
-        });
-    });
-  }, [supabase]);
+    fetchAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (
