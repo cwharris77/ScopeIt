@@ -19,6 +19,8 @@
       }
     ],
     "paths": {
+      "react": ["./node_modules/react"],
+      "react-dom": ["./node_modules/react-dom"],
       "@/*": ["./*"],
       "@shared/*": ["../shared/*"]
     }
@@ -29,7 +31,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "../shared/**/*.ts",
+    "../shared/**/*.tsx"
   ],
   "exclude": ["node_modules"]
 }
