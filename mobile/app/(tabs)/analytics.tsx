@@ -3,37 +3,48 @@ import { Colors } from '@/constants/colors';
 import { PAGE_BOTTOM_PADDING } from '@/constants/layout';
 import { TASK_STATUS } from '@/constants/tasks';
 import { useTasks } from '@/contexts/TasksContext';
-import { AIAnalysis, analyzeTaskPerformance } from '@/services/geminiService';
+import { supabase } from '@/lib/supabase';
 import { calculatePerTaskAccuracy } from '@/utils/accuracy';
 import { secondsToDisplay } from '@/utils/time';
 import { Ionicons } from '@expo/vector-icons';
+import { AIAnalysis, analyzeTaskPerformance } from '@shared/services/geminiService';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AnalyticsScreen() {
-  const { tasks } = useTasks();
+  const { tasks, loading: tasksLoading } = useTasks();
   const [analysis, setAnalysis] = useState<AIAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const completedTasks = tasks.filter((t) => t.status === TASK_STATUS.COMPLETED);
 
   const fetchAnalysis = useCallback(async () => {
     if (completedTasks.length === 0) return;
     setLoading(true);
-    const result = await analyzeTaskPerformance();
-    if (result) {
-      setAnalysis(result);
+    setError(null);
+    try {
+      const result = await analyzeTaskPerformance(supabase);
+      if (result) {
+        setAnalysis(result);
+      } else {
+        setError('Failed to load insights');
+      }
+    } catch (err) {
+      setError('An error occurred');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [completedTasks.length]);
 
-  // run on mount
+  // run when tasks are loaded and we don't have analysis yet
   useEffect(() => {
+    if (tasksLoading) return;
+    if (analysis || error) return;
     fetchAnalysis();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchAnalysis, analysis, error, tasksLoading]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -188,6 +199,37 @@ export default function AnalyticsScreen() {
           <View style={styles.loadingCard}>
             <Ionicons name="sparkles" size={24} color={Colors.primary} />
             <Text style={styles.loadingText}>Gemini is analyzing your scope...</Text>
+          </View>
+        ) : error ? (
+          <View
+            style={[
+              styles.insightCard,
+              {
+                backgroundColor: Colors.backgroundSecondary,
+                borderStyle: 'dashed',
+                borderWidth: 1,
+                borderColor: Colors.border,
+              },
+            ]}>
+            <View style={styles.insightHeader}>
+              <View style={styles.insightTitleRow}>
+                <Ionicons name="alert-circle-outline" size={24} color={Colors.warning} />
+                <Text style={[styles.insightTitle, { color: Colors.text }]}>Insight Error</Text>
+              </View>
+            </View>
+            <Text
+              style={[styles.summaryText, { color: Colors.textSecondary, fontStyle: 'normal' }]}>
+              {error === 'Failed to load insights'
+                ? 'Analysis timed out or failed. This can happen if the AI is busy.'
+                : 'Something went wrong while generating insights.'}
+            </Text>
+            <View style={styles.recCard}>
+              <Text
+                style={[styles.recText, { textAlign: 'center', color: Colors.primary }]}
+                onPress={fetchAnalysis}>
+                Tap to retry analysis
+              </Text>
+            </View>
           </View>
         ) : analysis ? (
           <View style={styles.insightCard}>

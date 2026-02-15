@@ -5,8 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@shared/*": ["./shared/*"]
+      "@shared/*": ["../shared/*"]
     }
   },
-  "exclude": ["supabase/functions", "web"]
+  "exclude": ["../supabase/functions"]
 }

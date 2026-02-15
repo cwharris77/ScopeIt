@@ -1,4 +1,4 @@
-import { useProjects as useProjectsHook } from '@/hooks/useProjects';
+import { useProjects as useProjectsHook } from '@shared/hooks/useProjects';
 import { createContext, ReactNode, useContext } from 'react';
 
 const ProjectsContext = createContext<ReturnType<typeof useProjectsHook> | null>(null);

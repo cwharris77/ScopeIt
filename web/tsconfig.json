@@ -18,6 +18,8 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "../node_modules/@types"],
     "paths": {
       "@/*": ["./*"],
       "@shared/*": ["../shared/*"]
@@ -29,7 +31,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "../shared/**/*.ts",
+    "../shared/**/*.tsx"
   ],
   "exclude": ["node_modules"]
 }

@@ -1,0 +1,15 @@
+{
+  "name": "@scope-it/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./index.ts",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "@supabase/supabase-js": ">=2"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.3",
+    "@types/react-dom": "19.2.3"
+  }
+}

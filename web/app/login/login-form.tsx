@@ -1,8 +1,9 @@
 'use client';
 
 import { createClient } from '@/lib/supabase/client';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { SiGithub, SiGoogle } from 'react-icons/si';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -73,12 +74,14 @@ export default function LoginForm() {
         <div className="space-y-3">
           <button
             onClick={() => handleOAuth('google')}
-            className="w-full rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition">
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition">
+            <SiGoogle size={20} />
             Continue with Google
           </button>
           <button
             onClick={() => handleOAuth('github')}
-            className="w-full rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition">
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-border p-3 text-white hover:bg-background-tertiary transition">
+            <SiGithub size={20} />
             Continue with GitHub
           </button>
         </div>

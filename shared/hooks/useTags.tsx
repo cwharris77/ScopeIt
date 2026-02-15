@@ -1,13 +1,22 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Tag, TagInsert, TagUpdate } from '@/lib/supabase';
-import { PostgrestError } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
+
+/**
+ * Minimal error interface to avoid direct dependency on @supabase/supabase-js
+ */
+export interface MinimalPostgrestError {
+  message: string;
+  details: string;
+  hint: string;
+  code: string;
+}
 
 export function useTags() {
   const { session } = useAuth();
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<PostgrestError | null>(null);
+  const [error, setError] = useState<MinimalPostgrestError | null>(null);
 
   const fetchTags = useCallback(async () => {
     if (!session?.user.id) {

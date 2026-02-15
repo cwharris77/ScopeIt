@@ -1,14 +1,24 @@
-import { TASK_STATUS } from '@/constants/tasks';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Task, TaskInsert } from '@/lib/supabase';
-import { PostgrestError } from '@supabase/supabase-js';
+import { TASK_STATUS } from '@shared/constants/tasks';
 import { useCallback, useEffect, useState } from 'react';
+
+/**
+ * Minimal error interface to avoid direct dependency on @supabase/supabase-js
+ * which causes build issues in some environments.
+ */
+export interface MinimalPostgrestError {
+  message: string;
+  details: string;
+  hint: string;
+  code: string;
+}
 
 export function useTasks() {
   const { session } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<PostgrestError | null>(null);
+  const [error, setError] = useState<MinimalPostgrestError | null>(null);
 
   const fetchTasks = useCallback(async () => {
     if (!session?.user.id) {
