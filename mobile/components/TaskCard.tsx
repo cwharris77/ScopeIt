@@ -170,10 +170,16 @@ export function TaskCard({
         </View>
 
         <View style={styles.actions}>
-          <Pressable onPress={handleEdit} style={styles.actionButton}>
+          <Pressable
+            onPress={handleEdit}
+            style={styles.actionButton}
+            accessibilityLabel="Edit task">
             <Ionicons name="pencil" size={18} color={Colors.textMuted} />
           </Pressable>
-          <Pressable onPress={() => onDelete(task.id)} style={styles.actionButton}>
+          <Pressable
+            onPress={() => onDelete(task.id)}
+            style={styles.actionButton}
+            accessibilityLabel="Delete task">
             <Ionicons name="trash-outline" size={20} color={Colors.textMuted} />
           </Pressable>
         </View>
