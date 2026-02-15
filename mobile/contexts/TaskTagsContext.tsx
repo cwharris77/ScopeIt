@@ -1,4 +1,4 @@
-import { useTaskTags as useTaskTagsHook } from '@/shared/hooks/useTaskTags';
+import { useTaskTags as useTaskTagsHook } from '@shared/hooks/useTaskTags';
 import { createContext, ReactNode, useContext } from 'react';
 
 const TaskTagsContext = createContext<ReturnType<typeof useTaskTagsHook> | null>(null);

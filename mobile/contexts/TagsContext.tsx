@@ -1,4 +1,4 @@
-import { useTags as useTagsHook } from '@/shared/hooks/useTags';
+import { useTags as useTagsHook } from '@shared/hooks/useTags';
 import { createContext, ReactNode, useContext } from 'react';
 
 const TagsContext = createContext<ReturnType<typeof useTagsHook> | null>(null);

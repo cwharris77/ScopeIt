@@ -1,1 +1,1 @@
-export * from '../shared/constants/tasks';
+export * from '@shared/constants/tasks';

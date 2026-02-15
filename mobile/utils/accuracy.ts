@@ -1,1 +1,1 @@
-export * from '../shared/utils/accuracy';
+export * from '@shared/utils/accuracy';

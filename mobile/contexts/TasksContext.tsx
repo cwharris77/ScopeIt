@@ -1,4 +1,4 @@
-import { useTasks as useTasksHook } from '@/shared/hooks/useTasks';
+import { useTasks as useTasksHook } from '@shared/hooks/useTasks';
 import { createContext, ReactNode, useContext } from 'react';
 
 const TasksContext = createContext<ReturnType<typeof useTasksHook> | null>(null);
